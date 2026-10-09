@@ -25,6 +25,10 @@ TFNG = Question.FIXED_CHOICES[Question.Type.TFNG]
 Q_RE = re.compile(r"^\s*(\d{1,3})\s*[.)]\s*(.*)$")
 OPT_RE = re.compile(r"^\s*(\*)?\s*([A-Za-z]|[ivxIVX]{1,5})\s*[).]\s*(.*)$")
 # PDF copies often lose the dot: "A<tab>THE ACE HOTEL" or "A    THE ACE HOTEL"
+# In matching / headings / map parts also "A – text", "A: text", "A text" (short lines only)
+OPT_LOOSE_RE = re.compile(r"^\s*(\*)?\s*([A-J])(?:\s*[-–—:]\s*|\s+)(\S.*)$")
+# Cyrillic letters that look like Latin ones (Word documents typed with an Uzbek/Russian keyboard)
+HOMOGLYPHS = str.maketrans("АВСЕНІКМОРТХаеосрх", "ABCEHIKMOPTXaeocpx")
 OPT_TAB_RE = re.compile(r"^\s*(\*)?\s*([A-J])(?:\t|\s{2,})\s*(\S.*)$")
 # headings that introduce the list of options in printed papers
 LIST_HEAD_RE = re.compile(r"^\s*(list of headings|headings|list of (statements|people|places|options)|topic\b.*)\s*:?.*$", re.I)
@@ -68,6 +72,7 @@ def expand_lines(text):
     "15. Paragraph 1   17. Paragraph 3" → two questions."""
     out = []
     for raw in (text or "").splitlines():
+        raw = re.sub(r"^(\s*\*?\s*)([АВСЕНІКМОРТХ])(?=[\s).:–—-])", lambda m: m.group(1) + m.group(2).translate(HOMOGLYPHS), raw)
         for piece in MULTI_Q_SPLIT.split(raw):
             if not re.search(r"\S\s+\*?[A-D]\)\s", piece):
                 out.append(piece)
@@ -151,6 +156,11 @@ def parse_part(text, part):
             items.append(current)
             continue
         m = OPT_RE.match(line) or OPT_TAB_RE.match(line)
+        if not m and label_only and not Q_RE.match(line) and len(line.split()) <= 12:
+            loose = OPT_LOOSE_RE.match(line)
+            # a new list may start after the questions, but only with "A"
+            if loose and (in_shared or current is None or loose.group(2) == "A"):
+                m = loose
         if m and label_only and not in_shared:
             in_shared, current = True, None  # an option list written without the word OPTIONS
             blocks.append([])
