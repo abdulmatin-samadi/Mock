@@ -187,6 +187,21 @@ def parse_part(text, part):
         else:
             errors.append(f"Line {n}: “{line.strip()[:60]}” is not a question. Start questions with a number, e.g. “1. …”.")
 
+    # Map labelling: the letters are on the map, so the paper often has no list. Take them from
+    # "(A-H)" in the instructions, otherwise from the answers.
+    if (items and not blocks and allowed and Question.Type.MAP_LABELLING in allowed
+            and all(t in Question.LABEL_TYPES for t in allowed)):
+        rng = re.search(r"\b([A-J])\s*[-–]\s*([A-J])\b", text or "")
+        answers = [(it.answer or key.get(it.number, "")).strip().upper() for it in items]
+        letters = [a for a in answers if re.fullmatch(r"[A-J]", a)]
+        if rng:
+            first, last = rng.group(1), rng.group(2)
+        elif letters:
+            first, last = "A", max(letters)
+        else:
+            first = last = None
+        if first and last and first <= last:
+            blocks.append([(chr(c), "", False) for c in range(ord(first), ord(last) + 1)])
     for it in items:
         k = key.get(it.number)
         if k and not it.answer and not any(ok for _, _, ok in it.options):
