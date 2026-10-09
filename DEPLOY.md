@@ -1,0 +1,52 @@
+# DreamZone'ni internetga chiqarish
+
+**Backend** (Django, baza, AI) → **Render**.  **Frontend** (CSS, JS, rasmlar) → **Netlify**.
+Barcha sozlamalar tayyor: `render.yaml` va `netlify.toml`. Siz faqat tugmalarni bosasiz.
+
+> Tartib muhim: **avval Render**, keyin Netlify.
+
+---
+
+## 1. Render — backend (≈10 daqiqa)
+
+1. Shu tugmani bosing: [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/abdulmatin-samadi/Mock)
+   — yoki **render.com → New → Blueprint →** `abdulmatin-samadi/Mock` repozitoriyini tanlang.
+2. Render 3 ta qiymat so'raydi:
+
+   | Nomi | Nima yoziladi |
+   |---|---|
+   | `ADMIN_EMAIL` | admin panelga kiradigan email, masalan `admin@dreamzone.uz` |
+   | `ADMIN_PASSWORD` | kuchli parol (kamida 10 belgi) |
+   | `AI_API_KEY` | Gemini kaliti — https://aistudio.google.com/apikey |
+
+3. **Apply** (yoki **Deploy Blueprint**) ni bosing. Render server va PostgreSQL bazani yaratadi.
+4. Build tugashini kuting (5–10 daqiqa). Holat **Live** bo'lganda server manzili ko'rinadi, masalan
+   `https://dreamzone-samadi-api.onrender.com` — uni nusxalab oling.
+5. Tekshiring: shu manzilga `/accounts/login/` qo'shib oching — login sahifasi chiqishi kerak.
+
+## 2. Netlify — frontend (≈3 daqiqa)
+
+1. Shu tugmani bosing: [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/abdulmatin-samadi/Mock)
+   — yoki **app.netlify.com → Add new site → Import an existing project → GitHub →** `Mock`.
+2. Sozlamalar `netlify.toml` dan o'zi olinadi (Base directory `frontend`, Publish `public`). **Deploy** ni bosing.
+3. **Faqat Render manzili `https://dreamzone-samadi-api.onrender.com` dan farq qilsa:**
+   Netlify → **Site configuration → Environment variables → Add** → `BACKEND_URL` = Render manzilingiz →
+   **Deploys → Trigger deploy**.
+4. Netlify manzilini oching (masalan `https://dreamzone-xxxx.netlify.app`) — sayt tayyor.
+   Admin panel: `…netlify.app/admin/` → 1-qadamdagi email va parol.
+
+---
+
+## Keyinchalik yangilash
+GitHub'ga yangi kod yuklansa, Render ham, Netlify ham **o'zi qayta joylaydi**.
+
+## Bilishingiz kerak
+- **Birinchi ochilish sekin.** Bepul Render server 15 daqiqa ishlatilmasa uxlaydi; uyg'onishi 30–60 soniya.
+  Netlify shu paytda xato ko'rsatsa — 1 daqiqadan keyin sahifani yangilang.
+- **Yuklangan fayllar o'chadi.** Bepul Render diskida Listening audio, rasmlar va ovoz yozuvlari server
+  qayta ishga tushganda yo'qoladi. Saqlash uchun Cloudflare R2 (10 GB bepul) yoki AWS S3 ulang:
+  Render → Environment → `USE_S3=True`, `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`,
+  `AWS_SECRET_ACCESS_KEY`, `AWS_S3_ENDPOINT_URL` (R2 uchun `https://<account-id>.r2.cloudflarestorage.com`).
+- **Bepul PostgreSQL** Render'da ma'lum muddatdan keyin o'chiriladi — Render'dagi ogohlantirishni kuzating.
+- **Mocklar bo'sh boshlanadi.** Yangi bazada mock yo'q — admin paneldagi ⚡ Quick entry bilan qo'shasiz.
+- **Kalitlar GitHub'da emas.** `AI_API_KEY` va admin paroli faqat Render sozlamalarida saqlanadi.

@@ -8,10 +8,23 @@ recordings. Admins manage everything from a separate dashboard. Roles: student a
 
 ## 1. Quick start
 
+The repository has two folders:
+
+```
+backend/    Django project (pages, API, database, AI) → deploy to Render
+frontend/   public/static (CSS, JS, images) + build.sh → deploy to Netlify (netlify.toml)
+render.yaml Render blueprint (web service + PostgreSQL); netlify.toml Netlify config
+```
+
+Django still renders every page; it reads the CSS/JS/images from `frontend/public/static`.
+On Netlify the static files are served from its CDN and every other request is proxied to the
+Render backend, so the site works on the Netlify domain exactly as it does locally.
+
 ```bash
 cd /Users/abdulmatin/Desktop/mock
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
+cd backend                        # every manage.py command runs from here
 
 createdb bandwise                 # PostgreSQL database
 cp .env.example .env              # then set SECRET_KEY, DB_*, AI_API_KEY, STT_API_KEY
@@ -85,6 +98,8 @@ Design rules applied everywhere:
   support for seeking; optional nginx `X-Accel-Redirect`).
 
 ## 3. Folder structure
+
+Inside `backend/` (static files are in `frontend/public/static/`):
 
 ```
 config/            settings, root urls, api_urls (all /api/ routes)
@@ -233,7 +248,22 @@ curl -s -X POST localhost:8000/api/attempts/1/submit/ -H "Authorization: Bearer 
   and run `python manage.py process_ai_queue` every minute (cron/systemd), or swap `ai/tasks.enqueue`
   for Celery — callers don't change.
 
-## 9. Known limitations
+## 9. Deploy: backend on Render, frontend on Netlify
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/abdulmatin-samadi/Mock)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/abdulmatin-samadi/Mock)
+
+Step-by-step guide (Uzbek): [DEPLOY.md](DEPLOY.md).
+
+- `render.yaml` creates the `dreamzone-samadi-api` web service (root `backend/`) and the `dreamzone-db`
+  PostgreSQL database. It asks for `ADMIN_EMAIL`, `ADMIN_PASSWORD` (the admin is created on start —
+  Render's free plan has no shell) and `AI_API_KEY`.
+- `netlify.toml` publishes `frontend/public` and `frontend/build.sh` writes a proxy rule that sends every
+  other request to `BACKEND_URL` (default `https://dreamzone-samadi-api.onrender.com`).
+- Uploaded files: Render's free disk is wiped on every restart. Set `USE_S3=True` and the `AWS_*`
+  variables (e.g. a free Cloudflare R2 bucket) to keep audio, pictures and recordings.
+
+## 10. Known limitations
 
 - Pronunciation is not assessed by the bundled providers (clearly labelled in results).
 - Recording duration is reported by the browser (used for display/prompting only, never for scoring).

@@ -1,0 +1,14 @@
+Django>=5.2,<5.3
+djangorestframework>=3.16
+djangorestframework-simplejwt>=5.5
+django-filter>=25.1
+psycopg[binary]>=3.2
+Pillow>=11.0
+python-dotenv>=1.0
+anthropic>=1.0
+openai>=2.0
+# Production server + static files (Render)
+gunicorn>=23
+whitenoise>=6.7
+# Uploaded audio/images/recordings in an S3-compatible bucket (Cloudflare R2, AWS S3…): set USE_S3=True
+django-storages[s3]>=1.14

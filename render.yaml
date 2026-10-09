@@ -1,0 +1,59 @@
+# Render Blueprint — backend (Django) + PostgreSQL.
+# Render → New → Blueprint → choose this GitHub repo → fill the 3 secret values → Apply.
+services:
+  - type: web
+    name: dreamzone-samadi-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: >-
+      python manage.py migrate --noinput &&
+      python manage.py ensure_admin &&
+      python manage.py seed_words &&
+      gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120
+    healthCheckPath: /accounts/login/
+    envVars:
+      # ---- asked when you create the Blueprint ----
+      - key: ADMIN_EMAIL        # your admin login, e.g. admin@dreamzone.uz
+        sync: false
+      - key: ADMIN_PASSWORD     # a strong password for that admin
+        sync: false
+      - key: AI_API_KEY         # Gemini key from https://aistudio.google.com/apikey
+        sync: false
+      # ---- preset ----
+      - key: PYTHON_VERSION
+        value: "3.13.1"
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dreamzone-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,.netlify.app"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.netlify.app,https://*.onrender.com"
+      - key: USE_X_FORWARDED_HOST
+        value: "True"
+      - key: SITE_NAME
+        value: DreamZone
+      - key: TIME_ZONE
+        value: Asia/Tashkent
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_MODEL
+        value: gemini-3.5-flash
+      - key: STT_PROVIDER
+        value: gemini
+      - key: STT_MODEL
+        value: gemini-3.5-flash
+      - key: AI_TASK_MODE
+        value: thread
+
+databases:
+  - name: dreamzone-db
+    plan: free
+    databaseName: dreamzone

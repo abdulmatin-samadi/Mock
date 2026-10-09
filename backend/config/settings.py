@@ -14,7 +14,9 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 # override=True: the dev autoreloader passes the env from first start to every
 # reload, so without it edits to .env (keys, SITE_NAME) need a manual restart.
-load_dotenv(BASE_DIR / ".env", override=True)
+# Hosts such as Render set their own variables (and RENDER=true); a local .env must never override them.
+if not os.environ.get("RENDER"):
+    load_dotenv(BASE_DIR / ".env", override=True)
 
 
 def env(name, default=None, required=False):
@@ -39,7 +41,12 @@ def env_list(name, default=""):
 DEBUG = env_bool("DEBUG", False)
 SECRET_KEY = env("SECRET_KEY", required=not DEBUG) or "dev-only-insecure-key-change-me"
 ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", "localhost,127.0.0.1")
+if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):  # Render sets this to the service's own hostname
+    ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "")
+# Behind the Vercel proxy the browser's host is the Vercel domain; trust the forwarded host
+# so redirects, CSRF and absolute links use it.
+USE_X_FORWARDED_HOST = env_bool("USE_X_FORWARDED_HOST", False)
 CSRF_FAILURE_VIEW = "core.views.csrf_failure"
 
 SITE_NAME = env("SITE_NAME", "DREAMZONE")
@@ -74,6 +81,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # serves collected static files on Render
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -114,6 +122,17 @@ DATABASES = {
         "CONN_MAX_AGE": env_int("DB_CONN_MAX_AGE", 60),
     }
 }
+
+# Hosted databases (Render, Railway, Neon…) give one URL instead of separate settings.
+if env("DATABASE_URL"):
+    from urllib.parse import unquote, urlparse
+
+    _db = urlparse(env("DATABASE_URL"))
+    DATABASES["default"].update({
+        "NAME": unquote(_db.path.lstrip("/")), "USER": unquote(_db.username or ""),
+        "PASSWORD": unquote(_db.password or ""), "HOST": _db.hostname or "", "PORT": str(_db.port or ""),
+    })
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ------------------------------------------------------------------------- Auth
@@ -137,7 +156,10 @@ USE_TZ = True
 
 # ----------------------------------------------------------- Static and media
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# The site's own CSS/JS/images live in the frontend project (deployed to Vercel's CDN);
+# Django reads them from there so templates and {% static %} keep working everywhere.
+FRONTEND_STATIC_DIR = Path(env("FRONTEND_STATIC_DIR", BASE_DIR.parent / "frontend" / "public" / "static"))
+STATICFILES_DIRS = [FRONTEND_STATIC_DIR]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Public media (avatars, course thumbnails, task images). Served by the web

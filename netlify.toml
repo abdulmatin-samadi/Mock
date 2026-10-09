@@ -1,0 +1,15 @@
+# Netlify — frontend (static CSS/JS/images) + proxy of every page and API call to the Render backend.
+# Netlify → Add new site → Import from GitHub → this repo → Deploy. Nothing else to fill in
+# unless your Render URL differs (then set BACKEND_URL in Site configuration → Environment variables).
+[build]
+  base = "frontend"
+  publish = "public"
+  command = "sh build.sh"
+
+[build.environment]
+  BACKEND_URL = "https://dreamzone-samadi-api.onrender.com"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
