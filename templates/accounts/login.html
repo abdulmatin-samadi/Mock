@@ -1,0 +1,15 @@
+{% extends "accounts/_auth_layout.html" %}{% block title %}Log in{% endblock %}
+{% block auth %}
+<div class="auth-head">
+  <h1>Welcome back 👋</h1>
+  <p>Log in to continue your Multilevel preparation.</p>
+</div>
+{% if guest %}<div class="guest-saved">✅ Your free mock result will be added to your account.</div>{% endif %}
+<form method="post" novalidate class="auth-form">{% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <div class="auth-row"><span></span><a href="{% url 'accounts:password_reset' %}">Forgot password?</a></div>
+  <button class="btn btn-block btn-lg auth-submit" type="submit">Log in</button>
+</form>
+<p class="auth-switch">New to {{ SITE_NAME }}? <a href="{% url 'accounts:register' %}">Create a free account</a></p>
+{% endblock %}

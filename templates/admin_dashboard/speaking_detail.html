@@ -1,0 +1,9 @@
+{% extends "portal_base.html" %}{% block title %}Speaking recording{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Speaking recording #{{ sub.pk }}</div><h1>{{ sub.student.get_full_name }}</h1></div>
+<div class="row"><form method="post" action="{% url 'admin_dashboard:speaking_retry' sub.pk %}" class="inline" data-confirm="Re-run transcription and AI evaluation?">{% csrf_token %}<button class="btn btn-secondary">↻ Retry processing</button></form>
+<a class="btn btn-secondary" href="{% url 'results:detail' sub.attempt_id %}">Full attempt</a><a class="btn btn-secondary" href="{% url 'admin_dashboard:speaking' %}">← All</a></div></div>
+<div class="card mb-2">{% include "partials/identity.html" with student=sub.student exam=sub.exam submitted=sub.submitted_at score=sub.score status=sub.get_processing_status_display %}
+<p class="small muted mt-1 mb-0">Duration {{ sub.duration|floatformat:0 }}s · {{ sub.file_size|filesize }} · {{ sub.mime_type }}{% if sub.processed_at %} · processed {{ sub.processed_at|date:"d M Y H:i" }}{% endif %}</p></div>
+<div class="card">{% include "results/_speaking_eval.html" %}</div>
+{% endblock %}

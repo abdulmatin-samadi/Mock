@@ -1,0 +1,11 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Results{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>All exam results</h1><p>{{ page.paginator.count }} attempt{{ page.paginator.count|pluralize }}. Score filters use the normalised percentage (0–100).</p></div></div>
+{% include "admin_dashboard/_filters.html" with score_label="Min %" %}
+<div class="table-wrap"><table class="table"><thead><tr><th>First name</th><th>Last name</th><th>Email</th><th>Exam</th><th>Section</th><th>Date</th><th>Score</th><th>%</th><th>Status</th><th></th></tr></thead><tbody>
+{% for a in page %}<tr><td>{{ a.student.first_name }}</td><td>{{ a.student.last_name }}</td><td class="small">{{ a.student.email }}</td><td>{{ a.exam.title }}{% if a.practice %}<div class="tiny muted">🎯 Practice · {{ a.practice_label }}</div>{% endif %}</td><td><span class="badge badge-{{ a.exam.section }}">{{ a.exam.get_section_display }}</span></td>
+<td class="small nowrap">{{ a.submitted_at|default:a.started_at|date:"d M Y H:i" }}</td><td><strong>{{ a.display_score|default:"—" }}</strong></td><td>{{ a.percentage|floatformat:0|default:"—" }}</td><td>{% status_badge a.status a.get_status_display %}</td>
+<td class="actions"><a class="btn btn-sm" href="{{ a.get_absolute_url }}">Open</a></td></tr>
+{% empty %}<tr><td colspan="10" class="empty">No results match.</td></tr>{% endfor %}</tbody></table></div>
+{% include "partials/pagination.html" %}
+{% endblock %}

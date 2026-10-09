@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block title %}{{ section_label }} mocks{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'exams:hub' %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>Back to Mock exams</span></a>
+<div class="page-head"><div><div class="eyebrow">{{ info.icon }} Multilevel · CEFR</div><h1>{{ section_label }} mocks</h1><p>{{ info.blurb }}</p></div></div>
+<div class="mock-cards">
+  {% for c in cards %}
+  <article class="mock-card t-{{ c.theme }}">
+    <header class="mc-top">
+      <span class="mc-num">#{{ c.number|stringformat:"02d" }}</span>
+      {% if c.exam.section == 'listening' %}<span class="mc-dots" aria-hidden="true">{% for it in c.items %}<i class="{% if it.ready %}on{% endif %}"></i>{% endfor %}</span>{% endif %}
+      <span class="mc-ready {% if c.all_ready %}ok{% endif %}">{{ c.ready }}/{{ c.total }} READY</span>
+      <span class="mc-date">📅 {{ c.exam.created_at|date:"j M Y" }}</span>
+      {% if c.mine %}<span class="mc-mine">{% if c.mine.status == 'completed' %}✓ {{ c.mine.display_score|default:"Done" }}{% else %}⏳ {{ c.mine.get_status_display }}{% endif %}</span>{% endif %}
+    </header>
+    <h2 class="mc-title">{{ c.exam.title }}</h2>
+    <p class="mc-stats">{% if c.trending %}<span class="mc-trend">🔥 Trending</span> · {% endif %}<span title="All-time attempts">👥 {{ c.attempts }}</span> · <span title="Attempts today">⚡ {{ c.today }} today</span>{% if c.exam.level %} · <span>{{ c.exam.level }}</span>{% endif %}</p>
+    <ul class="mc-items">
+      {% for it in c.items %}
+      <li>
+        <div class="mc-row">
+          {% if c.exam.is_objective %}<span class="mc-n">{{ it.label }}</span>{% else %}<span class="mc-tag">{{ it.label }}</span>{% endif %}
+          <span class="mc-text {% if it.sub %}strong{% endif %}">{{ it.title }}</span>
+          {% if it.ready is not None and c.exam.section != 'speaking' %}<span class="mc-ok {% if not it.ready %}no{% endif %}">{% if it.ready %}✓ Ready{% else %}Not ready{% endif %}</span>{% endif %}
+        </div>
+        {% for s in it.sub %}
+        <div class="mc-row mc-sub"><span class="mc-n sq">{{ s.label }}</span><span class="mc-text">{{ s.title }}</span><span class="mc-ok {% if not s.ready %}no{% endif %}">{% if s.ready %}✓ Ready{% else %}Not ready{% endif %}</span></div>
+        {% endfor %}
+      </li>
+      {% endfor %}
+    </ul>
+    <footer class="mc-actions">
+      <span class="grow"></span>
+      <a class="mc-begin" href="{% url 'exams:detail' c.exam.pk %}">Begin →</a>
+    </footer>
+  </article>
+  {% empty %}<div class="card empty">No {{ section_label|lower }} mocks yet.</div>{% endfor %}
+</div>
+{% include "partials/pagination.html" %}
+{% endblock %}

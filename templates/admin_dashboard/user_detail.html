@@ -1,0 +1,46 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}{{ u.get_full_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="row"><span class="avatar avatar-lg">{% if u.profile_photo %}<img src="{{ u.profile_photo.url }}" alt="">{% else %}{{ u.initials }}{% endif %}</span>
+  <div><h1>{{ u.get_full_name }}</h1><p>{{ u.email }} · <span class="badge badge-{{ u.role }}">{{ u.get_role_display }}</span> {% if u.is_active %}<span class="badge badge-active">Active</span>{% else %}<span class="badge badge-inactive">Inactive</span>{% endif %}</p></div></div>
+  <div class="row">
+    <a class="btn btn-secondary" href="{% url 'admin_dashboard:user_edit' u.pk %}">Edit</a>
+    {% if u.pk != user.pk %}<form method="post" action="{% url 'admin_dashboard:user_toggle_active' u.pk %}" class="inline" data-confirm="{% if u.is_active %}Deactivate{% else %}Activate{% endif %} this account?">{% csrf_token %}<button class="btn {% if u.is_active %}btn-danger{% else %}btn-good{% endif %}">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button></form>{% endif %}
+  </div>
+</div>
+<div class="card mb-2"><h3>Personal information</h3>
+<dl class="identity">
+  <div><dt>First name</dt><dd>{{ u.first_name }}</dd></div><div><dt>Last name</dt><dd>{{ u.last_name }}</dd></div><div><dt>Email</dt><dd>{{ u.email }}</dd></div>
+  <div><dt>Phone</dt><dd>{{ u.phone_number|default:"—" }}</dd></div><div><dt>Current level</dt><dd>{{ stats.current_level|default:"—" }}</dd></div>
+  <div><dt>Registered</dt><dd>{{ u.date_joined|date:"d M Y H:i" }}</dd></div><div><dt>Last login</dt><dd>{{ u.last_login|date:"d M Y H:i"|default:"—" }}</dd></div>
+</dl></div>
+<div class="grid grid-4 mb-2">
+  <div class="stat"><div class="label">Exams completed</div><div class="value">{{ stats.exams_completed }}</div></div>
+  <div class="stat"><div class="label">Average / best</div><div class="value">{{ stats.average_percentage|floatformat:0|default:"—" }}<span class="small">%</span> / {{ stats.best_percentage|floatformat:0|default:"—" }}<span class="small">%</span></div></div>
+  <div class="stat"><div class="label">Current level</div><div class="value">{{ stats.current_level|default:"—" }}</div></div>
+  <div class="stat"><div class="label">Writing / Speaking</div><div class="value">{{ stats.writing_submissions }} / {{ stats.speaking_submissions }}</div></div>
+</div>
+
+<h2>Exam history</h2>
+<div class="table-wrap"><table class="table"><thead><tr><th>Exam</th><th>Section</th><th>Started</th><th>Submitted</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>
+{% for a in attempts %}<tr><td>{{ a.exam.title }}</td><td><span class="badge badge-{{ a.exam.section }}">{{ a.exam.get_section_display }}</span></td><td class="small">{{ a.started_at|date:"d M Y H:i" }}</td><td class="small">{{ a.submitted_at|date:"d M Y H:i"|default:"—" }}</td><td><strong>{{ a.display_score|default:"—" }}</strong></td><td>{% status_badge a.status a.get_status_display %}</td><td class="actions"><a href="{{ a.get_absolute_url }}">Details</a></td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No exam attempts.</td></tr>{% endfor %}</tbody></table></div>
+
+<h2 class="mt-3">Full mock sittings</h2>
+<div class="table-wrap"><table class="table"><thead><tr><th>Full mock</th><th>Started</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>
+{% for f in full_attempts %}<tr><td>{{ f.full_mock.title }}</td><td class="small">{{ f.started_at|date:"d M Y H:i" }}</td><td><strong>{% if f.score is not None %}{{ f.score|floatformat:0 }}/75 · {{ f.cefr_level }}{% else %}—{% endif %}</strong></td><td>{% status_badge f.status f.get_status_display %}</td><td class="actions"><a href="{{ f.get_absolute_url }}">Details</a></td></tr>
+{% empty %}<tr><td colspan="5" class="empty">No full mock sittings.</td></tr>{% endfor %}</tbody></table></div>
+
+<h2 class="mt-3">Writing submissions</h2>
+{% for sub in writing %}<details class="box"><summary>{{ sub.attempt.exam.title }} · {{ sub.task.title }} — {{ sub.submitted_at|date:"d M Y" }} — score {{ sub.score|floatformat:"-1"|default:"—" }} ({{ sub.get_status_display }})</summary>
+<div class="mt-1"><a class="btn btn-sm" href="{% url 'admin_dashboard:writing_detail' sub.pk %}">Open full submission</a></div>
+<div class="essay mt-1" style="max-height:220px;overflow:auto">{{ sub.essay }}</div>
+{% if sub.evaluation %}<p class="small mt-1"><strong>AI feedback:</strong> {{ sub.evaluation.detailed_feedback|truncatewords:60 }}</p>{% endif %}</details>
+{% empty %}<p class="muted">No writing submissions.</p>{% endfor %}
+
+<h2 class="mt-3">Speaking recordings</h2>
+{% for sub in speaking %}<details class="box"><summary>{{ sub.exam.title }} · Part {{ sub.question.part }} — {{ sub.submitted_at|date:"d M Y" }} — score {{ sub.score|floatformat:"-1"|default:"—" }} ({{ sub.get_processing_status_display }})</summary>
+<div class="mt-1">{% include "results/_speaking_eval.html" with ev=sub.evaluation %}</div></details>
+{% empty %}<p class="muted">No speaking recordings.</p>{% endfor %}
+
+{% endblock %}

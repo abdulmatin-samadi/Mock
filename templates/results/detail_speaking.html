@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% load static core_tags %}{% block title %}Result · {{ exam.title }}{% endblock %}
+{% block content %}
+{% include "results/_header.html" %}
+{% if result.details.parts %}
+<h3>Score by part</h3>
+<div class="part-scores mb-2">{% for p in result.details.parts %}<div class="stat"><div class="label">📝 {{ p.part }}</div><div class="value">{{ p.score }}<span class="small muted">/75</span></div><div class="sub">{{ p.answers }} answer{{ p.answers|pluralize }}</div></div>{% endfor %}</div>
+{% endif %}
+{% if result.details.criteria %}
+<div class="grid grid-4 mb-2">
+  <div class="stat"><div class="label">Fluency &amp; Coherence</div><div class="value">{{ result.details.criteria.fluency }}</div></div>
+  <div class="stat"><div class="label">Vocabulary</div><div class="value">{{ result.details.criteria.vocabulary }}</div></div>
+  <div class="stat"><div class="label">Grammar</div><div class="value">{{ result.details.criteria.grammar }}</div></div>
+  <div class="stat"><div class="label">Pronunciation</div><div class="value small" style="font-size:1rem">{% if result.details.pronunciation_assessed %}Assessed{% else %}Not assessed (transcript-based AI){% endif %}</div></div>
+</div>
+{% endif %}
+{% for sub in submissions %}<div class="card mb-2">{% include "results/_speaking_eval.html" with ev=sub.evaluation %}</div>{% empty %}<div class="card empty">No recordings.</div>{% endfor %}
+{% endblock %}
+{% block scripts %}<script src="{% vstatic 'js/misc.js' %}"></script>{% endblock %}

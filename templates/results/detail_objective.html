@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% load static core_tags %}{% block title %}Result · {{ exam.title }}{% endblock %}
+{% block content %}
+{% include "results/_header.html" %}
+{% if result.details.parts %}
+<div class="grid grid-4 mb-2">{% for name, p in result.details.parts.items %}<div class="stat"><div class="label">{{ name }}</div><div class="value">{{ p.correct }}/{{ p.total }}</div></div>{% endfor %}</div>
+{% endif %}
+<h2>Answer review</h2>
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>#</th><th>Question</th><th>Your answer</th><th>Correct answer</th><th>Points</th></tr></thead>
+  <tbody>
+  {% for a in answers %}
+  <tr class="answer-row {% if a.is_correct %}correct{% elif a.answer %}incorrect{% else %}unanswered{% endif %}">
+    <td><strong>{{ a.question.order }}</strong></td>
+    <td><div class="small muted">{{ a.question.part.title }}</div>{{ a.question.prompt|truncatechars:160 }}{% if a.question.explanation %}<details class="small mt-1"><summary>Explanation</summary>{{ a.question.explanation }}</details>{% endif %}</td>
+    <td>{% if a.selected_option %}{{ a.selected_option.label }}. {{ a.selected_option.text }}{% elif a.answer %}{{ a.answer }}{% else %}<span class="muted">—</span>{% endif %}</td>
+    <td>{{ a.question.correct_display }}</td>
+    <td>{% if a.is_correct %}<span class="badge badge-good">+{{ a.points|floatformat:"-2" }}</span>{% else %}<span class="badge badge-bad">0</span>{% endif %}</td>
+  </tr>
+  {% empty %}<tr><td colspan="5" class="empty">No answers recorded.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% if exam.section == 'listening' and exam.transcript and attempt.status == 'completed' %}<details class="box mt-2"><summary>Transcript</summary><div class="pre mt-1">{{ exam.transcript }}</div></details>{% endif %}
+{% endblock %}
+{% block scripts %}<script src="{% vstatic 'js/misc.js' %}"></script>{% endblock %}

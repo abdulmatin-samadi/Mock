@@ -1,0 +1,124 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Quick entry · {{ part.title }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">{{ exam.title }}</div><h1>⚡ {{ part.title }}</h1><p>Paste the text and all questions of this part at once, then press <b>Preview</b> to check before saving.</p></div>
+<a class="btn btn-secondary" href="{% url 'admin_dashboard:mock_manage' exam.pk %}">← Back to mock</a></div>
+
+{% if locked %}<div class="alert alert-warning">Students have already answered this part, so its questions can't be replaced. Use <b>Duplicate</b> on the mock page to make an editable copy.</div>{% endif %}
+
+<div class="qk">
+  <form method="post" enctype="multipart/form-data" class="card qk-form" id="qk-form">{% csrf_token %}
+    {% if preset %}<div class="qk-preset"><b>{{ preset.title }}</b> · usually {{ preset.count }} questions<br><span class="muted small">{{ preset.instructions }}</span></div>{% endif %}
+
+    <label class="qk-label" for="passage">1 · {% if exam.section == 'listening' %}Notes / text <span class="muted">(optional)</span>{% else %}Reading text{% endif %}</label>
+    <p class="qk-hint">Paste the text. Mark each gap with its number and a line, e.g. <code>1. ______</code> — it becomes an answer box. A first line in CAPITALS becomes the title.</p>
+    <textarea id="passage" name="passage" rows="9" class="qk-area" placeholder="Example:&#10;HOUSEPLANTS&#10;Raising houseplants involves nearly as much care as raising children. First, both 1. ______ and children are sensitive…">{{ passage }}</textarea>
+
+    <label class="qk-label" for="questions">2 · Questions and answers</label>
+    <p class="qk-hint">One numbered line per question. For gap filling just write the answer: <code>1. plants</code>. For other types see the examples on the right.</p>
+    <textarea id="questions" name="questions" rows="16" class="qk-area qk-mono" placeholder="Example:&#10;1. plants&#10;2. environment | environments">{{ text }}</textarea>
+
+    {% if exam.section == 'listening' %}
+    <div class="qk-files">
+      <label class="qk-file"><span>🎧 Audio for this part</span><input type="file" name="audio" accept="audio/*"><small>{% if part.audio %}Current: {{ part.audio.name|cut:"exams/" }} — choose a file only to replace it{% else %}mp3, m4a, wav or ogg{% endif %}</small></label>
+      <label class="qk-file"><span>🗺 Map / picture</span><input type="file" name="image" accept="image/*"><small>{% if part.image %}Current picture kept unless you choose a new one{% else %}Only for map labelling{% endif %}</small></label>
+    </div>
+    {% else %}
+    <div class="qk-files"><label class="qk-file"><span>🖼 Picture <span class="muted">(optional)</span></span><input type="file" name="image" accept="image/*"><small>{% if part.image %}Current picture kept unless you choose a new one{% else %}Diagram shown next to the text{% endif %}</small></label></div>
+    {% endif %}
+
+    <div class="qk-actions">
+      <button class="btn btn-secondary btn-lg" name="action" value="preview">👁 Preview</button>
+      <button class="btn btn-lg" name="action" value="save" {% if locked %}disabled{% endif %}>💾 Save part</button>
+    </div>
+    <p class="qk-hint mb-0">Saving replaces all current questions of this part with the list above.</p>
+  </form>
+
+  <aside class="qk-side">
+    {% if previewed %}
+    <div class="card qk-preview">
+      {% if errors %}
+        <h3>⚠️ Fix {{ errors|length }} problem{{ errors|length|pluralize }}</h3>
+        <ul class="qk-errors">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% else %}
+        <h3>✅ {{ items|length }} question{{ items|length|pluralize }} ready</h3>
+        <p class="muted small">Looks right? Press <b>Save part</b>.</p>
+        {% if missing %}<div class="alert alert-warning small">Gap{{ missing|length|pluralize }} {{ missing|join:", " }} {{ missing|length|pluralize:"is,are" }} not marked in the text, so {{ missing|length|pluralize:"it,they" }} will appear as separate answer boxes under the text. To show {{ missing|length|pluralize:"it,them" }} inside the text, write <code>{{ missing.0 }}. ______</code> at the right place.</div>{% endif %}
+      {% endif %}
+      {% if items %}
+      <div class="table-wrap"><table class="table qk-table">
+        <thead><tr><th>#</th><th>Type</th><th>Question</th><th>Answer</th></tr></thead>
+        <tbody>{% for it in items %}<tr>
+          <td><b>{{ it.number }}</b></td>
+          <td><span class="qk-type t-{{ it.qtype }}">{{ type_labels|get_item:it.qtype|default:"?" }}</span></td>
+          <td class="small">{{ it.prompt|truncatechars:70 }}{% if it.options and not it.shared %}<div class="muted">{% for l, t, ok in it.options %}<span {% if ok %}class="qk-ok"{% endif %}>{{ l }}) {{ t|truncatechars:24 }}</span>{% if not forloop.last %} · {% endif %}{% endfor %}</div>{% endif %}</td>
+          <td><b>{% if it.qtype == 'multiple_choice' %}{% for l, t, ok in it.options %}{% if ok %}{{ l }}{% endif %}{% endfor %}{% else %}{{ it.answer_display|default:"—" }}{% endif %}</b>{% if it.shared %}<div class="muted small">from {{ it.options|length }} options</div>{% endif %}</td>
+        </tr>{% endfor %}</tbody></table></div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="card qk-help">
+      <h3>How to write questions</h3>
+      {% with types=preset.types|default:"" %}
+      {% if not preset or 'gap_filling' in types %}
+      <div class="qk-ex"><div class="qk-ex-head"><b>Gap filling</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-gap">Insert</button></div>
+<pre id="ex-gap">1. plants
+2. environment | environments</pre><small>Just the answer after the number. Several correct answers? Separate them with <code>|</code>. In the text mark the gap as <code>1. ______</code>.</small></div>
+      {% endif %}
+      {% if not preset or 'multiple_choice' in types %}
+      <div class="qk-ex"><div class="qk-ex-head"><b>Multiple choice</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-mcq">Insert</button></div>
+<pre id="ex-mcq">7. What is the writer's main purpose?
+A) to inform readers about a new law
+*B) to persuade readers to recycle more
+C) to describe a local business
+D) to complain about the council</pre><small>Put <code>*</code> before the correct option (or write <code>= B</code> after the question).</small></div>
+      {% endif %}
+      {% if not preset or 'true_false_not_given' in types %}
+      <div class="qk-ex"><div class="qk-ex-head"><b>True / False / No Information</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-tfng">Insert</button></div>
+<pre id="ex-tfng">10. The library opened in 1998. = TRUE
+11. Most visitors are teachers. = NO INFORMATION</pre><small>Short forms work too: <code>T</code>, <code>F</code>, <code>NI</code>.</small></div>
+      {% endif %}
+      {% if not preset or 'matching' in types %}
+      <div class="qk-ex"><div class="qk-ex-head"><b>Matching</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-match">Insert</button></div>
+<pre id="ex-match">OPTIONS
+A) Weekend Photography
+B) Coding for Teens
+C) Business English Online
+D) First Aid Certificate
+
+6. Aziz wants to speak confidently with clients. = C
+7. Malika must show she can help injured people. = D</pre><small>Write the list once after <code>OPTIONS</code>; every question uses it.</small></div>
+      {% endif %}
+      {% if not preset or 'headings' in types %}
+      <div class="qk-ex"><div class="qk-ex-head"><b>Headings</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-head">Insert</button></div>
+<pre id="ex-head">OPTIONS
+i) Why we forget
+ii) A surprising experiment
+iii) Advice for students
+
+15. Paragraph A = ii
+16. Paragraph B = iii</pre><small>Use small roman numerals for headings.</small></div>
+      {% endif %}
+      {% if not preset or 'map_labelling' in types %}
+      <div class="qk-ex"><div class="qk-ex-head"><b>Map labelling</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-map">Insert</button></div>
+<pre id="ex-map">OPTIONS: A-I
+
+21. Swimming pool = D
+22. Car park = A</pre><small>Upload the map picture below the questions. <code>A-I</code> means the letters on the map.</small></div>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% vstatic 'js/quick.js' %}"></script>
+<script>
+  document.querySelectorAll("[data-insert]").forEach((b) => b.addEventListener("click", () => {
+    const area = document.getElementById("questions");
+    const text = document.getElementById(b.dataset.insert).textContent.trim();
+    area.value = (area.value.trim() ? area.value.trimEnd() + "\n\n" : "") + text;
+    area.focus();
+  }));
+</script>
+{% endblock %}

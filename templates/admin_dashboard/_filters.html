@@ -1,0 +1,10 @@
+<form class="filters" method="get">
+  <div class="grow"><label class="small muted" for="fq">Student</label><input id="fq" type="search" name="q" value="{{ f.q }}" placeholder="First name, last name or email"></div>
+  {% if sections %}<div><label class="small muted" for="fs">Section</label><select id="fs" name="section"><option value="">All</option>{% for v, l in sections %}<option value="{{ v }}" {% if f.section == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>{% endif %}
+  <div><label class="small muted" for="fst">Status</label><select id="fst" name="status"><option value="">Any</option>{% for v, l in statuses %}<option value="{{ v }}" {% if f.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  <div><label class="small muted" for="fd1">From</label><input id="fd1" type="date" name="date_from" value="{{ f.date_from|date:'Y-m-d' }}"></div>
+  <div><label class="small muted" for="fd2">To</label><input id="fd2" type="date" name="date_to" value="{{ f.date_to|date:'Y-m-d' }}"></div>
+  <div><label class="small muted" for="fmin">{{ score_label|default:"Min score" }}</label><input id="fmin" type="number" step="0.5" name="min_score" value="{{ f.min_score|default_if_none:'' }}" style="min-width:90px;width:100px"></div>
+  <div><label class="small muted" for="fmax">Max</label><input id="fmax" type="number" step="0.5" name="max_score" value="{{ f.max_score|default_if_none:'' }}" style="min-width:90px;width:100px"></div>
+  <button class="btn btn-secondary">Filter</button><a class="btn btn-ghost" href="?">Reset</a>
+</form>

@@ -1,0 +1,27 @@
+{# expects: sub, ev #}
+{% load core_tags %}
+<div class="row-between"><div><span class="badge badge-speaking">{{ sub.question.get_part_display }}</span> {% status_badge sub.processing_status sub.get_processing_status_display %}</div><span class="small muted">{{ sub.submitted_at|date:"d M Y, H:i" }} · {{ sub.duration|floatformat:0 }}s</span></div>
+<h3 class="mt-1">{{ sub.question.question }}</h3>
+<audio controls preload="none" src="{% url 'speaking:audio' sub.pk %}" style="width:100%"></audio>
+{% if sub.status == 'failed' or sub.processing_status == 'failed' %}<div class="alert alert-error mt-1"><strong>Processing failed:</strong> {{ sub.error_message }}</div>{% endif %}
+{% if sub.transcript %}<details class="box mt-1"><summary>Transcript</summary><p class="pre mt-1 mb-0">{{ sub.transcript }}</p></details>{% endif %}
+{% if ev %}
+<div class="criteria mt-2">
+  <div class="criterion" style="background:var(--primary-soft)"><div class="name">Overall</div><div class="val">{{ ev.overall_score|floatformat:"-1" }}<span class="small">/75</span></div>{% if ev.cefr_level %}<div class="small">CEFR {{ ev.cefr_level }}</div>{% endif %}</div>
+  <div class="criterion"><div class="name">Fluency &amp; Coherence</div><div class="val">{{ ev.fluency_score|floatformat:"-1" }}</div></div>
+  <div class="criterion"><div class="name">Vocabulary</div><div class="val">{{ ev.vocabulary_score|floatformat:"-1" }}</div></div>
+  <div class="criterion"><div class="name">Grammar</div><div class="val">{{ ev.grammar_score|floatformat:"-1" }}</div></div>
+  <div class="criterion"><div class="name">Pronunciation</div><div class="val">{% if ev.pronunciation_assessed %}{{ ev.pronunciation_score|floatformat:"-1" }}{% else %}<span class="small muted">Not assessed</span>{% endif %}</div></div>
+</div>
+<div class="grid grid-2 mt-2">
+  {% if ev.fluency_feedback %}<div class="card card-tight"><h3>Fluency</h3><p class="small pre mb-0">{{ ev.fluency_feedback }}</p></div>{% endif %}
+  {% if ev.coherence_feedback %}<div class="card card-tight"><h3>Coherence</h3><p class="small pre mb-0">{{ ev.coherence_feedback }}</p></div>{% endif %}
+  {% if ev.vocabulary_feedback %}<div class="card card-tight"><h3>Vocabulary</h3><p class="small pre mb-0">{{ ev.vocabulary_feedback }}</p></div>{% endif %}
+  {% if ev.grammar_feedback %}<div class="card card-tight"><h3>Grammar</h3><p class="small pre mb-0">{{ ev.grammar_feedback }}</p></div>{% endif %}
+</div>
+<div class="alert {% if ev.pronunciation_assessed %}alert-info{% else %}alert-warning{% endif %} mt-2 small"><strong>Pronunciation:</strong> {{ ev.pronunciation_feedback|default:"—" }}</div>
+{% if ev.detailed_feedback %}<p class="pre">{{ ev.detailed_feedback }}</p>{% endif %}
+{% if ev.mistakes %}<details class="box"><summary>Mistakes &amp; corrections ({{ ev.mistakes|length }})</summary><div class="mt-1">{% for m in ev.mistakes %}<div class="correction"><span class="orig">{{ m.original }}</span> → <span class="fix">{{ m.correction }}</span><div class="small muted">{{ m.explanation }}</div></div>{% endfor %}</div></details>{% endif %}
+{% if ev.improvement_suggestions %}<details class="box"><summary>Improvement suggestions</summary><ol class="mt-1 mb-0">{% for s in ev.improvement_suggestions %}<li>{{ s }}</li>{% endfor %}</ol></details>{% endif %}
+<p class="tiny muted mt-1">Transcribed by {{ ev.stt_provider|default:"—" }} {{ ev.stt_model }} · evaluated by {{ ev.provider }} ({{ ev.model_name }}).</p>
+{% elif sub.processing_status != 'failed' %}<div class="alert alert-info mt-1">⏳ {{ sub.get_processing_status_display }}…</div>{% endif %}

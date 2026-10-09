@@ -1,0 +1,12 @@
+{% extends "portal_base.html" %}{% block title %}Full mocks{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Full Mocks</h1><p>Bundle one Listening, Reading, Writing and Speaking mock into a complete test.</p></div><a class="btn" href="{% url 'admin_dashboard:full_mock_create' %}">+ Add Full Mock</a></div>
+<div class="table-wrap"><table class="table"><thead><tr><th>Title</th><th>Level</th><th>Sections</th><th>Time</th><th>Sittings</th><th>Status</th><th></th></tr></thead><tbody>
+{% for fm in page %}<tr><td><a href="{% url 'admin_dashboard:full_mock_detail' fm.pk %}"><strong>{{ fm.title }}</strong></a></td><td>{{ fm.level|default:"—" }}</td>
+<td class="small">{{ fm.listening.title }} · {{ fm.reading.title }} · {{ fm.writing.title }} · {{ fm.speaking.title }}</td><td>{{ fm.total_minutes }} min</td><td>{{ fm.sittings }}</td>
+<td>{% if fm.is_published %}<span class="badge badge-published">Published</span>{% else %}<span class="badge badge-draft">Draft</span>{% endif %}</td>
+<td class="actions"><form method="post" action="{% url 'admin_dashboard:full_mock_publish' fm.pk %}" class="inline">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button class="btn btn-sm btn-secondary">{% if fm.is_published %}Unpublish{% else %}Publish{% endif %}</button></form>
+<a class="btn btn-sm" href="{% url 'admin_dashboard:full_mock_detail' fm.pk %}">Open</a></td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No full mocks yet. Create the four section mocks first, then bundle them here.</td></tr>{% endfor %}</tbody></table></div>
+{% include "partials/pagination.html" %}
+{% endblock %}

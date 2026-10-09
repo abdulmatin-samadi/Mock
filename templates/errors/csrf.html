@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Page expired{% endblock %}
+{% block content %}
+<div class="card center auth-card" style="max-width:560px">
+  <div style="font-size:2.4rem" aria-hidden="true">🔄</div>
+  <h1>This page expired</h1>
+  <p>You signed in or out in another tab, so this form's security key changed and it couldn't be sent.</p>
+  <p class="muted small">Nothing was saved. Reload the page and send it again — text typed into <b>Quick entry</b> is kept in this browser and can be restored.</p>
+  <div class="row" style="justify-content:center">
+    <a class="btn btn-lg" href="{{ back }}">Reload the page</a>
+    <button type="button" class="btn btn-secondary btn-lg" onclick="history.back()">Go back</button>
+  </div>
+</div>
+{% endblock %}

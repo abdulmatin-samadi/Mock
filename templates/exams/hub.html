@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Mock exams{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Mock exams</h1><p>Multilevel (CEFR) practice tests for every skill.</p></div></div>
+{% include "partials/continue.html" %}
+<div class="mt-2">{% include "partials/section_cards.html" %}</div>
+<div class="full-banner mt-3">
+  <div><h2>🎯 Full mock</h2><p>Listening → Reading → Writing → Speaking in one sitting, with an overall Multilevel score. {{ full_count }} available.</p></div>
+  <a class="btn btn-lg" href="{% url 'exams:full_list' %}">Browse full mocks →</a>
+</div>
+{% endblock %}

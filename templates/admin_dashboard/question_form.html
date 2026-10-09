@@ -1,0 +1,27 @@
+{% extends "portal_base.html" %}{% block title %}Question{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">{{ exam.title }} · {{ part.title }}</div><h1>{% if question %}Edit question {{ question.order }}{% else %}Add question{% endif %}</h1></div><a class="btn btn-secondary" href="{{ back_url }}">← Back</a></div>
+<div class="split">
+<form method="post" class="card" novalidate>{% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <h3>Options <span class="small muted">(multiple choice, matching, headings, map labelling)</span></h3>
+  {{ formset.management_form }}
+  {% if formset.non_form_errors %}<div class="alert alert-error">{{ formset.non_form_errors }}</div>{% endif %}
+  <div class="table-wrap"><table class="table"><thead><tr><th style="width:80px">Label</th><th>Text</th><th>Correct (MCQ)</th><th style="width:80px">Order</th><th>Delete</th></tr></thead><tbody>
+  {% for f in formset %}<tr>{% for h in f.hidden_fields %}{{ h }}{% endfor %}<td>{{ f.label }}{{ f.label.errors }}</td><td>{{ f.text }}{{ f.text.errors }}</td><td>{{ f.is_correct }}</td><td>{{ f.order }}</td><td>{% if f.instance.pk %}{{ f.DELETE }}{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="row mt-2"><button class="btn" type="submit">Save</button><button class="btn btn-secondary" type="submit" name="save_add" value="1">Save &amp; add next</button><a class="btn btn-ghost" href="{{ back_url }}">Cancel</a></div>
+</form>
+<div class="card small">
+{% if preset %}<h3>{{ preset.title }}</h3><p class="muted">{{ preset.instructions }}</p><p>Usually <strong>{{ preset.count }}</strong> questions in this part.</p><hr>{% endif %}
+<h3>How answers are checked</h3>
+<ul>
+<li><strong>Gap filling</strong> — write the gap in the part text as <code>(N) ______</code> (N = question number) and enter the accepted answers separated by <code>|</code>, e.g. <code>1990|nineteen ninety</code>. Case, extra spaces, final punctuation and a leading “the/a/an” are ignored.</li>
+<li><strong>Multiple choice</strong> — add options A, B, C (D) and tick the correct one.</li>
+<li><strong>True / False / No Information</strong> — correct answer: <code>TRUE</code>, <code>FALSE</code> or <code>NO INFORMATION</code>.</li>
+<li><strong>Matching (statements / speakers)</strong> — the question is the text or speaker; list the statements A–J as options and enter the correct <em>letter</em>. Use the same option list for every question in the part.</li>
+<li><strong>Matching headings</strong> — the question is the paragraph; list the headings as options and enter the correct letter.</li>
+<li><strong>Map labelling</strong> — upload the map on the part, add letters A–I as options (text can stay empty) and enter the correct letter.</li>
+</ul></div>
+</div>
+{% endblock %}

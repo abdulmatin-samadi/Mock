@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% load core_tags %}{% block title %}{{ exam.title }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'exams:section' exam.section %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>Back to {{ exam.get_section_display }} mocks</span></a>
+<div class="split">
+  <div class="card">
+    <div class="row"><span class="badge badge-{{ exam.section }}">{{ info.icon }} {{ exam.get_section_display }}</span><span class="badge badge-multilevel">Multilevel</span>{% if exam.level %}<span class="badge">{{ exam.level }}</span>{% endif %}{% if not exam.is_published %}<span class="badge badge-draft">Draft (admin preview)</span>{% endif %}</div>
+    <h1 class="mt-1">{{ exam.title }}</h1>
+    {% if exam.description %}<p>{{ exam.description|linebreaksbr }}</p>{% endif %}
+    <div class="grid grid-3 mt-2">
+      <div class="stat"><div class="label">Time limit</div><div class="value">{% if exam.time_limit %}{{ exam.time_limit }}<span class="small"> min</span>{% else %}—{% endif %}</div></div>
+      <div class="stat"><div class="label">{% if exam.section == 'writing' %}Tasks{% else %}Questions{% endif %}</div><div class="value">{{ question_count }}</div></div>
+      <div class="stat"><div class="label">Scoring</div><div class="value small" style="font-size:1rem">Multilevel 0–75 + CEFR</div></div>
+    </div>
+    {% if exam.instructions %}<h3 class="mt-3">Instructions</h3><div class="pre">{{ exam.instructions }}</div>{% endif %}
+    {% if parts %}<h3 class="mt-3">Structure</h3><ul>{% for p in parts %}<li>{{ p.title }} — {{ p.n }} question{{ p.n|pluralize }}</li>{% endfor %}</ul>{% endif %}
+    {% if exam.section == 'speaking' %}<div class="alert alert-info mt-2">You'll need a working microphone. Your browser will ask for permission. Each answer is recorded, then transcribed and evaluated by AI. Pronunciation is only assessed if the configured AI provider genuinely analyses audio.</div>{% endif %}
+    {% if exam.section == 'writing' %}<div class="alert alert-info mt-2">Write directly in the browser. A live word counter shows your progress. When you submit, your essay is saved and evaluated by AI against official criteria.</div>{% endif %}
+    <div class="mt-2">
+      {% if guest_used %}
+        <div class="guest-cta"><div><b>🎁 You've used your free mock</b><p>Create a free account to take this one — your first result is kept.</p></div>
+          <a class="btn btn-lg" href="{% url 'accounts:register' %}?next={{ request.path }}">Create free account</a></div>
+      {% elif not user.is_authenticated or user.is_student %}
+          {% if not user.is_authenticated %}<div class="guest-note">🎁 <b>Your first mock is free</b> — no account needed. <a href="{% url 'accounts:login' %}?next={{ request.path }}">Log in</a></div>{% endif %}
+          <h3 class="center mt-2" style="color:{{ info.color }}">Choose your mode</h3>
+          <div class="mode-grid">
+            <form method="post" action="{% url 'exams:start' exam.pk %}">{% csrf_token %}
+              <button class="mode-card mode-full" type="submit">
+                <span class="mode-icon" aria-hidden="true">{{ info.icon }}</span>
+                <strong>{% if in_progress %}Resume full test{% else %}Full {{ exam.get_section_display|lower }} test{% endif %}</strong>
+                <span>{% if exam.is_objective %}All {{ parts|length }} parts{% elif exam.section == 'writing' %}All {{ question_count }} tasks{% else %}All {{ question_count }} questions{% endif %}{% if exam.time_limit %} • {{ exam.time_limit }} min{% endif %}</span>
+              </button>
+            </form>
+            {% if practice_options|length > 1 %}
+            <a class="mode-card mode-practice" href="{% url 'exams:practice' exam.pk %}">
+              <span class="mode-icon" aria-hidden="true">🎯</span>
+              <strong>Part practice</strong>
+              <span>Pick one {% if exam.section == 'writing' %}task{% else %}part{% endif %}{% if practice_minutes %} • ~{{ practice_minutes }} min{% endif %}</span>
+            </a>
+            {% endif %}
+          </div>
+          {% if exam.time_limit and not in_progress %}<p class="small muted center mt-1">The timer starts as soon as you choose a mode.</p>{% endif %}
+      {% else %}<div class="alert alert-warning">Only student accounts can take mock exams.</div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <h3>Your attempts</h3>
+    {% for a in attempts %}
+      <div class="row-between" style="padding:8px 0;border-bottom:1px solid var(--line)">
+        <div><div class="small">{{ a.started_at|date:"d M Y, H:i" }}{% if a.practice %} · 🎯 {{ a.practice_label }}{% endif %}</div>{% status_badge a.status a.get_status_display %}</div>
+        <div class="right">{% if a.display_score %}<strong>{{ a.display_score }}</strong><br>{% endif %}<a class="small" href="{{ a.get_absolute_url }}">{% if a.status == 'in_progress' %}Continue{% else %}View result{% endif %}</a></div>
+      </div>
+    {% empty %}<p class="muted small">No attempts yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

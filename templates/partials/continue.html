@@ -1,0 +1,43 @@
+{% load humanize %}
+{% if continue_items %}{% with c=continue_items.0 %}
+<section class="cw" style="--c: {{ c.color }}" aria-label="Continue where you left off">
+  <div class="cw-main">
+    <a class="cw-visual" href="{{ c.url }}" aria-hidden="true" tabindex="-1">
+      <div class="cw-ring" style="--pct: {{ c.pct }}"><div><span class="cw-ico">{% include "partials/icon.html" with name=c.icon size=26 %}</span></div></div>
+      <span class="cw-pct">{{ c.pct }}%</span>
+    </a>
+    <div class="cw-body">
+      <div class="cw-top">
+        <span class="cw-eyebrow"><i class="cw-pulse"></i>Continue where you left off</span>
+        {% if continue_items|length > 1 %}<span class="cw-count">{{ continue_items|length }} unfinished</span>{% endif %}
+      </div>
+      <h2 class="cw-title"><a href="{{ c.url }}">{{ c.exam_title }}</a></h2>
+      <div class="cw-tags">
+        <span class="cw-sec">{{ c.attempt.exam.get_section_display }}</span>
+        {% if c.part %}<span class="cw-tag">{{ c.part }}</span>{% elif c.in_full %}<span class="cw-tag">Full mock</span>{% else %}<span class="cw-tag">Full test</span>{% endif %}
+        {% if c.expired %}<span class="cw-time over">⏱ Time's up</span>{% elif c.minutes_left is not None %}<span class="cw-time">⏱ {{ c.minutes_left }} min left</span>{% endif %}
+      </div>
+      <div class="cw-progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ c.total }}" aria-valuenow="{{ c.done }}" aria-label="Progress"><i style="width: {{ c.pct }}%"></i></div>
+      <p class="cw-meta"><b>{{ c.done }} / {{ c.total }}</b> {% if c.section == 'speaking' %}answers recorded{% elif c.section == 'writing' %}tasks drafted · {{ c.words }} word{{ c.words|pluralize }}{% else %}questions answered{% endif %} · saved {{ c.last|naturaltime }}</p>
+    </div>
+    <div class="cw-actions">
+      <a class="btn btn-lg cw-resume" href="{{ c.url }}">{% if c.expired and c.attempt.exam.is_objective %}Finish &amp; see result{% else %}Resume{% endif %} <span aria-hidden="true">→</span></a>
+      {% if not c.in_full %}<form method="post" action="{% url 'exams:discard' c.attempt.pk %}" data-confirm="Discard this unfinished mock? Your saved answers will not be graded.">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="cw-discard" type="submit">Discard</button></form>{% endif %}
+    </div>
+  </div>
+  {% if continue_items|length > 1 %}
+  <div class="cw-more">
+    <div class="cw-more-head"><span class="cw-more-label">Also unfinished</span>{% if continue_items|length > 5 %}<a href="{% url 'dashboard:results' %}">+{{ continue_items|length|add:"-5" }} more in My results →</a>{% endif %}</div>
+    <div class="cw-list">
+      {% for o in continue_items|slice:"1:5" %}
+      <a class="cw-item" href="{{ o.url }}" style="--c: {{ o.color }}">
+        <span class="cw-item-ico">{% include "partials/icon.html" with name=o.icon size=16 %}</span>
+        <span class="cw-item-text"><b>{{ o.exam_title }}</b><small>{% if o.part %}{{ o.part }} · {% endif %}{{ o.done }}/{{ o.total }} · {{ o.last|naturaltime }}</small></span>
+        <span class="cw-item-bar"><i style="width: {{ o.pct }}%"></i></span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endwith %}{% endif %}

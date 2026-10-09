@@ -1,0 +1,16 @@
+{# Required identification block for every submission (student, exam, section, date, score, status) #}
+<dl class="identity">
+  {% if student.is_guest %}
+  <div><dt>Student</dt><dd>Guest <span class="muted small">(free trial)</span></dd></div>
+  <div><dt>Account</dt><dd><a href="{% url 'accounts:register' %}">Create a free account</a> to keep this result</dd></div>
+  {% else %}
+  <div><dt>First name</dt><dd>{{ student.first_name }}</dd></div>
+  <div><dt>Last name</dt><dd>{{ student.last_name }}</dd></div>
+  <div><dt>Email</dt><dd>{{ student.email }}</dd></div>
+  {% endif %}
+  <div><dt>Exam</dt><dd>{{ exam.title }}</dd></div>
+  <div><dt>Section</dt><dd>{{ exam.get_section_display }}</dd></div>
+  <div><dt>Submitted</dt><dd>{% if submitted %}{{ submitted|date:"d F Y, H:i" }}{% else %}—{% endif %}</dd></div>
+  <div><dt>Score</dt><dd>{{ score|default:"—" }}</dd></div>
+  <div><dt>Status</dt><dd>{{ status }}</dd></div>
+</dl>

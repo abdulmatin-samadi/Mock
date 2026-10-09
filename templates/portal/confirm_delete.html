@@ -1,0 +1,9 @@
+{% extends "portal_base.html" %}{% block title %}Delete{% endblock %}
+{% block content %}
+<div class="card" style="max-width:620px">
+  <h1>Delete “{{ object }}”?</h1>
+  {% if warning %}<div class="alert {% if blocked %}alert-error{% else %}alert-warning{% endif %}">{{ warning }}</div>{% endif %}
+  <p>This action cannot be undone.</p>
+  <form method="post" class="row">{% csrf_token %}{% if not blocked %}<button class="btn btn-danger" type="submit">Yes, delete</button>{% endif %}<a class="btn btn-secondary" href="{{ back_url }}">Cancel</a></form>
+</div>
+{% endblock %}

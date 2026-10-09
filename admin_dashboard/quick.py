@@ -1,0 +1,383 @@
+"""Quick entry: paste a whole part / speaking set / writing set as plain text.
+
+Reading & Listening part format (one question per numbered line, answer after "="):
+
+    1. ______ = library | libraries          gap filling (accepted answers split by |)
+    5. The club opened in 1998. = TRUE       True / False / No Information
+    7. What is the writer's main purpose?    multiple choice: own options below,
+    A) to inform                             the correct one marked with *
+    *B) to persuade
+    OPTIONS                                  one shared list for matching / headings / map
+    A) Weekend Photography
+    6. Aziz works in an office… = C
+
+`OPTIONS: A-I` is a shortcut for a map with letters A to I and no text.
+"""
+import re
+from dataclasses import dataclass, field
+
+from django.db import transaction
+
+from exams import cefr
+from exams.models import Option, Question, SpeakingQuestion, WritingTask
+
+TFNG = Question.FIXED_CHOICES[Question.Type.TFNG]
+Q_RE = re.compile(r"^\s*(\d{1,3})\s*[.)]\s*(.*)$")
+OPT_RE = re.compile(r"^\s*(\*)?\s*([A-Za-z]|[ivxIVX]{1,5})\s*[).]\s*(.*)$")
+OPTIONS_RE = re.compile(r"^\s*(options|variantlar)\s*:?\s*(.*)$", re.I)
+RANGE_RE = re.compile(r"^([A-Za-z])\s*[-–]\s*([A-Za-z])$")
+ANSWER_SPLIT = re.compile(r"\s+=\s*(?=[^=]*$)")
+
+
+@dataclass
+class Item:
+    number: int
+    prompt: str
+    answer: str = ""
+    options: list = field(default_factory=list)  # [(label, text, is_correct)]
+    shared: bool = False
+    qtype: str = ""
+    line: int = 0
+    block: int = -1  # index of the OPTIONS list written before this question
+
+    @property
+    def answer_display(self):
+        return self.answer.replace("|", " / ")
+
+
+def _is_roman(label):
+    return bool(re.fullmatch(r"[ivx]{1,5}", label))
+
+
+def parse_part(text, part):
+    """Turn pasted text into question items for `part`. Returns (items, errors)."""
+    items, errors, blocks = [], [], []
+    current, in_shared = None, False
+    for n, raw in enumerate((text or "").splitlines(), start=1):
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        m = OPTIONS_RE.match(line)
+        if m:
+            in_shared, current = True, None
+            rest = m.group(2).strip()
+            rng = RANGE_RE.match(rest)
+            if rng:
+                a, b = rng.group(1).upper(), rng.group(2).upper()
+                blocks.append([(chr(c), "", False) for c in range(ord(a), ord(b) + 1)])
+            else:
+                blocks.append([(tok.upper(), "", False) for tok in re.split(r"[\s,]+", rest) if tok])
+            continue
+        m = Q_RE.match(line)
+        if m:
+            in_shared = False
+            body = m.group(2).strip()
+            parts = ANSWER_SPLIT.split(body, maxsplit=1)
+            prompt, answer = (parts[0].strip(), parts[1].strip()) if len(parts) == 2 else (body, "")
+            if body.startswith("="):
+                prompt, answer = "", body[1:].strip()
+            current = Item(number=int(m.group(1)), prompt=prompt, answer=answer, line=n, block=len(blocks) - 1)
+            items.append(current)
+            continue
+        m = OPT_RE.match(line)
+        if m and (in_shared or current is not None):
+            label = m.group(2)
+            # lowercase roman numerals (i, ii, iv …) are heading labels; everything else is a capital letter
+            option = (label if re.fullmatch(r"[ivx]+", label) else label.upper(), m.group(3).strip(), bool(m.group(1)))
+            if in_shared:
+                blocks[-1].append(option)
+            else:
+                current.options.append(option)
+            continue
+        # A line that is neither: continuation of the previous prompt / option text.
+        if in_shared and blocks and blocks[-1]:
+            label, text_, ok = blocks[-1][-1]
+            blocks[-1][-1] = (label, f"{text_} {line.strip()}".strip(), ok)
+        elif current is not None and current.options:
+            label, text_, ok = current.options[-1]
+            current.options[-1] = (label, f"{text_} {line.strip()}".strip(), ok)
+        elif current is not None:
+            current.prompt = f"{current.prompt} {line.strip()}".strip()
+        else:
+            errors.append(f"Line {n}: “{line.strip()[:60]}” is not a question. Start questions with a number, e.g. “1. …”.")
+
+    preset = cefr.PARTS.get(part.cefr_part or "")
+    allowed = preset["types"] if preset else None
+    seen = set()
+    for it in items:
+        shared = blocks[max(it.block, 0)] if blocks else []
+        shared_labels = {l.upper() for l, _, _ in shared}
+        if it.number in seen:
+            errors.append(f"Line {it.line}: question {it.number} appears twice.")
+        seen.add(it.number)
+        ans_upper = re.sub(r"\s+", " ", it.answer.upper()).strip()
+        if it.options:
+            it.qtype = Question.Type.MULTIPLE_CHOICE
+            if ans_upper and not any(ok for _, _, ok in it.options):
+                it.options = [(l, t, l.upper() == ans_upper) for l, t, _ in it.options]
+            if len(it.options) < 2:
+                errors.append(f"Question {it.number}: multiple choice needs at least two options (A, B …).")
+            if sum(ok for _, _, ok in it.options) != 1:
+                errors.append(f"Question {it.number}: mark exactly one correct option with * (e.g. “*B) …”) "
+                              f"or write “= B” after the question.")
+            it.answer = ""
+        elif shared and ans_upper in shared_labels:
+            it.shared = True
+            if (part.cefr_part == "R3" or any(_is_roman(l) for l, _, _ in shared)
+                    or re.match(r"paragraph\b", it.prompt, re.I)):
+                it.qtype = Question.Type.HEADINGS
+            elif part.cefr_part == "L4" or (part.image and not any(t for _, t, _ in shared)):
+                it.qtype = Question.Type.MAP_LABELLING
+            else:
+                it.qtype = Question.Type.MATCHING
+            it.options = list(shared)
+            it.answer = next(l for l, _, _ in shared if l.upper() == ans_upper)
+        elif Question.canonical_choice(ans_upper) in TFNG:
+            it.qtype = Question.Type.TFNG
+            it.answer = Question.canonical_choice(ans_upper)
+        elif shared and allowed and Question.Type.GAP_FILLING not in allowed:
+            # matching / headings / map part, but the answer is missing or not a label
+            it.qtype = next(t for t in allowed if t in Question.LABEL_TYPES)
+            labels = [l for l, _, _ in shared]
+            span = f"{labels[0]}–{labels[-1]}" if len(labels) > 1 else labels[0]
+            errors.append(f"Question {it.number}: after “=” write one of the OPTIONS letters ({span}), "
+                          f"e.g. “{it.number}. {it.prompt[:20] or 'Paragraph 1'} = {labels[0]}”.")
+        else:
+            it.qtype = Question.Type.GAP_FILLING
+            # "3. healthier" with no "=": a short line in a gap-filling part is the answer itself.
+            gap_part = not allowed or Question.Type.GAP_FILLING in allowed
+            if (not it.answer and gap_part and it.prompt and not it.prompt.rstrip().endswith("?")
+                    and not re.search(r"_{2,}", it.prompt) and len(it.prompt.split()) <= 4):
+                it.answer, it.prompt = it.prompt, ""
+            it.answer = " | ".join(a.strip() for a in re.split(r"\||\s/\s", it.answer) if a.strip()).replace(" | ", "|")
+            if not it.answer:
+                errors.append(f"Question {it.number}: write the answer, e.g. “{it.number}. library”.")
+            if shared and re.fullmatch(r"[A-Za-z]|[ivx]{1,5}", it.answer.strip()):
+                errors.append(f"Question {it.number}: answer “{it.answer}” is not one of the OPTIONS labels.")
+        if not it.prompt or re.fullmatch(r"[_\s.…]*", it.prompt):
+            it.prompt = f"Gap {it.number}" if it.qtype == Question.Type.GAP_FILLING else it.prompt
+        if not it.prompt:
+            errors.append(f"Question {it.number}: the question text is empty.")
+        if allowed and it.qtype not in allowed:
+            label = dict(Question.Type.choices)[it.qtype]
+            errors.append(f"Question {it.number}: {label} is not used in {preset['title']}.")
+    if not items and not errors:
+        errors.append("No questions found. Start each question with its number, e.g. “1. ______ = library”.")
+    return items, errors
+
+
+GAP_ANY_RE = re.compile(r"(?<![\w(])\(?(\d{1,3})\)?\s*[.)]?\s*_{2,}")
+
+
+def normalize_gaps(passage, numbers):
+    """Turn "1. ______", "2.______", "3) ___" or "(4)____" into the "(4) ______" marker the exam room uses."""
+    def repl(m):
+        return f"({m.group(1)}) ______" if int(m.group(1)) in numbers else m.group(0)
+    return GAP_ANY_RE.sub(repl, passage or "")
+
+
+def missing_gaps(passage, items):
+    """Gap-filling question numbers that have no "(N) ______" marker in the text."""
+    found = {int(n) for n in re.findall(r"\((\d+)\)\s*_{2,}", passage or "")}
+    return [it.number for it in items if it.qtype == Question.Type.GAP_FILLING and it.number not in found]
+
+
+def serialize_part(part):
+    """Existing questions back to the quick-entry text (so the page can be edited again)."""
+    questions = list(part.questions.prefetch_related("options"))
+    lines, shared_written = [], None
+    for q in questions:
+        opts = list(q.options.all())
+        if q.question_type in Question.LABEL_TYPES:
+            key = tuple((o.label, o.text) for o in opts)
+            if key != shared_written:
+                if q.question_type == Question.Type.MAP_LABELLING and not any(o.text for o in opts) and opts:
+                    lines += ["", f"OPTIONS: {opts[0].label}-{opts[-1].label}"]
+                else:
+                    lines += ["", "OPTIONS"] + [f"{o.label}) {o.text}" for o in opts]
+                lines.append("")
+                shared_written = key
+            lines.append(f"{q.order}. {q.prompt} = {q.correct_answer}")
+        elif q.question_type == Question.Type.MULTIPLE_CHOICE:
+            lines.append(f"{q.order}. {q.prompt}")
+            lines += [f"{'*' if o.is_correct else ''}{o.label}) {o.text}" for o in opts]
+            lines.append("")
+        else:
+            answer = q.correct_answer.replace("|", " | ")
+            if re.fullmatch(r"Gap \d+", q.prompt) and len(q.correct_answer.replace("|", " ").split()) <= 4:
+                lines.append(f"{q.order}. {answer}")  # the short form an admin naturally types
+            else:
+                prompt = "______" if re.fullmatch(r"Gap \d+", q.prompt) else q.prompt
+                lines.append(f"{q.order}. {prompt} = {answer}")
+    return "\n".join(lines).strip()
+
+
+def part_locked(part):
+    """Students already answered these questions -> replacing them would delete their answers."""
+    from results.models import Answer
+
+    return Answer.objects.filter(question__part=part).exists()
+
+
+@transaction.atomic
+def apply_part(part, items):
+    part.questions.all().delete()
+    for it in sorted(items, key=lambda i: i.number):
+        q = Question.objects.create(part=part, order=it.number, question_type=it.qtype, prompt=it.prompt,
+                                    correct_answer=it.answer)
+        Option.objects.bulk_create([Option(question=q, label=l, text=t, is_correct=ok, order=i)
+                                    for i, (l, t, ok) in enumerate(it.options)])
+    return len(items)
+
+
+# ------------------------------------------------------------------ speaking
+SPEAKING_HEAD = re.compile(r"^\s*part\s*(1\.1|1\.2|2|3)\s*:?\s*$", re.I)
+SPEAKING_PARTS = {"1.1": 1, "1.2": 2, "2": 3, "3": 4}
+
+
+def parse_speaking(text):
+    """PART 1.1 / PART 1.2 / PART 2 / PART 3 headings; one question per line.
+    Part 2 bullet points start with "-"; Part 3 arguments start with "For:" / "Against:"."""
+    items, errors, part = [], [], None
+    for n, raw in enumerate((text or "").splitlines(), start=1):
+        line = raw.strip()
+        if not line:
+            continue
+        m = SPEAKING_HEAD.match(line)
+        if m:
+            part = SPEAKING_PARTS[m.group(1)]
+            continue
+        if part is None:
+            errors.append(f"Line {n}: start with a heading such as “PART 1.1”.")
+            continue
+        is_point = line[:1] in "-•*" or re.match(r"^(for|against)\s*:", line, re.I)
+        if is_point and part in (3, 4):
+            if not items or items[-1]["part"] != part:
+                errors.append(f"Line {n}: write the Part {'2' if part == 3 else '3'} question before its points.")
+                continue
+            point = line.lstrip("-•* ").strip()
+            if part == 4:
+                point = re.sub(r"^(for|against)\s*:\s*", lambda mm: mm.group(1).capitalize() + ": ", point, flags=re.I)
+            items[-1]["cue"].append(point)
+            continue
+        items.append({"part": part, "question": re.sub(r"^\d+\s*[.)]\s*", "", line), "cue": [], "line": n})
+    counts = {p: sum(1 for i in items if i["part"] == p) for p in (1, 2, 3, 4)}
+    if not items:
+        errors.append("No questions found. Use headings PART 1.1, PART 1.2, PART 2, PART 3.")
+    if items and counts[4] and not any(c.startswith(("For:", "Against:")) for i in items if i["part"] == 4
+                                       for c in i["cue"]):
+        errors.append("Part 3: add the arguments as lines starting with “For:” and “Against:”.")
+    return items, errors, counts
+
+
+def serialize_speaking(exam):
+    lines, last = [], None
+    labels = {v: k for k, v in SPEAKING_PARTS.items()}
+    for q in exam.speaking_questions.order_by("part", "order"):
+        if q.part != last:
+            lines += (["", f"PART {labels[q.part]}"] if lines else [f"PART {labels[q.part]}"])
+            last = q.part
+        lines.append(q.question)
+        for point in q.cue_points if hasattr(q, "cue_points") else q.cue_card_points.splitlines():
+            point = point.strip()
+            if point:
+                lines.append(point if q.part == 4 else f"- {point}")
+    return "\n".join(lines).strip()
+
+
+def speaking_locked(exam):
+    return exam.speaking_questions.filter(submissions__isnull=False).exists()
+
+
+@transaction.atomic
+def apply_speaking(exam, items, image=None):
+    old_image = exam.speaking_questions.filter(part=2).exclude(image="").values_list("image", flat=True).first()
+    exam.speaking_questions.all().delete()
+    counters = {}
+    for it in items:
+        counters[it["part"]] = counters.get(it["part"], 0) + 1
+        first = counters[it["part"]] == 1
+        prep, speak = SpeakingQuestion.DEFAULT_TIMES[it["part"]] if first or it["part"] != 2 else (5, 30)
+        q = SpeakingQuestion(exam=exam, part=it["part"], order=counters[it["part"]], question=it["question"],
+                             cue_card_points="\n".join(it["cue"]), preparation_time=prep, speaking_time=speak)
+        if it["part"] == 2 and first:
+            if image:
+                q.image = image
+            elif old_image:
+                q.image.name = old_image
+        q.save()
+    return len(items)
+
+
+# ------------------------------------------------------------------ writing
+WRITING_HEAD = re.compile(r"^\s*task\s*(1\.1|1\.2|2)\s*:?\s*$", re.I)
+WRITING_DEFAULTS = {
+    "1.1": (WritingTask.TaskType.TASK1_1, "Task 1.1", 50, 70, 15),
+    "1.2": (WritingTask.TaskType.TASK1_2, "Task 1.2", 120, 150, 20),
+    "2": (WritingTask.TaskType.TASK2, "Task 2", 180, 200, 25),
+}
+
+
+def parse_writing(text):
+    """SITUATION (optional, shared by Task 1.1 and 1.2), then TASK 1.1 / TASK 1.2 / TASK 2 blocks."""
+    blocks, current, situation, errors = {}, None, [], []
+    for raw in (text or "").splitlines():
+        m = WRITING_HEAD.match(raw)
+        if m:
+            current = m.group(1)
+            blocks[current] = []
+            continue
+        if re.match(r"^\s*(situation|vaziyat)\s*:?\s*$", raw, re.I):
+            current = "situation"
+            continue
+        if current == "situation":
+            situation.append(raw)
+        elif current:
+            blocks[current].append(raw)
+        elif raw.strip():
+            situation.append(raw)
+    situation = "\n".join(situation).strip()
+    items = []
+    for key in ("1.1", "1.2", "2"):
+        body = "\n".join(blocks.get(key, [])).strip()
+        if not body:
+            continue
+        ttype, title, low, high, minutes = WRITING_DEFAULTS[key]
+        topic = f"{situation}\n\n{body}" if situation and key != "2" else body
+        items.append({"key": key, "task_type": ttype, "title": title, "topic": topic, "low": low, "high": high,
+                      "minutes": minutes})
+    if not items:
+        errors.append("No tasks found. Use the headings TASK 1.1, TASK 1.2 and TASK 2.")
+    return items, errors, situation
+
+
+def serialize_writing(exam):
+    tasks = list(exam.writing_tasks.order_by("order"))
+    if not tasks:
+        return ""
+    keys = {v[0]: k for k, v in WRITING_DEFAULTS.items()}
+    t1 = [t for t in tasks if t.task_type != WritingTask.TaskType.TASK2]
+    situation = ""
+    if len(t1) == 2:
+        a, b = t1[0].topic.split("\n\n"), t1[1].topic.split("\n\n")
+        if len(a) > 1 and len(b) > 1 and a[0] == b[0]:
+            situation = a[0]
+    lines = ["SITUATION", situation, ""] if situation else []
+    for t in tasks:
+        topic = t.topic[len(situation):].lstrip("\n") if situation and t.topic.startswith(situation) else t.topic
+        lines += [f"TASK {keys.get(t.task_type, '2')}", topic, ""]
+    return "\n".join(lines).strip()
+
+
+def writing_locked(exam):
+    return exam.writing_tasks.filter(submissions__isnull=False).exists()
+
+
+@transaction.atomic
+def apply_writing(exam, items):
+    exam.writing_tasks.all().delete()
+    for order, it in enumerate(items, start=1):
+        WritingTask.objects.create(exam=exam, order=order, title=it["title"], task_type=it["task_type"],
+                                   topic=it["topic"], minimum_word_count=it["low"], maximum_word_count=it["high"],
+                                   time_limit=it["minutes"], level=exam.level or "")
+    return len(items)

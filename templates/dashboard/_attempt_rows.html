@@ -1,0 +1,10 @@
+{% load core_tags %}
+{% for a in attempts %}
+<tr>
+  <td><a href="{{ a.get_absolute_url }}"><strong>{{ a.exam.title }}</strong></a></td>
+  <td><span class="badge badge-{{ a.exam.section }}">{{ a.exam.get_section_display }}</span></td>
+  <td class="nowrap">{{ a.submitted_at|default:a.started_at|date:"d M Y" }}</td>
+  <td><strong>{{ a.display_score|default:"—" }}</strong></td>
+  <td>{% status_badge a.status a.get_status_display %}</td>
+</tr>
+{% empty %}<tr><td colspan="5" class="empty">No results yet — <a href="{% url 'exams:hub' %}">take your first mock exam</a>.</td></tr>{% endfor %}

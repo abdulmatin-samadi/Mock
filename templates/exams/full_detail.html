@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% load core_tags %}{% block title %}{{ fm.title }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'exams:full_list' %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>Back to Full mocks</span></a>
+<div class="split">
+  <div class="card">
+    <div class="row"><span class="badge badge-multilevel">🎯 Full mock</span>{% if fm.level %}<span class="badge">{{ fm.level }}</span>{% endif %}{% if not fm.is_published %}<span class="badge badge-draft">Draft (admin preview)</span>{% endif %}</div>
+    <h1 class="mt-1">{{ fm.title }}</h1>
+    {% if fm.description %}<p>{{ fm.description|linebreaksbr }}</p>{% endif %}
+    <p class="muted">You take the four sections in the official order. Each section has its own timer; you can take a break between sections. Your overall score is the average of the four section scores (0–75), converted to a CEFR level.</p>
+    <div class="table-wrap mt-2"><table class="table"><thead><tr><th>#</th><th>Section</th><th>Mock</th><th>Time</th></tr></thead><tbody>
+    {% for s, exam, info in sections %}<tr><td>{{ forloop.counter }}</td><td><span class="badge badge-{{ s }}">{{ info.icon }} {{ exam.get_section_display }}</span></td><td>{{ exam.title }}</td><td>{% if exam.time_limit %}{{ exam.time_limit }} min{% else %}—{% endif %}</td></tr>{% endfor %}
+    <tr><td></td><td colspan="2"><strong>Total</strong></td><td><strong>≈ {{ fm.total_minutes }} min</strong></td></tr>
+    </tbody></table></div>
+    <div class="alert alert-info mt-2 small">Speaking needs a working microphone. Writing and Speaking are evaluated by AI, so the overall result appears a little after you finish.</div>
+    <div class="mt-2">
+    {% if user.is_authenticated and not user.is_guest %}
+      {% if user.is_student %}
+        {% if in_progress %}<a class="btn btn-lg" href="{% url 'exams:full_progress' in_progress.pk %}">Continue full mock</a>
+        {% else %}<form method="post" action="{% url 'exams:full_start' fm.pk %}">{% csrf_token %}<button class="btn btn-lg">Start full mock</button></form>{% endif %}
+      {% else %}<div class="alert alert-warning">Only student accounts can take mock exams.</div>{% endif %}
+    {% else %}<div class="guest-note">Full mocks need a free account.</div><a class="btn btn-lg" href="{% url 'accounts:register' %}?next={{ request.path }}">Create free account</a> <a class="btn btn-secondary btn-lg" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in</a>{% endif %}
+    </div>
+  </div>
+  <div class="card"><h3>Your sittings</h3>
+    {% for a in attempts %}
+    <div class="row-between" style="padding:8px 0;border-bottom:1px solid var(--line)">
+      <div><div class="small">{{ a.started_at|date:"d M Y, H:i" }}</div>{% status_badge a.status a.get_status_display %}</div>
+      <div class="right">{% if a.score is not None %}<strong>{{ a.score|floatformat:0 }}/75 · {{ a.cefr_level }}</strong><br>{% endif %}<a class="small" href="{% if a.status == 'in_progress' %}{% url 'exams:full_progress' a.pk %}{% else %}{{ a.get_absolute_url }}{% endif %}">{% if a.status == 'in_progress' %}Continue{% else %}View result{% endif %}</a></div>
+    </div>
+    {% empty %}<p class="muted small">No sittings yet.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

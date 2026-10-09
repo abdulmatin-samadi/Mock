@@ -1,0 +1,51 @@
+{% extends "base.html" %}{% load core_tags %}{% block title %}Writing history{% endblock %}
+{% block content %}
+<section class="hx-hero" style="--c1:#5b21b6;--c2:#8b5cf6;--c3:#c4b5fd">
+  <div class="hx-head">
+    <span class="hx-ico">{% include "partials/icon.html" with name="pen" size=26 %}</span>
+    <div><span class="hx-kicker">History</span><h1>Writing history</h1><p>Your letters and essays with AI scores and feedback.</p></div>
+  </div>
+  <div class="hx-figs">
+    <div><strong>{{ summary.n }}</strong><span>Essays</span></div>
+    <div><strong>{{ summary.avg|floatformat:0|default:"—" }}</strong><span>Average /75</span></div>
+    <div><strong>{{ summary.best|floatformat:0|default:"—" }}</strong><span>Best /75</span></div>
+    <div><strong>{{ summary.words|floatformat:0|default:"—" }}</strong><span>Avg words</span></div>
+  </div>
+  <a class="btn btn-lg hx-btn" href="{% url 'exams:section' 'writing' %}">✍️ New writing mock</a>
+</section>
+
+<div class="hx-list">
+{% for sub in page %}
+<article class="wx-card">
+  <div class="wx-side">
+    <div class="rs-score {% if sub.score is None %}none{% endif %}" style="--c:#8b5cf6;--pct:{{ sub.pct }}"><div>{% if sub.score is not None %}<strong>{{ sub.score|floatformat:0 }}</strong><small>{{ sub.evaluation.cefr_level|default:"/75" }}</small>{% else %}<strong>—</strong>{% endif %}</div></div>
+    <span class="wx-task">{{ sub.task.get_task_type_display|cut:" — Informal letter"|cut:" — Formal letter"|cut:" — Essay" }}</span>
+  </div>
+  <div class="wx-main">
+    <div class="wx-top">
+      <div>
+        <h3>{{ sub.attempt.exam.title }} <span class="muted">· {{ sub.task.title }}</span></h3>
+        <div class="wx-meta"><span class="rs-sec" style="--c:#8b5cf6">{{ sub.task.get_task_type_display }}</span><span>📅 {{ sub.submitted_at|date:"j M Y, H:i" }}</span><span>📝 {{ sub.word_count }} words</span>{% if sub.status != 'completed' %}{% status_badge sub.status sub.get_status_display %}{% endif %}</div>
+      </div>
+      <a class="btn btn-sm" href="{% url 'dashboard:writing_detail' sub.pk %}">Open →</a>
+    </div>
+    <blockquote class="wx-essay">{{ sub.essay|truncatewords:55 }}</blockquote>
+    {% if sub.criteria %}
+    <div class="wx-crit">{% for label, value, pct in sub.criteria %}<div><span>{{ label }}</span><i style="--w:{{ pct }}%"></i><b>{{ value|floatformat:0 }}</b></div>{% endfor %}</div>
+    {% endif %}
+    {% if sub.evaluation.detailed_feedback %}
+    <div class="wx-feedback"><span class="wx-ai">✨ AI feedback</span><p>{{ sub.evaluation.detailed_feedback|truncatewords:40 }}</p>
+      <small>{{ sub.evaluation.grammar_mistakes|length }} grammar · {{ sub.evaluation.vocabulary_mistakes|length }} vocabulary corrections</small></div>
+    {% elif sub.status == 'failed' %}
+    <div class="wx-fail">⚠️ The AI couldn't evaluate this essay yet. An administrator can re-run the evaluation.</div>
+    {% elif sub.status != 'completed' %}
+    <div class="wx-wait">⏳ AI evaluation in progress…</div>
+    {% endif %}
+  </div>
+</article>
+{% empty %}
+<div class="hx-empty"><span>✍️</span><h3>No essays yet</h3><p class="muted">Write your first letter or essay and get a 0–75 score with AI feedback.</p><a class="btn" href="{% url 'exams:section' 'writing' %}">Start a writing mock</a></div>
+{% endfor %}
+</div>
+{% include "partials/pagination.html" %}
+{% endblock %}

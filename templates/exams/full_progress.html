@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% load core_tags %}{% block title %}{{ full.full_mock.title }}{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'exams:full_list' %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>Back to Full mocks</span></a>
+<div class="container-narrow" style="margin:0 auto">
+  <div class="page-head"><div><div class="eyebrow">🎯 Full mock · {{ done }} of 4 sections done</div><h1>{{ full.full_mock.title }}</h1></div></div>
+  <div class="progress mb-2"><span style="width:{% widthratio done 4 100 %}%"></span></div>
+  {% for st in steps %}
+  <div class="card mb-2 full-step {% if st.current %}current{% endif %}">
+    <div class="row-between">
+      <div class="row"><span class="step-num">{{ st.number }}</span><div><strong>{{ st.info.icon }} {{ st.exam.get_section_display }}</strong><div class="small muted">{{ st.exam.title }} · {% if st.exam.time_limit %}{{ st.exam.time_limit }} min{% else %}untimed{% endif %}</div></div></div>
+      <div>
+        {% if st.attempt and st.attempt.status != 'in_progress' %}{% status_badge st.attempt.status st.attempt.get_status_display %}
+        {% elif st.current %}
+          <form method="post">{% csrf_token %}<button class="btn">{% if st.attempt %}Continue{% else %}Start{% endif %} {{ st.exam.get_section_display|lower }} →</button></form>
+        {% else %}<span class="muted small">Waiting</span>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <p class="small muted">Take a short break if you need one — the next section's timer starts only when you press Start. Your overall result appears when all four sections are done.</p>
+</div>
+{% endblock %}

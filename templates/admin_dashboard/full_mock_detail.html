@@ -1,0 +1,22 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}{{ fm.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><div class="eyebrow"><a href="{% url 'admin_dashboard:full_mocks' %}">Full mocks</a></div><h1>{{ fm.title }}</h1>
+  <p>{% if fm.level %}<span class="badge">{{ fm.level }}</span> · {% endif %}{{ fm.total_minutes }} min · {% if fm.is_published %}<span class="badge badge-published">Published</span>{% else %}<span class="badge badge-draft">Draft</span>{% endif %}</p></div>
+  <div class="row">
+    <form method="post" action="{% url 'admin_dashboard:full_mock_publish' fm.pk %}" class="inline">{% csrf_token %}<button class="btn {% if fm.is_published %}btn-secondary{% else %}btn-good{% endif %}">{% if fm.is_published %}Unpublish{% else %}Publish{% endif %}</button></form>
+    <a class="btn btn-secondary" href="{% url 'admin_dashboard:full_mock_edit' fm.pk %}">Edit</a>
+    <a class="btn btn-secondary" href="{{ fm.get_absolute_url }}" target="_blank" rel="noopener">Preview ↗</a>
+    <a class="btn btn-danger" href="{% url 'admin_dashboard:full_mock_delete' fm.pk %}">Delete</a>
+  </div>
+</div>
+{% if problems %}<div class="alert alert-warning"><strong>Before publishing:</strong><ul class="mb-0">{% for p in problems %}<li>{{ p }}</li>{% endfor %}</ul></div>{% endif %}
+<div class="grid grid-4 mb-2">
+  {% for s, exam in fm.sections %}<a class="card card-link" href="{% url 'admin_dashboard:mock_manage' exam.pk %}"><span class="badge badge-{{ s }}">{{ forloop.counter }}. {{ exam.get_section_display }}</span><h3 class="mt-1">{{ exam.title }}</h3><p class="small muted mb-0">{{ exam.time_limit }} min · {% if exam.is_published %}published{% else %}draft{% endif %}</p></a>{% endfor %}
+</div>
+<h2>Sittings</h2>
+<div class="table-wrap"><table class="table"><thead><tr><th>Student</th><th>Email</th><th>Started</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody>
+{% for f in page %}<tr><td>{{ f.student.get_full_name }}</td><td class="small">{{ f.student.email }}</td><td class="small">{{ f.started_at|date:"d M Y H:i" }}</td><td><strong>{% if f.score is not None %}{{ f.score|floatformat:0 }}/75 · {{ f.cefr_level }}{% else %}—{% endif %}</strong></td><td>{% status_badge f.status f.get_status_display %}</td><td class="actions"><a class="btn btn-sm" href="{{ f.get_absolute_url }}">Open</a></td></tr>
+{% empty %}<tr><td colspan="6" class="empty">No sittings yet.</td></tr>{% endfor %}</tbody></table></div>
+{% include "partials/pagination.html" %}
+{% endblock %}

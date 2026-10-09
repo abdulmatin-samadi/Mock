@@ -1,0 +1,11 @@
+<div class="exit-modal" id="exit-modal" hidden role="dialog" aria-modal="true" aria-labelledby="exit-title">
+  <div class="exit-card">
+    <div class="exit-icon" aria-hidden="true">⚠️</div>
+    <h2 id="exit-title">Testdan chiqmoqchimisiz?</h2>
+    <p>{% if exam.section == 'speaking' %}Yuborilgan javoblaringiz saqlanadi.{% else %}Javoblaringiz saqlanadi.{% endif %} Keyinroq bosh sahifadagi <strong>Resume</strong> tugmasi orqali shu yoki boshqa qurilmada davom ettirishingiz mumkin.{% if deadline %} Taymer to'xtamaydi.{% endif %}</p>
+    <div class="exit-actions">
+      <button type="button" class="exit-stay" id="exit-stay">✓ Testni davom ettirish</button>
+      <a class="exit-leave" id="exit-leave" href="{{ exit_url }}">Hozircha chiqish</a>
+    </div>
+  </div>
+</div>

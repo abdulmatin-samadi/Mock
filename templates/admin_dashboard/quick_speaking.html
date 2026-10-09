@@ -1,0 +1,69 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Quick entry · {{ exam.title }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">{{ exam.title }}</div><h1>⚡ Speaking questions</h1><p>Write all 8 questions on one page under the part headings, then <b>Preview</b> and <b>Save</b>.</p></div>
+<a class="btn btn-secondary" href="{% url 'admin_dashboard:mock_manage' exam.pk %}">← Back to mock</a></div>
+{% if locked %}<div class="alert alert-warning">Students have already recorded answers to this mock, so its questions can't be replaced. Use <b>Duplicate</b> on the mock page to make an editable copy.</div>{% endif %}
+
+<div class="qk">
+  <form method="post" enctype="multipart/form-data" class="card qk-form">{% csrf_token %}
+    <label class="qk-label" for="text">Questions</label>
+    <p class="qk-hint">Use the headings <code>PART 1.1</code>, <code>PART 1.2</code>, <code>PART 2</code>, <code>PART 3</code>. One question per line. Times are set automatically.</p>
+    <textarea id="text" name="text" rows="22" class="qk-area qk-mono" placeholder="PART 1.1&#10;What do you usually do in your free time?">{{ text }}</textarea>
+    <div class="qk-files">
+      <label class="qk-file"><span>🖼 Part 1.2 pictures</span><input type="file" name="image" accept="image/*"><small>{% if current_image %}Current picture kept unless you choose a new one{% else %}Two pictures to compare, in one image{% endif %}</small></label>
+    </div>
+    <div class="qk-actions">
+      <button class="btn btn-secondary btn-lg" name="action" value="preview">👁 Preview</button>
+      <button class="btn btn-lg" name="action" value="save" {% if locked %}disabled{% endif %}>💾 Save questions</button>
+    </div>
+    <p class="qk-hint mb-0">Saving replaces all current speaking questions of this mock.</p>
+  </form>
+  <aside class="qk-side">
+    {% if previewed %}
+    <div class="card qk-preview">
+      {% if errors %}<h3>⚠️ Fix {{ errors|length }} problem{{ errors|length|pluralize }}</h3><ul class="qk-errors">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% else %}<h3>✅ {{ items|length }} question{{ items|length|pluralize }} ready</h3>
+        <p class="muted small">Part 1.1: {{ counts.1 }} · Part 1.2: {{ counts.2 }} · Part 2: {{ counts.3 }} · Part 3: {{ counts.4 }} <span class="muted">(official: 3 · 3 · 1 · 1)</span></p>{% endif %}
+      {% for it in items %}<div class="qk-sq"><span class="qk-type t-speaking">{% if it.part == 1 %}Part 1.1{% elif it.part == 2 %}Part 1.2{% elif it.part == 3 %}Part 2{% else %}Part 3{% endif %}</span> {{ it.question }}{% if it.cue %}<ul>{% for c in it.cue %}<li>{{ c }}</li>{% endfor %}</ul>{% endif %}</div>{% endfor %}
+    </div>
+    {% endif %}
+    <div class="card qk-help">
+      <div class="qk-ex"><div class="qk-ex-head"><b>Full example</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-sp">Insert</button></div>
+<pre id="ex-sp">PART 1.1
+Do you work or are you a student?
+What kind of music do you enjoy?
+How often do you use public transport?
+
+PART 1.2
+Compare studying alone at home and studying in a group. Talk about the good and bad sides of each.
+Which do you find more effective for learning English? Why?
+Should schools give students more group projects?
+
+PART 2
+Describe a skill you would like to learn in the future.
+- what the skill is
+- why you want to learn it
+- how you will learn it
+
+PART 3
+Everyone should do some kind of volunteer work.
+For: It helps the community
+For: It teaches useful skills
+Against: Many people are too busy
+Against: Work should always be paid</pre>
+      <small>Part 2 points start with <code>-</code>. Part 3 arguments start with <code>For:</code> or <code>Against:</code>. Upload the Part 1.2 pictures on the left.</small></div>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% vstatic 'js/quick.js' %}"></script>
+<script>
+  document.querySelectorAll("[data-insert]").forEach((b) => b.addEventListener("click", () => {
+    const area = document.getElementById("text");
+    const text = document.getElementById(b.dataset.insert).textContent.trim();
+    area.value = area.value.trim() ? area.value.trimEnd() + "\n\n" + text : text;
+    area.focus();
+  }));
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Admin dashboard</h1><p>{% now "l, d F Y" %}</p></div>
+<div class="row"><a class="btn" href="{% url 'admin_dashboard:mock_create' 'reading' %}">+ Reading mock</a><a class="btn btn-secondary" href="{% url 'admin_dashboard:full_mock_create' %}">+ Full mock</a></div></div>
+{% if stats.ai_failed %}<div class="alert alert-error">{{ stats.ai_failed }} AI evaluation{{ stats.ai_failed|pluralize }} failed. <a href="{% url 'admin_dashboard:settings' %}">Check AI settings →</a></div>{% endif %}
+<div class="akpis">
+  <div class="akpi"><span class="akpi-ico g-blue">{% include "partials/icon.html" with name="users" %}</span><div><span>Students</span><strong>{{ stats.students }}</strong></div></div>
+  <div class="akpi"><span class="akpi-ico g-purple">{% include "partials/icon.html" with name="file" %}</span><div><span>Total attempts</span><strong>{{ stats.attempts }}</strong></div></div>
+  <div class="akpi"><span class="akpi-ico g-orange">{% include "partials/icon.html" with name="zap" %}</span><div><span>Today</span><strong>{{ stats.today }}</strong></div></div>
+  <div class="akpi"><span class="akpi-ico g-green">{% include "partials/icon.html" with name="percent" %}</span><div><span>Average score</span><strong>{% if stats.avg_score is not None %}{{ stats.avg_score|floatformat:0 }}%{% else %}—{% endif %}</strong></div></div>
+</div>
+<div class="arow">
+  <div class="card asubs">
+    <div class="row-between"><h3 class="mb-0">Submissions by section</h3><a class="small" href="{% url 'admin_dashboard:results' %}">All results →</a></div>
+    <div class="asubs-grid">
+      <a href="{% url 'admin_dashboard:results' %}?section=listening" style="--c:#3b82f6"><span class="asub-ico">{% include "partials/icon.html" with name="headphones" size=18 %}</span><strong>{{ stats.listening }}</strong><small>Listening</small></a>
+      <a href="{% url 'admin_dashboard:results' %}?section=reading" style="--c:#f59e0b"><span class="asub-ico">{% include "partials/icon.html" with name="book" size=18 %}</span><strong>{{ stats.reading }}</strong><small>Reading</small></a>
+      <a href="{% url 'admin_dashboard:writing' %}" style="--c:#8b5cf6"><span class="asub-ico">{% include "partials/icon.html" with name="pen" size=18 %}</span><strong>{{ stats.writing }}</strong><small>Writing</small></a>
+      <a href="{% url 'admin_dashboard:speaking' %}" style="--c:#10b981"><span class="asub-ico">{% include "partials/icon.html" with name="mic" size=18 %}</span><strong>{{ stats.speaking }}</strong><small>Speaking</small></a>
+    </div>
+  </div>
+  <div class="card alib">
+    <h3>Content library</h3>
+    <div class="alib-row"><span>Mock exams</span><strong>{{ stats.exams }}</strong><small>{{ stats.published_exams }} published</small></div>
+    <div class="alib-row"><span>Full mocks</span><strong>{{ stats.full_mocks }}</strong><small>{{ stats.full_sittings }} sitting{{ stats.full_sittings|pluralize }}</small></div>
+  </div>
+</div>
+<div class="split mt-3">
+  <div class="card"><h3>Attempts — last 14 days</h3>
+    <div class="bar-chart" role="img" aria-label="Daily attempts over the last 14 days">{% for c in chart %}<div class="bar" title="{{ c.day|date:'d M' }}: {{ c.n }}"><small>{{ c.n }}</small><span style="height:{{ c.pct }}%"></span><small>{{ c.day|date:"d" }}</small></div>{% endfor %}</div>
+  </div>
+  <div class="card"><h3>Average score by section</h3>
+    {% for label, avg, n in section_avgs %}<div class="mt-1"><div class="row-between small"><span>{{ label }} <span class="muted">({{ n }})</span></span><strong>{% if avg is not None %}{{ avg|floatformat:0 }}%{% else %}—{% endif %}</strong></div><div class="progress"><span style="width:{{ avg|default:0|floatformat:0 }}%"></span></div></div>{% endfor %}
+  </div>
+</div>
+<div class="row-between mt-3"><h2 class="mb-0">Latest attempts</h2><a href="{% url 'admin_dashboard:results' %}">All results →</a></div>
+<div class="table-wrap mt-1"><table class="table"><thead><tr><th>Student</th><th>Email</th><th>Exam</th><th>Section</th><th>Date</th><th>Score</th><th>Status</th></tr></thead><tbody>
+{% for a in recent %}<tr><td><a href="{% url 'admin_dashboard:user_detail' a.student_id %}">{{ a.student.get_full_name }}</a></td><td class="small">{{ a.student.email }}</td><td><a href="{{ a.get_absolute_url }}">{{ a.exam.title }}</a></td><td><span class="badge badge-{{ a.exam.section }}">{{ a.exam.get_section_display }}</span></td><td class="small">{{ a.started_at|date:"d M H:i" }}</td><td><strong>{{ a.display_score|default:"—" }}</strong></td><td>{% status_badge a.status a.get_status_display %}</td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No attempts yet.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

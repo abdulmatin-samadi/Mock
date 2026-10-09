@@ -1,0 +1,53 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Quick entry · {{ exam.title }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">{{ exam.title }}</div><h1>⚡ Writing tasks</h1><p>Write the situation and all three tasks on one page. Word limits and times are set automatically.</p></div>
+<a class="btn btn-secondary" href="{% url 'admin_dashboard:mock_manage' exam.pk %}">← Back to mock</a></div>
+{% if locked %}<div class="alert alert-warning">Students have already submitted essays for this mock, so its tasks can't be replaced. Use <b>Duplicate</b> on the mock page to make an editable copy.</div>{% endif %}
+
+<div class="qk">
+  <form method="post" class="card qk-form">{% csrf_token %}
+    <label class="qk-label" for="text">Situation and tasks</label>
+    <p class="qk-hint">Headings: <code>SITUATION</code> (shared by Task 1.1 and 1.2), <code>TASK 1.1</code>, <code>TASK 1.2</code>, <code>TASK 2</code>.</p>
+    <textarea id="text" name="text" rows="22" class="qk-area" placeholder="SITUATION&#10;You are a member of a sports club…">{{ text }}</textarea>
+    <div class="qk-actions">
+      <button class="btn btn-secondary btn-lg" name="action" value="preview">👁 Preview</button>
+      <button class="btn btn-lg" name="action" value="save" {% if locked %}disabled{% endif %}>💾 Save tasks</button>
+    </div>
+    <p class="qk-hint mb-0">Saving replaces all current writing tasks of this mock.</p>
+  </form>
+  <aside class="qk-side">
+    {% if previewed %}
+    <div class="card qk-preview">
+      {% if errors %}<h3>⚠️ Fix {{ errors|length }} problem{{ errors|length|pluralize }}</h3><ul class="qk-errors">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% else %}<h3>✅ {{ items|length }} task{{ items|length|pluralize }} ready</h3>{% endif %}
+      {% for it in items %}<div class="qk-sq"><span class="qk-type t-writing">{{ it.title }}</span> <span class="muted small">{{ it.low }}–{{ it.high }} words · {{ it.minutes }} min</span><p class="small pre mb-0 mt-1">{{ it.topic|truncatechars:260 }}</p></div>{% endfor %}
+    </div>
+    {% endif %}
+    <div class="card qk-help">
+      <div class="qk-ex"><div class="qk-ex-head"><b>Full example</b><button type="button" class="btn btn-sm btn-secondary" data-insert="ex-wr">Insert</button></div>
+<pre id="ex-wr">SITUATION
+You are a member of a sports club. The manager has announced that the gym will be closed for two months for repairs.
+
+TASK 1.1
+Write a letter to your friend who is also a member. Tell them about the news, how you feel and what you plan to do instead. Write about 50 words.
+
+TASK 1.2
+Write a letter to the club manager. Explain how the closure affects you and suggest what the club could do for members. Write 120–150 words.
+
+TASK 2
+Some people think everyone should do sport every day, while others believe it is a personal choice. Discuss both views and give your opinion. Write 180–200 words.</pre>
+      <small>Task 1.1: 50–70 words · Task 1.2: 120–150 · Task 2: 180–200.</small></div>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% vstatic 'js/quick.js' %}"></script>
+<script>
+  document.querySelectorAll("[data-insert]").forEach((b) => b.addEventListener("click", () => {
+    const area = document.getElementById("text");
+    area.value = document.getElementById(b.dataset.insert).textContent.trim();
+    area.focus();
+  }));
+</script>
+{% endblock %}

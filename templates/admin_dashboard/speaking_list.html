@@ -1,0 +1,11 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Speaking recordings{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Speaking recordings</h1><p>{{ page.paginator.count }} recording{{ page.paginator.count|pluralize }}</p></div></div>
+{% include "admin_dashboard/_filters.html" with score_label="Min score (band/75)" %}
+<div class="table-wrap"><table class="table"><thead><tr><th>Student</th><th>Email</th><th>Exam</th><th>Date</th><th>Score</th><th>Recording</th><th>Status</th><th></th></tr></thead><tbody>
+{% for s in page %}<tr><td>{{ s.student.first_name }} {{ s.student.last_name }}</td><td class="small">{{ s.student.email }}</td><td>{{ s.exam.title }}<div class="tiny muted">Part {{ s.question.part }} · {{ s.question.question|truncatechars:50 }}</div></td><td class="small nowrap">{{ s.submitted_at|date:"d M Y H:i" }}</td>
+<td><strong>{{ s.score|floatformat:"-1"|default:"—" }}</strong></td><td><audio controls preload="none" src="{% url 'speaking:audio' s.pk %}" style="width:220px;height:36px"></audio></td><td>{% status_badge s.processing_status s.get_processing_status_display %}</td>
+<td class="actions"><a class="btn btn-sm" href="{% url 'admin_dashboard:speaking_detail' s.pk %}">Open</a></td></tr>
+{% empty %}<tr><td colspan="8" class="empty">No recordings match.</td></tr>{% endfor %}</tbody></table></div>
+{% include "partials/pagination.html" %}
+{% endblock %}

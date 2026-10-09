@@ -1,0 +1,74 @@
+{% extends "base.html" %}{% load core_tags %}{% block title %}My results{% endblock %}
+{% block content %}
+<section class="rs-hero">
+  <div class="rs-id">
+    <span class="rs-avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span>
+    <div><span class="rs-kicker">My results</span><h1>{{ user.get_full_name|default:user.email|title }}</h1>
+    <p>{{ overview.total }} test{{ overview.total|pluralize }}{% if overview.since %} since {{ overview.since|date:"j M Y" }}{% endif %}</p></div>
+  </div>
+  <div class="rs-figs">
+    <div class="rs-best"><span>Best</span><strong>{{ overview.best|default_if_none:"—" }}<small>/75</small></strong>{% if overview.best_level %}<em>{{ overview.best_level }}</em>{% endif %}</div>
+    <div><span>Latest</span><strong>{% if overview.latest is not None %}{{ overview.latest }}<small>/75</small>{% else %}—{% endif %}</strong></div>
+    <div><span>Skills</span><strong>{{ overview.skills }}<small>/4</small></strong></div>
+    <div><span>AI analysed</span><strong>{{ overview.ai_analysed|default:"0" }}</strong></div>
+  </div>
+</section>
+
+<div class="chips rs-chips mt-2">
+  <a class="chip {% if not section %}active{% endif %}" href="?">All</a>
+  {% for v, l in sections %}<a class="chip {% if section == v %}active{% endif %}" href="?section={{ v }}">{% if v == 'speaking' %}🎤{% elif v == 'writing' %}✍️{% elif v == 'listening' %}🎧{% else %}📖{% endif %} {{ l }}</a>{% endfor %}
+  <a class="chip {% if section == 'full' %}active{% endif %}" href="?section=full">🎯 Full Mock</a>
+</div>
+
+{% if section == 'full' %}
+<h3 class="mt-3">🎯 Full mock results ({{ full_page.paginator.count }})</h3>
+{% for f in full_page %}
+<a class="result-card" href="{% if f.status == 'in_progress' %}{% url 'exams:full_progress' f.pk %}{% else %}{{ f.get_absolute_url }}{% endif %}" style="--c:#6366f1">
+  <div class="score-box">{% if f.score is not None %}<strong>{{ f.score|floatformat:0 }}</strong><small>/ 75</small><em>{{ f.cefr_level }}</em>{% else %}<strong style="font-size:1.1rem">—</strong><small>{{ f.get_status_display }}</small>{% endif %}</div>
+  <div class="grow"><div class="row" style="gap:6px"><span class="muted">{{ f.started_at|date:"j M Y, H:i" }}</span><span class="pill" style="background:#e0f2fe;color:#0369a1">CEFR</span><span class="pill" style="background:#eef2ff;color:#4338ca">Full mock</span>{% if f.status != 'completed' %}{% status_badge f.status f.get_status_display %}{% endif %}</div>
+  <div class="mt-1"><strong>{{ f.full_mock.title }}</strong>{% if f.details.sections %} <span class="muted">· L {{ f.details.sections.listening|floatformat:0 }} · R {{ f.details.sections.reading|floatformat:0 }} · W {{ f.details.sections.writing|floatformat:0 }} · S {{ f.details.sections.speaking|floatformat:0 }}</span>{% endif %}</div></div>
+  <span class="chev">{% include "partials/icon.html" with name="chevron" %}</span>
+</a>
+{% empty %}<div class="card empty">No full mock sittings yet — <a href="{% url 'exams:full_list' %}">start one</a>.</div>{% endfor %}
+{% include "partials/pagination.html" with page=full_page %}
+{% else %}
+<div class="card mt-2">
+  <div class="row-between"><h3 class="mb-0">📈 Score progression</h3><span class="rs-guides"><i></i>B1 38 <i></i>B2 51 <i></i>C1 65</span></div>
+  {% if bars %}
+  <div class="prog rs-prog" role="img" aria-label="Scores of your last attempts">
+    {% for b in bars %}<a href="{{ b.url }}" title="{{ b.section }} · {{ b.score }}/75 · {{ b.date|date:'j M H:i' }}">{{ b.score }}<span style="height:{{ b.pct }}%;background:{{ b.color }}"></span></a>{% endfor %}
+  </div>
+  <div class="prog-dates">{% for b in bars %}<small>{{ b.date|date:"j/n" }}</small>{% endfor %}</div>
+  <div class="row-between mt-2"><div class="legend">{% for label, color in legend %}<span><i style="background:{{ color }}"></i>{{ label }}</span>{% endfor %}</div><span class="small muted">last {{ bars|length }} scored attempt{{ bars|length|pluralize }}</span></div>
+  {% else %}<p class="muted mb-0">No scored attempts yet{% if section %} in this section{% endif %}.</p>{% endif %}
+</div>
+
+<div class="row-between mt-3"><h3 class="mb-0">🗂️ All results <span class="muted">({{ page.paginator.count }})</span></h3><a class="btn btn-sm" href="{% url 'exams:hub' %}">Take a mock →</a></div>
+{% regroup page by day as days %}
+<div class="rs-timeline">
+{% for d in days %}
+  <div class="rs-day"><span>{% if d.grouper == today %}Today{% elif d.grouper == yesterday %}Yesterday{% else %}{{ d.grouper|date:"l, j F" }}{% endif %}</span></div>
+  {% for a in d.list %}
+  <a class="rs-item" href="{{ a.get_absolute_url }}" style="--c: {{ a.meta.color }}">
+    <span class="rs-dot" aria-hidden="true">{% include "partials/icon.html" with name=a.meta.icon size=16 %}</span>
+    <div class="rs-score {% if a.score75 is None and not a.raw %}none{% endif %}" style="--pct:{{ a.pct }}">
+      <div>{% if a.score75 is not None %}<strong>{{ a.score75|floatformat:0 }}</strong><small>{{ a.level }}</small>{% elif a.raw %}<strong class="rs-raw">{{ a.raw }}</strong><small>correct</small>{% else %}<strong>—</strong>{% endif %}</div>
+    </div>
+    <div class="rs-body">
+      <div class="rs-title">{{ a.exam.title }}{% if a.parts_text %} <span class="muted">· {{ a.parts_text }}</span>{% endif %}</div>
+      <div class="rs-tags">
+        <span class="rs-sec">{{ a.exam.get_section_display }}</span>
+        {% if a.practice %}<span class="rs-tag rs-practice">Practice · {{ a.practice_label }}</span>{% else %}<span class="rs-tag">Full test</span>{% endif %}
+        {% if a.status != 'completed' %}{% status_badge a.status a.get_status_display %}{% endif %}
+        <span class="rs-time">{{ a.started_at|date:"H:i" }}</span>
+      </div>
+    </div>
+    <span class="chev">{% include "partials/icon.html" with name="chevron" %}</span>
+  </a>
+  {% endfor %}
+{% empty %}<div class="card empty">No results yet — <a href="{% url 'exams:hub' %}">take your first mock</a>.</div>
+{% endfor %}
+</div>
+{% include "partials/pagination.html" %}
+{% endif %}
+{% endblock %}

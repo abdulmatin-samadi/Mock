@@ -1,0 +1,28 @@
+{% extends "portal_base.html" %}{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Settings</h1><p>Configuration comes from environment variables (<code>.env</code>). API keys are never shown.</p></div></div>
+<div class="grid grid-2">
+  <div class="card"><h3>AI evaluation</h3>
+    {% if ai.errors %}{% for e in ai.errors %}<div class="alert alert-error small">{{ e }}</div>{% endfor %}{% else %}<div class="alert alert-success small">AI and speech-to-text providers are configured.</div>{% endif %}
+    <dl class="identity">
+      <div><dt>AI_PROVIDER</dt><dd>{{ ai.provider }}</dd></div><div><dt>Model</dt><dd>{{ ai.model }}</dd></div>
+      <div><dt>AI_API_KEY</dt><dd>{% if ai.api_key_set %}✓ set{% else %}✗ missing{% endif %}</dd></div>
+      <div><dt>STT_PROVIDER</dt><dd>{{ ai.stt_provider }} ({{ ai.stt_model }})</dd></div>
+      <div><dt>STT key</dt><dd>{% if ai.stt_key_set %}✓ set{% else %}✗ missing{% endif %}</dd></div>
+      <div><dt>Job mode</dt><dd>{{ ai.task_mode }}</dd></div>
+      <div><dt>Pronunciation</dt><dd>{% if ai.pronunciation_supported %}Assessed from audio{% else %}Not assessed (transcript-only provider){% endif %}</dd></div>
+    </dl>
+  </div>
+  <div class="card"><h3>AI queue</h3>
+    <p>Pending: <strong>{{ pending.writing }}</strong> writing, <strong>{{ pending.speaking }}</strong> speaking.<br>Failed: <strong>{{ pending.writing_failed }}</strong> writing, <strong>{{ pending.speaking_failed }}</strong> speaking.</p>
+    <form method="post">{% csrf_token %}<input type="hidden" name="action" value="process_queue"><button class="btn">Process pending items now</button></form>
+    <p class="small muted mt-1">Failed items can be retried from each submission page, or with <code>python manage.py process_ai_queue --retry-failed</code>.</p>
+  </div>
+  <div class="card"><h3>Uploads &amp; storage</h3>
+    <dl class="identity">{% for k, v in limits.items %}<div><dt>{{ k }}</dt><dd>{{ v }} MB</dd></div>{% endfor %}
+    <div><dt>Storage</dt><dd>{% if use_s3 %}S3-compatible{% else %}Local disk{% endif %}</dd></div></dl>
+  </div>
+  <div class="card"><h3>Exams</h3><dl class="identity"><div><dt>Submit grace period</dt><dd>{{ grace }} s</dd></div><div><dt>DEBUG</dt><dd>{{ debug }}</dd></div></dl>
+  <p class="small muted mb-0">Advanced data is also available in <a href="/django-admin/">Django admin</a> (read-only for scores).</p></div>
+</div>
+{% endblock %}

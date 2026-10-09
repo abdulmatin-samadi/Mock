@@ -1,0 +1,59 @@
+{% extends "base.html" %}{% load static %}
+{% block body_class %}auth-body{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block full %}
+<div class="auth-split">
+  <aside class="auth-hero" aria-hidden="true">
+    <div class="ah-rings"><span></span><span></span><span></span></div>
+    <a class="ah-brand" href="{% url 'core:home' %}" tabindex="-1">
+      <img src="{% static 'img/logo-512.png' %}" alt="" width="52" height="52">
+      <span>{{ SITE_NAME }}<small>MULTILEVEL · CEFR</small></span>
+    </a>
+    <div class="ah-body">
+      <h2>Reach your <span>dream</span> level.</h2>
+      <p>Real Multilevel (CEFR) mock exams with instant AI feedback on your Writing and Speaking.</p>
+      <ul class="ah-skills">
+        <li><span class="ah-dot" style="--c:#3b82f6"></span>Listening</li>
+        <li><span class="ah-dot" style="--c:#f59e0b"></span>Reading</li>
+        <li><span class="ah-dot" style="--c:#8b5cf6"></span>Writing</li>
+        <li><span class="ah-dot" style="--c:#10b981"></span>Speaking</li>
+      </ul>
+      <ul class="ah-points">
+        <li><b>0–75</b> score with CEFR level — B1, B2, C1</li>
+        <li><b>Full mock</b> or practise one part at a time</li>
+        <li><b>AI feedback</b> on every essay and answer</li>
+      </ul>
+    </div>
+    <p class="ah-foot">© {% now "Y" %} {{ SITE_NAME }}</p>
+  </aside>
+
+  <section class="auth-main">
+    <a class="am-brand" href="{% url 'core:home' %}"><img src="{% static 'img/logo.png' %}" alt="" width="40" height="40"><span>{{ SITE_NAME }}</span></a>
+    <div class="auth-panel">
+      {% include "partials/messages.html" %}
+      {% block auth %}{% endblock %}
+    </div>
+    <a class="am-home" href="{% url 'core:home' %}">← Back to home</a>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.querySelectorAll(".auth-panel input[type=password]").forEach((input) => {
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "pw-toggle"; btn.textContent = "Show";
+    btn.setAttribute("aria-label", "Show password");
+    const wrap = document.createElement("span");
+    wrap.className = "pw-wrap";
+    input.parentNode.insertBefore(wrap, input);
+    wrap.append(input, btn);
+    btn.addEventListener("click", () => {
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.textContent = show ? "Hide" : "Show";
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    });
+  });
+</script>
+{% endblock %}

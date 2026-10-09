@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% load static core_tags %}{% block title %}Result · {{ exam.title }}{% endblock %}
+{% block content %}
+{% include "results/_header.html" %}
+{% for sub in submissions %}<div class="card mb-2">{% include "results/_writing_eval.html" with ev=sub.evaluation %}</div>{% empty %}<div class="card empty">No essays submitted.</div>{% endfor %}
+{% endblock %}
+{% block scripts %}<script src="{% vstatic 'js/misc.js' %}"></script>{% endblock %}

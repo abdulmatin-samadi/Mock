@@ -1,0 +1,63 @@
+{% load static core_tags %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %} · Admin · {{ SITE_NAME }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% vstatic 'css/app.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  <meta name="theme-color" content="#0197f8">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="portal">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{% url 'core:home' %}"><img class="brand-mark" src="{% static 'img/logo.png' %}" alt="" width="36" height="36"><span>{{ SITE_NAME }}<small>ADMIN DASHBOARD</small></span></a>
+    {% with p=request.path %}
+    <nav aria-label="Portal">
+      <a href="{% url 'admin_dashboard:home' %}" class="{% if p == '/admin-dashboard/' %}active{% endif %}"><span class="tile t-indigo">{% include "partials/icon.html" with name="grid" size=18 %}</span>Dashboard</a>
+      <div class="group">People</div>
+      <a href="{% url 'admin_dashboard:users' %}" class="{% if '/admin-dashboard/users' in p %}active{% endif %}"><span class="tile t-sky">{% include "partials/icon.html" with name="users" size=18 %}</span>Users</a>
+      <div class="group">Mock exams</div>
+      <a href="{% url 'admin_dashboard:mocks' 'reading' %}" class="{% if p == '/admin-dashboard/mocks/section/reading/' %}active{% endif %}"><span class="tile t-amber">{% include "partials/icon.html" with name="book" size=18 %}</span>Reading Mocks</a>
+      <a href="{% url 'admin_dashboard:mocks' 'listening' %}" class="{% if p == '/admin-dashboard/mocks/section/listening/' %}active{% endif %}"><span class="tile t-sky">{% include "partials/icon.html" with name="headphones" size=18 %}</span>Listening Mocks</a>
+      <a href="{% url 'admin_dashboard:mocks' 'writing' %}" class="{% if p == '/admin-dashboard/mocks/section/writing/' %}active{% endif %}"><span class="tile t-violet">{% include "partials/icon.html" with name="pen" size=18 %}</span>Writing Mocks</a>
+      <a href="{% url 'admin_dashboard:mocks' 'speaking' %}" class="{% if p == '/admin-dashboard/mocks/section/speaking/' %}active{% endif %}"><span class="tile t-green">{% include "partials/icon.html" with name="mic" size=18 %}</span>Speaking Mocks</a>
+      <a href="{% url 'admin_dashboard:full_mocks' %}" class="{% if '/admin-dashboard/full-mocks' in p %}active{% endif %}"><span class="tile t-gold">{% include "partials/icon.html" with name="target" size=18 %}</span>Full Mocks</a>
+      <div class="group">Submissions</div>
+      <a href="{% url 'admin_dashboard:writing' %}" class="{% if '/admin-dashboard/writing' in p %}active{% endif %}"><span class="tile t-purple">{% include "partials/icon.html" with name="file" size=18 %}</span>Writing Submissions</a>
+      <a href="{% url 'admin_dashboard:speaking' %}" class="{% if '/admin-dashboard/speaking' in p %}active{% endif %}"><span class="tile t-teal">{% include "partials/icon.html" with name="mic" size=18 %}</span>Speaking Recordings</a>
+      <a href="{% url 'admin_dashboard:results' %}" class="{% if '/admin-dashboard/results' in p %}active{% endif %}"><span class="tile t-slate">{% include "partials/icon.html" with name="flag" size=18 %}</span>Results</a>
+      <div class="group">System</div>
+      <a href="{% url 'admin_dashboard:settings' %}" class="{% if '/admin-dashboard/settings' in p %}active{% endif %}"><span class="tile t-slate">{% include "partials/icon.html" with name="settings" size=18 %}</span>Settings</a>
+    </nav>
+    {% endwith %}
+  </aside>
+  <div class="portal-main">
+    <div class="portal-top">
+      <button class="btn btn-sm btn-secondary sidebar-toggle" data-toggle="#sidebar" aria-label="Open menu">☰</button>
+      <div class="small muted">{% block crumbs %}{% endblock %}</div>
+      <div class="dropdown">
+        <button aria-haspopup="true"><span class="small">{{ user.get_full_name }}</span><span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span></button>
+        <div class="dropdown-menu">
+          <a href="{% url 'core:home' %}">View site</a>
+          <a href="{% url 'accounts:profile' %}">Profile</a>
+          <a href="{% url 'accounts:password_change' %}">Change password</a>
+          <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link" type="submit">Log out</button></form>
+        </div>
+      </div>
+    </div>
+    <div class="portal-content" id="main">
+      {% include "partials/messages.html" %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+<script src="{% vstatic 'js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+{% if request.GET.quick_saved %}<script src="{% vstatic 'js/quick.js' %}"></script>{% endif %}
+</body>
+</html>
