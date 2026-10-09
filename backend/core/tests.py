@@ -1143,3 +1143,20 @@ class MapRequiredTests(BaseTest):
         c.post(f"/admin-dashboard/parts/{part4.pk}/quick/", {**body, "action": "save"})
         self.assertEqual(part4.questions.count(), 2)
         self.assertTrue(any("upload the map picture" in p for p in validate_publishable(exam)))
+
+
+class QuickEntryLetterAnswerTests(TestCase):
+    def test_letter_f_is_an_option_in_matching_parts_not_false(self):
+        from admin_dashboard.quick import parse_part
+        from exams.models import ExamPart
+
+        text = "7. Emma is organised. = F\n8. John is creative. = B\nTOPIC: JOB ADVERTISEMENTS\nA. one\nB. two\nF. six"
+        items, errors = parse_part(text, ExamPart(cefr_part="R2"))
+        self.assertEqual(errors, [])
+        self.assertEqual([(i.qtype, i.answer) for i in items], [("matching", "F"), ("matching", "B")])
+        items, errors = parse_part("List of headings\nA. x\nF. y\n15. Paragraph 1 = F", ExamPart(cefr_part="R3"))
+        self.assertEqual((errors, items[0].qtype, items[0].answer), ([], "headings", "F"))
+        items, errors = parse_part("23. The sky is green. = F", ExamPart(cefr_part="R4"))
+        self.assertEqual((errors, items[0].answer), ([], "FALSE"))
+        _, errors = parse_part("7. Emma = F", ExamPart(cefr_part="R2"))
+        self.assertIn("the list of options is missing", errors[0])

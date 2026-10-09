@@ -24,6 +24,8 @@ from exams.models import Option, Question, SpeakingQuestion, WritingTask
 TFNG = Question.FIXED_CHOICES[Question.Type.TFNG]
 Q_RE = re.compile(r"^\s*(\d{1,3})\s*[.)]\s*(.*)$")
 OPT_RE = re.compile(r"^\s*(\*)?\s*([A-Za-z]|[ivxIVX]{1,5})\s*[).]\s*(.*)$")
+# headings that introduce the list of options in printed papers
+LIST_HEAD_RE = re.compile(r"^\s*(list of headings|headings|list of (statements|people|places|options)|topic\b.*)\s*:?.*$", re.I)
 OPTIONS_RE = re.compile(r"^\s*(options|variantlar)\s*:?\s*(.*)$", re.I)
 RANGE_RE = re.compile(r"^([A-Za-z])\s*[-–]\s*([A-Za-z])$")
 # "1   A) Please." — question number and its first option on one line (Listening Part 1 papers)
@@ -57,12 +59,20 @@ def _is_roman(label):
 
 def parse_part(text, part):
     """Turn pasted text into question items for `part`. Returns (items, errors)."""
+    preset = cefr.PARTS.get(part.cefr_part or "")
+    allowed = preset["types"] if preset else None
+    # matching / headings / map parts: every lettered line belongs to the shared list of options
+    label_only = bool(allowed) and all(t in Question.LABEL_TYPES for t in allowed)
     items, errors, blocks = [], [], []
     current, in_shared = None, False
     key, in_key = {}, False
     for n, raw in enumerate((text or "").splitlines(), start=1):
         line = raw.rstrip()
         if not line.strip():
+            continue
+        if label_only and LIST_HEAD_RE.match(line) and not Q_RE.match(line):
+            in_shared, current = True, None
+            blocks.append([])
             continue
         m = OPTIONS_RE.match(line)
         if m:
@@ -101,6 +111,9 @@ def parse_part(text, part):
             items.append(current)
             continue
         m = OPT_RE.match(line)
+        if m and label_only and not in_shared:
+            in_shared, current = True, None  # an option list written without the word OPTIONS
+            blocks.append([])
         if m and (in_shared or current is not None):
             label = m.group(2)
             # lowercase roman numerals (i, ii, iv …) are heading labels; everything else is a capital letter
@@ -124,8 +137,6 @@ def parse_part(text, part):
         else:
             errors.append(f"Line {n}: “{line.strip()[:60]}” is not a question. Start questions with a number, e.g. “1. …”.")
 
-    preset = cefr.PARTS.get(part.cefr_part or "")
-    allowed = preset["types"] if preset else None
     for it in items:
         k = key.get(it.number)
         if k and not it.answer and not any(ok for _, _, ok in it.options):
@@ -159,9 +170,13 @@ def parse_part(text, part):
                 it.qtype = Question.Type.MATCHING
             it.options = list(shared)
             it.answer = next(l for l, _, _ in shared if l.upper() == ans_upper)
-        elif Question.canonical_choice(ans_upper) in TFNG:
+        elif Question.canonical_choice(ans_upper) in TFNG and (not allowed or Question.Type.TFNG in allowed):
             it.qtype = Question.Type.TFNG
             it.answer = Question.canonical_choice(ans_upper)
+        elif label_only and not shared:
+            it.qtype = allowed[0]
+            errors.append(f"Question {it.number}: the list of options is missing. Write it before the questions, "
+                          f"one per line: “A) …”, “B) …” (or under the word OPTIONS).")
         elif shared and allowed and Question.Type.GAP_FILLING not in allowed:
             # matching / headings / map part, but the answer is missing or not a label
             it.qtype = next(t for t in allowed if t in Question.LABEL_TYPES)
