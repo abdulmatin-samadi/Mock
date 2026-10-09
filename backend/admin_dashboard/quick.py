@@ -58,7 +58,7 @@ class Item:
 
 
 INLINE_OPT_SPLIT = re.compile(r"(?<=\S)\s+(?=\*?[A-D]\)\s)")
-MULTI_Q_SPLIT = re.compile(r"(?:\t|\s{2,})(?=\d{1,3}\.\s)")
+MULTI_Q_SPLIT = re.compile(r"(?:\t|\s{2,})(?=\d{1,3}\.\s)|(?<=\S)\s*\t(?=[A-J]\t)")  # also "… \tA\ta musician"
 KEY_WORD_RE = re.compile(r"(\d{1,3})\s*[-–.:)=]\s*([^,;]+?)(?=\s+\d{1,3}\s*[-–.:)=]|\s*[,;]|\s*$)")
 TFNG_TEXTS = {"TRUE", "FALSE", "NO INFORMATION", "NOT GIVEN"}
 
