@@ -1109,3 +1109,21 @@ class GuestTrialTests(BaseTest):
         r = Client().post(f"/exams/{self.reading.pk}/start/")
         self.assertTrue(r["Location"].startswith("/accounts/register/"))
         self.assertEqual(User.objects.filter(is_guest=True).count(), 5)
+
+
+class QuickEntryPaperFormatTests(TestCase):
+    def test_listening_part1_as_printed_with_answer_key(self):
+        from admin_dashboard.quick import parse_part
+        from exams.models import ExamPart
+
+        text = ("The listening paper is consist of six parts. Each recording will be played twice.\n"
+                "Part 1\n"
+                "1 \tA)\tPlease.\nB)\tYou are welcome.\nC)\tThat's all right.\n"
+                "2 \tA)\tOh, have you?\nB)\tOh, don't they?\nC)\tOh, can they?\n"
+                "ANSWERS: 1-C 2-A\n")
+        items, errors = parse_part(text, ExamPart(cefr_part="L1"))
+        self.assertEqual(errors, [])
+        self.assertEqual([i.qtype for i in items], ["multiple_choice"] * 2)
+        self.assertEqual(items[0].prompt, "Choose the correct answer.")
+        self.assertEqual([o[1] for o in items[0].options], ["Please.", "You are welcome.", "That's all right."])
+        self.assertEqual([[l for l, _, ok in i.options if ok] for i in items], [["C"], ["A"]])

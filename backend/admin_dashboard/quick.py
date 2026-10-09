@@ -26,6 +26,12 @@ Q_RE = re.compile(r"^\s*(\d{1,3})\s*[.)]\s*(.*)$")
 OPT_RE = re.compile(r"^\s*(\*)?\s*([A-Za-z]|[ivxIVX]{1,5})\s*[).]\s*(.*)$")
 OPTIONS_RE = re.compile(r"^\s*(options|variantlar)\s*:?\s*(.*)$", re.I)
 RANGE_RE = re.compile(r"^([A-Za-z])\s*[-–]\s*([A-Za-z])$")
+# "1   A) Please." — question number and its first option on one line (Listening Part 1 papers)
+INLINE_Q_RE = re.compile(r"^\s*(\d{1,3})\s+(\*?\s*[A-Za-z]\s*[).]\s.*)$")
+# Answer key written after the questions: "ANSWERS: 1-B 2-A 3 C" (also "KEYS" / "JAVOBLAR")
+KEY_HEAD_RE = re.compile(r"^\s*(answers?|answer key|keys?|javoblar|kalit)\s*:?\s*(.*)$", re.I)
+KEY_PAIR_RE = re.compile(r"(\d{1,3})\s*[-–.:)=]?\s*(NOT GIVEN|NO INFORMATION|TRUE|FALSE|NG|NI|[ivx]{2,5}|[A-Za-z])(?![A-Za-z])", re.I)
+PART_HEAD_RE = re.compile(r"^\s*part\s*\d+(\.\d+)?\s*[:.]?\s*$", re.I)
 ANSWER_SPLIT = re.compile(r"\s+=\s*(?=[^=]*$)")
 
 
@@ -53,6 +59,7 @@ def parse_part(text, part):
     """Turn pasted text into question items for `part`. Returns (items, errors)."""
     items, errors, blocks = [], [], []
     current, in_shared = None, False
+    key, in_key = {}, False
     for n, raw in enumerate((text or "").splitlines(), start=1):
         line = raw.rstrip()
         if not line.strip():
@@ -68,7 +75,21 @@ def parse_part(text, part):
             else:
                 blocks.append([(tok.upper(), "", False) for tok in re.split(r"[\s,]+", rest) if tok])
             continue
-        m = Q_RE.match(line)
+        if PART_HEAD_RE.match(line):
+            continue
+        m = KEY_HEAD_RE.match(line)
+        if m or in_key:
+            in_key = True
+            for num, ans in KEY_PAIR_RE.findall(m.group(2) if m else line):
+                key[int(num)] = ans
+            continue
+        m = INLINE_Q_RE.match(line)
+        if m:
+            in_shared = False
+            current = Item(number=int(m.group(1)), prompt="", line=n, block=len(blocks) - 1)
+            items.append(current)
+            line = m.group(2)  # handled below as the question's first option
+        m = None if current is not None and current.line == n else Q_RE.match(line)
         if m:
             in_shared = False
             body = m.group(2).strip()
@@ -98,11 +119,17 @@ def parse_part(text, part):
             current.options[-1] = (label, f"{text_} {line.strip()}".strip(), ok)
         elif current is not None:
             current.prompt = f"{current.prompt} {line.strip()}".strip()
+        elif not items and not blocks:
+            continue  # instructions written before the first question (e.g. "Each recording is played twice")
         else:
             errors.append(f"Line {n}: “{line.strip()[:60]}” is not a question. Start questions with a number, e.g. “1. …”.")
 
     preset = cefr.PARTS.get(part.cefr_part or "")
     allowed = preset["types"] if preset else None
+    for it in items:
+        k = key.get(it.number)
+        if k and not it.answer and not any(ok for _, _, ok in it.options):
+            it.answer = k if re.fullmatch(r"[ivx]+", k) else k.upper()
     seen = set()
     for it in items:
         shared = blocks[max(it.block, 0)] if blocks else []
@@ -156,6 +183,8 @@ def parse_part(text, part):
                 errors.append(f"Question {it.number}: answer “{it.answer}” is not one of the OPTIONS labels.")
         if not it.prompt or re.fullmatch(r"[_\s.…]*", it.prompt):
             it.prompt = f"Gap {it.number}" if it.qtype == Question.Type.GAP_FILLING else it.prompt
+        if not it.prompt and it.qtype == Question.Type.MULTIPLE_CHOICE:
+            it.prompt = "Choose the correct answer."  # e.g. Listening Part 1: the question is only in the audio
         if not it.prompt:
             errors.append(f"Question {it.number}: the question text is empty.")
         if allowed and it.qtype not in allowed:
