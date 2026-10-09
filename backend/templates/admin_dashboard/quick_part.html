@@ -42,6 +42,7 @@
       {% else %}
         <h3>✅ {{ items|length }} question{{ items|length|pluralize }} ready</h3>
         <p class="muted small">Looks right? Press <b>Save part</b>.</p>
+        {% if needs_map %}<div class="alert alert-error small">🗺 <b>Don't forget the map:</b> choose the map picture in <b>Map / picture</b> below before saving. Without it the mock can't be published.</div>{% endif %}
         {% if missing %}<div class="alert alert-warning small">Gap{{ missing|length|pluralize }} {{ missing|join:", " }} {{ missing|length|pluralize:"is,are" }} not marked in the text, so {{ missing|length|pluralize:"it,they" }} will appear as separate answer boxes under the text. To show {{ missing|length|pluralize:"it,them" }} inside the text, write <code>{{ missing.0 }}. ______</code> at the right place.</div>{% endif %}
       {% endif %}
       {% if items %}

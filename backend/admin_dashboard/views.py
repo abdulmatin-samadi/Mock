@@ -626,11 +626,13 @@ def quick_part(request, pk):
     passage = request.POST.get("passage", part.passage) if request.method == "POST" else part.passage
     text = request.POST.get("questions", "") if request.method == "POST" else quick.serialize_part(part)
     items, errors = ([], [])
-    missing = []
+    missing, needs_map = [], False
     if request.method == "POST":
         items, errors = quick.parse_part(text, part)
         passage = quick.normalize_gaps(passage, {it.number for it in items if it.qtype == "gap_filling"})
         missing = quick.missing_gaps(passage, items) if passage.strip() else []
+        needs_map = (any(it.qtype == "map_labelling" for it in items) and not part.image
+                     and not request.FILES.get("image"))
         if request.POST.get("action") == "save" and not errors:
             if locked:
                 messages.error(request, "Students have already answered this part. Duplicate the mock to change it.")
@@ -653,7 +655,7 @@ def quick_part(request, pk):
     preset = cefr.PARTS.get(part.cefr_part or "")
     return _quick_render(request, "admin_dashboard/quick_part.html", {
         "part": part, "exam": exam, "preset": preset, "passage": passage, "text": text, "items": items,
-        "errors": errors, "locked": locked, "previewed": request.method == "POST", "missing": missing,
+        "errors": errors, "locked": locked, "previewed": request.method == "POST", "missing": missing, "needs_map": needs_map,
         "type_labels": {"gap_filling": "Gap filling", "multiple_choice": "Multiple choice",
                         "true_false_not_given": "True / False / NG", "matching": "Matching",
                         "headings": "Headings", "map_labelling": "Map"},

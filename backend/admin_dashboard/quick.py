@@ -195,7 +195,8 @@ def parse_part(text, part):
     return items, errors
 
 
-GAP_ANY_RE = re.compile(r"(?<![\w(])\(?(\d{1,3})\)?\s*[.)]?\s*_{2,}")
+# a gap: number + a line of underscores, dots or "…" ("9. ______", "(9) ……………", "30 ........")
+GAP_ANY_RE = re.compile(r"(?<![\w(])\(?(\d{1,3})\)?\s*[.)]?\s*(?:_{2,}|…{2,}|\.{4,})[_….]*")
 
 
 def normalize_gaps(passage, numbers):

@@ -1127,3 +1127,19 @@ class QuickEntryPaperFormatTests(TestCase):
         self.assertEqual(items[0].prompt, "Choose the correct answer.")
         self.assertEqual([o[1] for o in items[0].options], ["Please.", "You are welcome.", "That's all right."])
         self.assertEqual([[l for l, _, ok in i.options if ok] for i in items], [["C"], ["A"]])
+
+
+class MapRequiredTests(BaseTest):
+    def test_map_questions_need_a_map_picture(self):
+        from exams.services import validate_publishable
+
+        c = self.web(self.admin)
+        c.post("/admin-dashboard/mocks/section/listening/new/", {"title": "L map", "time_limit": 35, "cefr_layout": "on"})
+        exam = MockExam.objects.get(title="L map")
+        part4 = exam.parts.get(cefr_part="L4")
+        body = {"passage": "", "questions": "OPTIONS: A-H\n19. Quiet reading\n20. Computers\nANSWERS: 19-A 20-B"}
+        preview = c.post(f"/admin-dashboard/parts/{part4.pk}/quick/", {**body, "action": "preview"}).content.decode()
+        self.assertIn("Don't forget the map", preview)
+        c.post(f"/admin-dashboard/parts/{part4.pk}/quick/", {**body, "action": "save"})
+        self.assertEqual(part4.questions.count(), 2)
+        self.assertTrue(any("upload the map picture" in p for p in validate_publishable(exam)))

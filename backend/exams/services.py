@@ -29,6 +29,8 @@ def validate_publishable(exam):
                 problems.append(f"Question {q.order}: set the correct answer.")
         if exam.section == "listening" and not exam.audio and not exam.parts.exclude(audio="").exists():
             problems.append("Upload the listening audio.")
+        for part in exam.parts.filter(image="", questions__question_type=Question.Type.MAP_LABELLING).distinct():
+            problems.append(f"{part.title}: upload the map picture for the map labelling questions.")
     elif exam.section == "writing":
         if not exam.writing_tasks.filter(is_published=True).exists():
             problems.append("Add at least one published writing task.")
