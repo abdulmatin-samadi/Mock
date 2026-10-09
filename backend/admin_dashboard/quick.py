@@ -24,6 +24,8 @@ from exams.models import Option, Question, SpeakingQuestion, WritingTask
 TFNG = Question.FIXED_CHOICES[Question.Type.TFNG]
 Q_RE = re.compile(r"^\s*(\d{1,3})\s*[.)]\s*(.*)$")
 OPT_RE = re.compile(r"^\s*(\*)?\s*([A-Za-z]|[ivxIVX]{1,5})\s*[).]\s*(.*)$")
+# PDF copies often lose the dot: "A<tab>THE ACE HOTEL" or "A    THE ACE HOTEL"
+OPT_TAB_RE = re.compile(r"^\s*(\*)?\s*([A-J])(?:\t|\s{2,})\s*(\S.*)$")
 # headings that introduce the list of options in printed papers
 LIST_HEAD_RE = re.compile(r"^\s*(list of headings|headings|list of (statements|people|places|options)|topic\b.*)\s*:?.*$", re.I)
 OPTIONS_RE = re.compile(r"^\s*(options|variantlar)\s*:?\s*(.*)$", re.I)
@@ -147,7 +149,7 @@ def parse_part(text, part):
             current = Item(number=int(m.group(1)), prompt=prompt, answer=answer, line=n, block=len(blocks) - 1)
             items.append(current)
             continue
-        m = OPT_RE.match(line)
+        m = OPT_RE.match(line) or OPT_TAB_RE.match(line)
         if m and label_only and not in_shared:
             in_shared, current = True, None  # an option list written without the word OPTIONS
             blocks.append([])
@@ -262,6 +264,24 @@ def parse_part(text, part):
 
 # a gap: number + a line of underscores, dots or "…" ("9. ______", "(9) ……………", "30 ........")
 GAP_ANY_RE = re.compile(r"(?<![\w(])\(?(\d{1,3})\)?\s*[.)]?\s*(?:_{2,}|…{2,}|\.{4,})[_….]*")
+
+
+def pull_options(passage):
+    """Lettered option blocks ("A. THE ACE HOTEL" + its short lines) written in the text box of a
+    matching part → (text without them, options text). Long paragraphs stay in the text."""
+    keep, opts, in_opt = [], [], False
+    for line in (passage or "").splitlines():
+        s = line.strip()
+        m = (OPT_RE.match(s) or OPT_TAB_RE.match(s)) if s else None
+        if m and len(s.split()) < 30 and not re.fullmatch(r"[ivx]+", m.group(2), re.I):
+            opts.append(f"{m.group(2).upper()}) {m.group(3).strip()}")
+            in_opt = True
+        elif in_opt and s and len(s.split()) < 30:
+            opts.append(s)  # "Boutique hotel", "Pool, bar …" belong to the option above
+        else:
+            in_opt = False
+            keep.append(line)
+    return "\n".join(keep).strip(), "\n".join(opts)
 
 
 def normalize_gaps(passage, numbers):

@@ -629,8 +629,15 @@ def quick_part(request, pk):
             else imported if imported is not None else quick.serialize_part(part))
     items, errors = ([], [])
     missing, needs_map = [], False
+    moved = ""
     if request.method == "POST":
         items, errors = quick.parse_part(text, part)
+        if any("list of options is missing" in e for e in errors):
+            rest, opts = quick.pull_options(passage)  # options pasted into the text box
+            if opts:
+                items, errors = quick.parse_part("OPTIONS\n" + opts + "\n\n" + text, part)
+                passage, text = rest, "OPTIONS\n" + opts + "\n\n" + text
+                moved = "The lettered list was moved from the text box to the questions box as OPTIONS."
         passage = quick.normalize_gaps(passage, {it.number for it in items if it.qtype == "gap_filling"})
         missing = quick.missing_gaps(passage, items) if passage.strip() else []
         needs_map = (any(it.qtype == "map_labelling" for it in items) and not part.image
@@ -658,7 +665,7 @@ def quick_part(request, pk):
     return _quick_render(request, "admin_dashboard/quick_part.html", {
         "part": part, "exam": exam, "preset": preset, "passage": passage, "text": text, "items": items,
         "errors": errors, "locked": locked, "previewed": request.method == "POST", "missing": missing, "needs_map": needs_map,
-        "imported": imported is not None,
+        "imported": imported is not None, "moved": moved,
         "type_labels": {"gap_filling": "Gap filling", "multiple_choice": "Multiple choice",
                         "true_false_not_given": "True / False / NG", "matching": "Matching",
                         "headings": "Headings", "map_labelling": "Map"},

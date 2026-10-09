@@ -1218,3 +1218,21 @@ class WholeMockImportTests(BaseTest):
         self.assertTrue(parts["R3"].passage.startswith("1. The overriding idea"))
         self.assertIn("David Beckham", parts["R4"].passage)
         self.assertNotIn("For questions", parts["R4"].passage)
+
+
+class MatchingOptionsInTextBoxTests(BaseTest):
+    def test_options_pasted_into_text_box_are_moved(self):
+        c = self.web(self.admin)
+        c.post("/admin-dashboard/mocks/section/reading/new/", {"title": "R opts", "time_limit": 60, "cefr_layout": "on"})
+        part2 = MockExam.objects.get(title="R opts").parts.get(cefr_part="R2")
+        r = c.post(f"/admin-dashboard/parts/{part2.pk}/quick/", {
+            "action": "save",
+            "passage": "A. THE ACE HOTEL\nBoutique hotel\nC\tTHE HYATT REGENCY\nUpscale hotel\nE.  THE FOUR SEASONS",
+            "questions": "7. This expensive hotel is perfect for a romantic holiday. = E\n8. A budget hotel. = A"})
+        self.assertEqual(r.status_code, 302)
+        q7 = part2.questions.get(order=7)
+        self.assertEqual((q7.question_type, q7.correct_answer), ("matching", "E"))
+        self.assertEqual([o.label for o in q7.options.all()], ["A", "C", "E"])
+        self.assertEqual(q7.options.get(label="A").text, "THE ACE HOTEL Boutique hotel")
+        part2.refresh_from_db()
+        self.assertNotIn("ACE HOTEL", part2.passage)
