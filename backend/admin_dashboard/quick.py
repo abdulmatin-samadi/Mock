@@ -216,6 +216,14 @@ def parse_part(text, part):
             it.tfng = True
             if not it.answer:
                 errors.append(f"Question {it.number}: add the answer (TRUE, FALSE or NO INFORMATION).")
+    # the same question pasted twice (e.g. from a two-column layout) is simply kept once
+    unique, signatures = [], set()
+    for it in items:
+        sig = (it.number, it.prompt.strip().lower(), it.answer.strip().upper(), tuple(it.options))
+        if sig not in signatures:
+            signatures.add(sig)
+            unique.append(it)
+    items[:] = unique
     seen = set()
     for it in items:
         shared = blocks[max(it.block, 0)] if blocks else []
