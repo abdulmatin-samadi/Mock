@@ -647,6 +647,10 @@ def quick_part(request, pk):
             rest, opts = quick.pull_options(passage)  # options pasted into the text box
             if opts:
                 items, errors = quick.parse_part("OPTIONS\n" + opts + "\n\n" + text, part)
+                listed = {it.number for it in items}
+                # numbered sentences in the text box that are already questions would show twice
+                rest = "\n".join(l for l in rest.splitlines()
+                                 if not (quick.Q_RE.match(l) and int(quick.Q_RE.match(l).group(1)) in listed)).strip()
                 passage, text = rest, "OPTIONS\n" + opts + "\n\n" + text
                 moved = "The lettered list was moved from the text box to the questions box as OPTIONS."
         # numbers that restart (Part 2 written as 1–8) continue after the earlier parts (7–14)

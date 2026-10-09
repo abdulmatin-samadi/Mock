@@ -1278,3 +1278,24 @@ class QuickEntryWholePartInTextBoxTests(BaseTest):
         self.assertEqual(list(part2.questions.values_list("order", "question_type", "correct_answer")),
                          [(7, "matching", "E"), (8, "matching", "A")])
         self.assertEqual(part2.questions.get(order=7).options.count(), 3)
+
+
+
+class QuickEntryHotelsPart2Tests(BaseTest):
+    PASSAGE = 'A. THE ACE HOTEL\nBoutique hotel\nPool, bar, live music, coffee shop\nPrices start at 150$\nIdeal for travellers.\n\nB. THE HILTON\nHotel chains\nFree Wi-fi, breakfast, meeting rooms\nPrices vary depending on location.\nPerfect for Business trips!\n\nC. THE HYATT REGENCY\nUpscale hotel\nPool, fitness centre, multiple dining options\nPrices start at 200$\nIdeal for budget travellers.\n\nD. MANDARIN ORIENTAL\nLuxury hotel\nSkyline view, spa, restaurant\nPrices start at 600$\nIdeal for travellers!\n\nE. THE FOUR SEASONS\nHigh-end hotel\nGolf course, tennis courts, restaurants\nPrices start at 700$\nIdeal for luxurious holidays!\n\nF. THE W HOTEL\nUpscale hotel\nNightclub, poolside cabana, ocean views\nPrices start at 300$\nBest for Parties!\n\nG. THE FAIRMONT\nHistoric hotel\nElegant décor, world-class service and dining options.\nPrices start at 400$\nPerfect for classical luxury fans.\n\nH. THE RITZ-CARLTON\nLuxury Hotel.\nSpa, Dining restaurant, Rooftop bar\nPrices start at 500$\nPerfect for a romantic gateway\n\nI. THE HOLIDAY INN\nAffordable hotel\nFree wi-fi and breakfast and multiple options\nPrices vary depending on options.\nIdeal for budget travellers.\n\nJ. THE ALOFT\nModern hotel\nKeyless room entry, mobile check in, free wifi\nPrices start at 100$\nIdeal for millennial travellers.\n\n\n\n\n\n7.\tThis expensive hotel is perfect for spending a romantic holiday.  \n8.\tThis budget hotel is suitable for young people who are looking for a nice and fun experience.  \n9.\tThis expensive hotel is suitable for families who are looking for a luxurious vacation.  \n10.\tThis moderate hotel is suitable for young people who wants to party a lot.  \n11.\tThis expensive hotel is suitable for directors and managers who often has a meeting. \n12.\tThis expensive hotel is perfect for people who prefer to have a nice scene from their rooms. \n13.\tThis budget hotel is ideal for travelers who wants to have a comfort without breaking their bank. \n14.\tThis expensive hotel is suitable for people who wants to have classic services.\n'
+    QUESTIONS = '7. This expensive hotel is perfect for spending a romantic holiday. = H\n8. This budget hotel is suitable for young people who are looking for a nice and fun experience. = E\n9. This expensive hotel is suitable for families who are looking for a luxurious vacation. = C\n10. This moderate hotel is suitable for young people who wants to party a lot. = F\n11. This expensive hotel is suitable for directors and managers who often has a meeting. = B\n12. This expensive hotel is perfect for people who prefer to have a nice scene from their rooms. = D\n13. This budget hotel is ideal for travelers who wants to have a comfort without breaking their bank. = A\n14. This expensive hotel is suitable for people who wants to have classic services. = G\n'
+
+    def test_user_part2_hotels(self):
+        c = self.web(self.admin)
+        c.post("/admin-dashboard/mocks/section/reading/new/", {"title": "Hotels", "time_limit": 60, "cefr_layout": "on"})
+        part2 = MockExam.objects.get(title="Hotels").parts.get(cefr_part="R2")
+        r = c.post(f"/admin-dashboard/parts/{part2.pk}/quick/",
+                   {"action": "save", "passage": self.PASSAGE, "questions": self.QUESTIONS})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(list(part2.questions.values_list("order", "correct_answer")),
+                         [(7, "H"), (8, "E"), (9, "C"), (10, "F"), (11, "B"), (12, "D"), (13, "A"), (14, "G")])
+        q7 = part2.questions.get(order=7)
+        self.assertEqual([o.label for o in q7.options.all()], list("ABCDEFGHIJ"))
+        self.assertIn("Keyless room entry", q7.options.get(label="J").text)
+        part2.refresh_from_db()
+        self.assertNotIn("This expensive hotel", part2.passage)  # already a question, not repeated as text

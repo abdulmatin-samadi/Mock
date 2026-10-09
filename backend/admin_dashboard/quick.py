@@ -33,7 +33,8 @@ RANGE_RE = re.compile(r"^([A-Za-z])\s*[-–]\s*([A-Za-z])$")
 # "1   A) Please." — question number and its first option on one line (Listening Part 1 papers)
 INLINE_Q_RE = re.compile(r"^\s*(\d{1,3})\s+(\*?\s*[A-Za-z]\s*[).]\s.*)$")
 # Answer key written after the questions: "ANSWERS: 1-B 2-A 3 C" (also "KEYS" / "JAVOBLAR")
-KEY_HEAD_RE = re.compile(r"^\s*(answers?|answer key|keys?|javoblar|kalit)\s*:?\s*(.*)$", re.I)
+# a whole word followed by ":" / a number / end of line — so "Keyless room entry" is not an answer key
+KEY_HEAD_RE = re.compile(r"^\s*(answers?|answer key|keys?|javoblar|kalit)\b\s*(?::|(?=\d)|$)\s*(.*)$", re.I)
 KEY_PAIR_RE = re.compile(r"(\d{1,3})\s*[-–.:)=]?\s*(NOT GIVEN|NO INFORMATION|TRUE|FALSE|NG|NI|[ivx]{2,5}|[A-Za-z])(?![A-Za-z])", re.I)
 PART_HEAD_RE = re.compile(r"^\s*part\s*\d+(\.\d+)?\s*[:.]?\s*$", re.I)
 ANSWER_SPLIT = re.compile(r"\s+=\s*(?=[^=]*$)")
@@ -297,7 +298,7 @@ def pull_options(passage):
     for line in (passage or "").splitlines():
         s = line.strip()
         m = (OPT_RE.match(s) or OPT_TAB_RE.match(s)) if s else None
-        if m and len(s.split()) < 30 and not re.fullmatch(r"[ivx]+", m.group(2), re.I):
+        if m and len(s.split()) < 30:  # long lines ("I. The overriding idea …") are paragraphs, not options
             opts.append(f"{m.group(2).upper()}) {m.group(3).strip()}")
             in_opt = True
         elif in_opt and s and len(s.split()) < 30:
