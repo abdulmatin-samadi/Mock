@@ -1160,3 +1160,61 @@ class QuickEntryLetterAnswerTests(TestCase):
         self.assertEqual((errors, items[0].answer), ([], "FALSE"))
         _, errors = parse_part("7. Emma = F", ExamPart(cefr_part="R2"))
         self.assertIn("the list of options is missing", errors[0])
+
+
+class WholeMockImportTests(BaseTest):
+    TEXT = (
+        "Read the text. Fill in each gap with ONE word. You must use a word which is somewhere in the rest of the text.\n"
+        "Part1\n"
+        "The company that makes the famous little plastic bricks known as LEGO started as a small shop. At first the "
+        "1.___________ sold wooden toys and other things and the 2._____________ grew quickly. PART 2\n"
+        "Read the texts 7-14 and the statements A-J.\n"
+        "1.\tThis expensive hotel is perfect for a romantic holiday.\n"
+        "2.\tThis budget hotel is suitable for young people.\n"
+        "A. THE ACE HOTEL\nBoutique hotel\nC. THE HYATT REGENCY\nUpscale hotel\nE. THE FOUR SEASONS\nHigh-end hotel\n"
+        "PART 3\nList of Headings.\nA.\tRecognize Your Limitations\nB.\tTake a Rest\nC.\tClear Out Distractions\n"
+        "15.\tParagraph 1 \t16. Paragraph 2\n"
+        "I.\tThe overriding idea is to go for simplicity and a quiet basement or a library table allow you to focus "
+        "on what you are doing instead of the kitchen table or common areas where you meet friends.\n"
+        "II.\tMaking your work relate to your leisure activities or hobbies eliminates much of the tedium associated "
+        "with it so whenever possible make your schoolwork centre around something you love.\n"
+        "Part 4\nDavid Beckham\nDavid Beckham was born on May 2, 1975, in London. He played for Manchester United "
+        "from 1992 to 2003 and every time he had a game he wore different football boots as a ritual for good luck.\n"
+        "For questions 21-24, choose the correct answer A, B, C, or D.\n"
+        "21. How many years had he played for Manchester United? A) 12 years\nB)\t10 years\n"
+        "C)\t11 years    D) 13 years\n"
+        "25. He wore the same boots in every game.\nA) True     B) False        C) No Information\n"
+        "Part 5\nWorld Ecotourism\nEcotourism is not a nature 30_______________ but a 31_______________ tour and "
+        "travellers enjoy it. Mark your answers on the answer sheet. 34. Which information is about South America?\n"
+        "A)\tlocal education\nB)\tfungus\n")
+    KEY = "1-shop 2-business | company\n3-C 4-A\n15 C, 16 B\n21-C 25-B\n30. adventure 31. sustainable 34-B"
+
+    def test_preview_then_create(self):
+        c = self.web(self.admin)
+        url = "/admin-dashboard/mocks/section/reading/import/"
+        self.assertEqual(c.get(url).status_code, 200)
+        preview = c.post(url, {"action": "preview", "title": "Imported", "time_limit": 60, "text": self.TEXT,
+                               "key": self.KEY}).content.decode()
+        self.assertIn("Question numbers started again from 1", preview)
+        self.assertFalse(MockExam.objects.filter(title="Imported").exists())
+        r = c.post(url, {"action": "create", "title": "Imported", "time_limit": 60, "text": self.TEXT,
+                         "key": self.KEY})
+        exam = MockExam.objects.get(title="Imported")
+        self.assertRedirects(r, f"/admin-dashboard/mocks/{exam.pk}/", fetch_redirect_response=False)
+        q = {x.order: x for x in Question.objects.filter(exam=exam).prefetch_related("options")}
+        self.assertEqual(sorted(q), [1, 2, 3, 4, 15, 16, 21, 25, 30, 31, 34])  # Part 2's 1–2 continue as 3–4
+        self.assertEqual((q[1].question_type, q[1].correct_answer), ("gap_filling", "shop"))
+        self.assertEqual(q[2].correct_answer, "business|company")
+        self.assertEqual((q[3].question_type, q[3].correct_answer, q[3].options.count()), ("matching", "C", 3))
+        self.assertEqual((q[16].question_type, q[16].correct_answer), ("headings", "B"))
+        self.assertEqual([o.label for o in q[21].options.all() if o.is_correct], ["C"])
+        self.assertEqual(q[21].options.count(), 4)
+        self.assertEqual((q[25].question_type, q[25].correct_answer), ("true_false_not_given", "FALSE"))
+        self.assertEqual((q[30].correct_answer, q[34].question_type), ("adventure", "multiple_choice"))
+        parts = {p.cefr_part: p for p in exam.parts.all()}
+        self.assertIn("(1) ______", parts["R1"].passage)
+        self.assertIn("(30) ______", parts["R5"].passage)
+        self.assertNotIn("Read the text", parts["R1"].passage)
+        self.assertTrue(parts["R3"].passage.startswith("1. The overriding idea"))
+        self.assertIn("David Beckham", parts["R4"].passage)
+        self.assertNotIn("For questions", parts["R4"].passage)

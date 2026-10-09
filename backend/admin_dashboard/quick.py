@@ -47,10 +47,48 @@ class Item:
     qtype: str = ""
     line: int = 0
     block: int = -1  # index of the OPTIONS list written before this question
+    tfng: bool = False  # printed with "A) True B) False C) No Information" options
 
     @property
     def answer_display(self):
         return self.answer.replace("|", " / ")
+
+
+INLINE_OPT_SPLIT = re.compile(r"(?<=\S)\s+(?=\*?[A-D]\)\s)")
+MULTI_Q_SPLIT = re.compile(r"(?:\t|\s{2,})(?=\d{1,3}\.\s)")
+KEY_WORD_RE = re.compile(r"(\d{1,3})\s*[-–.:)=]\s*([^,;]+?)(?=\s+\d{1,3}\s*[-–.:)=]|\s*[,;]|\s*$)")
+TFNG_TEXTS = {"TRUE", "FALSE", "NO INFORMATION", "NOT GIVEN"}
+
+
+def expand_lines(text):
+    """Split printed layouts into one item per line: "C) x    D) y" → two options,
+    "15. Paragraph 1   17. Paragraph 3" → two questions."""
+    out = []
+    for raw in (text or "").splitlines():
+        for piece in MULTI_Q_SPLIT.split(raw):
+            if not re.search(r"\S\s+\*?[A-D]\)\s", piece):
+                out.append(piece)
+                continue
+            parts = INLINE_OPT_SPLIT.split(piece)
+            if len(parts) > 1 and re.fullmatch(r"\s*\d{1,3}", parts[0]):
+                parts = [f"{parts[0]} {parts[1]}"] + parts[2:]  # "1  A) Please." stays a question line
+            out.extend(parts)
+    return out
+
+
+def parse_key(text):
+    """Answer key text → {number: answer}. Accepts "1-C 2-A", "3 B", "1. shop, 2. name | names"."""
+    key = {}
+    for line in (text or "").splitlines():
+        line = KEY_HEAD_RE.sub(lambda m: m.group(2), line) if KEY_HEAD_RE.match(line) else line
+        found = KEY_WORD_RE.findall(line)
+        if not found:
+            found = KEY_PAIR_RE.findall(line)
+        for num, ans in found:
+            ans = ans.strip().strip(".")
+            if ans and ans != "?":
+                key[int(num)] = ans
+    return key
 
 
 def _is_roman(label):
@@ -66,7 +104,7 @@ def parse_part(text, part):
     items, errors, blocks = [], [], []
     current, in_shared = None, False
     key, in_key = {}, False
-    for n, raw in enumerate((text or "").splitlines(), start=1):
+    for n, raw in enumerate(expand_lines(text), start=1):
         line = raw.rstrip()
         if not line.strip():
             continue
@@ -90,8 +128,7 @@ def parse_part(text, part):
         m = KEY_HEAD_RE.match(line)
         if m or in_key:
             in_key = True
-            for num, ans in KEY_PAIR_RE.findall(m.group(2) if m else line):
-                key[int(num)] = ans
+            key.update(parse_key(line))
             continue
         m = INLINE_Q_RE.match(line)
         if m:
@@ -140,7 +177,17 @@ def parse_part(text, part):
     for it in items:
         k = key.get(it.number)
         if k and not it.answer and not any(ok for _, _, ok in it.options):
-            it.answer = k if re.fullmatch(r"[ivx]+", k) else k.upper()
+            it.answer = k if re.fullmatch(r"[ivx]+|.*[a-z].*\s.*|[a-z]{2,}.*", k) else k.upper()
+        # "A) True  B) False  C) No Information" printed as options → a True/False/No Information question
+        if it.options and {Question.canonical_choice(t.strip(" .")) for _, t, _ in it.options} <= TFNG_TEXTS | {"NO INFORMATION"} \
+                and len(it.options) in (2, 3) and (not allowed or Question.Type.TFNG in allowed):
+            ans = it.answer.strip().upper()
+            chosen = next((t for l, t, ok in it.options if ok or l.upper() == ans), "")
+            it.answer = Question.canonical_choice(chosen.strip(" .")) if chosen else (ans if ans in TFNG else "")
+            it.options = []
+            it.tfng = True
+            if not it.answer:
+                errors.append(f"Question {it.number}: add the answer (TRUE, FALSE or NO INFORMATION).")
     seen = set()
     for it in items:
         shared = blocks[max(it.block, 0)] if blocks else []
@@ -149,7 +196,9 @@ def parse_part(text, part):
             errors.append(f"Line {it.line}: question {it.number} appears twice.")
         seen.add(it.number)
         ans_upper = re.sub(r"\s+", " ", it.answer.upper()).strip()
-        if it.options:
+        if it.tfng:
+            it.qtype = Question.Type.TFNG
+        elif it.options:
             it.qtype = Question.Type.MULTIPLE_CHOICE
             if ans_upper and not any(ok for _, _, ok in it.options):
                 it.options = [(l, t, l.upper() == ans_upper) for l, t, _ in it.options]
@@ -182,6 +231,7 @@ def parse_part(text, part):
             it.qtype = next(t for t in allowed if t in Question.LABEL_TYPES)
             labels = [l for l, _, _ in shared]
             span = f"{labels[0]}–{labels[-1]}" if len(labels) > 1 else labels[0]
+            it.options, it.shared, it.answer = list(shared), True, ""  # keep the list so the answer can be added later
             errors.append(f"Question {it.number}: after “=” write one of the OPTIONS letters ({span}), "
                           f"e.g. “{it.number}. {it.prompt[:20] or 'Paragraph 1'} = {labels[0]}”.")
         else:

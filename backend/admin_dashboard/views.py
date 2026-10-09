@@ -624,7 +624,9 @@ def quick_part(request, pk):
     exam = part.exam
     locked = quick.part_locked(part)
     passage = request.POST.get("passage", part.passage) if request.method == "POST" else part.passage
-    text = request.POST.get("questions", "") if request.method == "POST" else quick.serialize_part(part)
+    imported = request.session.pop(f"quick_draft_{part.pk}", None) if request.method != "POST" else None
+    text = (request.POST.get("questions", "") if request.method == "POST"
+            else imported if imported is not None else quick.serialize_part(part))
     items, errors = ([], [])
     missing, needs_map = [], False
     if request.method == "POST":
@@ -656,6 +658,7 @@ def quick_part(request, pk):
     return _quick_render(request, "admin_dashboard/quick_part.html", {
         "part": part, "exam": exam, "preset": preset, "passage": passage, "text": text, "items": items,
         "errors": errors, "locked": locked, "previewed": request.method == "POST", "missing": missing, "needs_map": needs_map,
+        "imported": imported is not None,
         "type_labels": {"gap_filling": "Gap filling", "multiple_choice": "Multiple choice",
                         "true_false_not_given": "True / False / NG", "matching": "Matching",
                         "headings": "Headings", "map_labelling": "Map"},
@@ -715,4 +718,58 @@ def quick_writing(request, exam_pk):
     return _quick_render(request, "admin_dashboard/quick_writing.html", {
         "exam": exam, "text": text, "items": items, "errors": errors, "locked": locked,
         "previewed": request.method == "POST",
+    })
+
+
+@admin_required
+def import_mock(request, section):
+    """Paste a whole Reading / Listening mock; preview every part, then create the mock in one go."""
+    from exams.models import CEFR
+
+    from . import importer
+
+    if section not in ("reading", "listening"):
+        raise Http404
+    data = request.POST if request.method == "POST" else {}
+    title = (data.get("title") or "").strip()
+    level = data.get("level", "")
+    time_limit = data.get("time_limit") or ("60" if section == "reading" else "35")
+    text, key_text = data.get("text", ""), data.get("key", "")
+    drafts, problems = [], []
+    if request.method == "POST":
+        if not text.strip():
+            problems.append("Paste the whole test into the big box.")
+        else:
+            drafts = importer.build(text, section, key_text)
+            if not drafts:
+                problems.append("No parts were found in the text.")
+        if request.POST.get("action") == "create" and not problems:
+            if not title:
+                problems.append("Give the mock a title.")
+            try:
+                minutes = int(time_limit)
+            except ValueError:
+                minutes = 0
+                problems.append("Time limit must be a number of minutes.")
+            if not problems:
+                exam, unfinished = importer.create_mock(section, title, level, minutes, drafts, request.user)
+                for pk, qtext in unfinished.items():
+                    request.session[f"quick_draft_{pk}"] = qtext
+                n = sum(len(d.items) for d in drafts if not d.errors)
+                msg = f"Created “{exam.title}” with {n} question{'s' if n != 1 else ''}."
+                if unfinished:
+                    msg += f" {len(unfinished)} part{'s' if len(unfinished) != 1 else ''} need fixing in ⚡ Quick entry."
+                messages.success(request, msg)
+                return redirect(_manage_url(exam.pk))
+    total = sum(len(d.items) for d in drafts)
+    missing = sum(1 for d in drafts for w in d.warnings
+                  if any(h in w for h in importer.MISSING_ANSWER_HINTS))
+    return render(request, "admin_dashboard/import_mock.html", {
+        **PORTAL, "section": section, "section_label": Section(section).label, "title": title, "level": level,
+        "time_limit": time_limit, "text": text, "key": key_text, "drafts": drafts, "problems": problems,
+        "previewed": request.method == "POST", "total": total, "missing": missing,
+        "blocked": sum(1 for d in drafts if d.errors), "levels": CEFR.choices,
+        "type_labels": {"gap_filling": "Gap filling", "multiple_choice": "Multiple choice",
+                        "true_false_not_given": "True / False / NI", "matching": "Matching",
+                        "headings": "Headings", "map_labelling": "Map"},
     })

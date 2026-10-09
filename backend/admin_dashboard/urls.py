@@ -42,6 +42,7 @@ urlpatterns = [
     path("full-mocks/<int:pk>/delete/", views.full_mock_delete, name="full_mock_delete"),
     path("mocks/section/<str:section>/", views.mocks, name="mocks"),
     path("mocks/section/<str:section>/new/", views.mock_create, name="mock_create"),
+    path("mocks/section/<str:section>/import/", views.import_mock, name="import_mock"),
     # submissions & results
     path("writing/", views.writing_submissions, name="writing"),
     path("writing/<int:pk>/", views.writing_detail, name="writing_detail"),

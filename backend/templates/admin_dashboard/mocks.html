@@ -1,6 +1,6 @@
 {% extends "portal_base.html" %}{% block title %}{{ section_label }} mocks{% endblock %}
 {% block content %}
-<div class="page-head"><div><h1>{{ section_label }} Mocks</h1></div><a class="btn" href="{% url 'admin_dashboard:mock_create' section %}">+ Add {{ section_label }} Mock</a></div>
+<div class="page-head"><div><h1>{{ section_label }} Mocks</h1></div><div class="row">{% if section == 'reading' or section == 'listening' %}<a class="btn qk-btn" href="{% url 'admin_dashboard:import_mock' section %}">📥 Import whole mock</a>{% endif %}<a class="btn btn-secondary" href="{% url 'admin_dashboard:mock_create' section %}">+ Add {{ section_label }} Mock</a></div></div>
 <form class="filters" method="get"><div class="grow"><input type="search" name="q" value="{{ q }}" placeholder="Search by title" aria-label="Search"></div>
 <button class="btn btn-secondary">Filter</button></form>
 <div class="table-wrap"><table class="table"><thead><tr><th>Title</th><th>Level</th><th>Time</th><th>{% if section == 'writing' %}Tasks{% else %}Questions{% endif %}</th><th>Attempts</th><th>Status</th><th></th></tr></thead><tbody>

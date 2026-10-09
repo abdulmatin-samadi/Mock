@@ -1,0 +1,79 @@
+{% extends "portal_base.html" %}{% load core_tags %}{% block title %}Import {{ section_label }} mock{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">{{ section_label }} mocks</div><h1>📥 Import a whole {{ section_label|lower }} mock</h1>
+  <p>Paste the full test — all parts, as copied from the PDF or Word file. The parts, texts and questions are found automatically. Press <b>Preview</b>, check every part, then <b>Create mock</b>.</p></div>
+  <a class="btn btn-secondary" href="{% url 'admin_dashboard:mocks' section %}">← Back</a></div>
+
+{% for p in problems %}<div class="alert alert-error">{{ p }}</div>{% endfor %}
+
+<div class="qk im">
+  <form method="post" class="card qk-form" id="import-form">{% csrf_token %}
+    <div class="im-row">
+      <div class="form-field"><label for="title">Title</label><input id="title" name="title" value="{{ title }}" placeholder="Multilevel {{ section_label }} — Mock 03"></div>
+      <div class="form-field"><label for="level">Level</label><select id="level" name="level"><option value="">Mixed / any</option>{% for v, l in levels %}<option value="{{ v }}" {% if v == level %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+      <div class="form-field"><label for="time_limit">Minutes</label><input id="time_limit" name="time_limit" type="number" min="0" value="{{ time_limit }}"></div>
+    </div>
+
+    <label class="qk-label" for="text">1 · The whole test</label>
+    <p class="qk-hint">Keep the <code>PART 2</code>, <code>Part 3</code> … headings. Instructions such as “Read the text…” are skipped. Gaps like <code>1.______</code> or <code>(9) ……</code> become answer boxes.</p>
+    <textarea id="text" name="text" rows="20" class="qk-area" placeholder="Part 1&#10;The company that makes the famous little plastic bricks… At first the 1.___________ sold wooden toys…&#10;&#10;PART 2&#10;1. This expensive hotel is perfect for…&#10;A. THE ACE HOTEL …">{{ text }}</textarea>
+
+    <label class="qk-label" for="key">2 · Answer key <span class="muted">(optional — you can add answers later)</span></label>
+    <p class="qk-hint">Any layout: <code>1-shop 2-name</code>, <code>7-E 8-A</code>, <code>15 C, 16 G</code>, <code>25-C</code> (for True/False/NI the letter is enough), <code>30. adventure</code>. Several correct words: <code>2-name | names</code>.</p>
+    <textarea id="key" name="key" rows="5" class="qk-area qk-mono" placeholder="1-shop 2-name 3-toys …&#10;7-E 8-A …&#10;21-D 22-C … 25-C 26-B …">{{ key }}</textarea>
+
+    <div class="qk-actions">
+      <button class="btn btn-secondary btn-lg" name="action" value="preview">👁 Preview</button>
+      <button class="btn btn-lg" name="action" value="create" {% if previewed and not drafts %}disabled{% endif %}>✅ Create mock</button>
+    </div>
+    <p class="qk-hint mb-0">Creating saves the mock as a <b>draft</b>. Add {% if section == 'listening' %}the audio for each part{% else %}any missing answers{% endif %} on the next page, then publish.</p>
+  </form>
+
+  <aside class="qk-side">
+    {% if previewed and drafts %}
+    <div class="card im-sum">
+      <div class="im-sum-row">
+        <div><strong>{{ drafts|length }}</strong><span>parts</span></div>
+        <div><strong>{{ total }}</strong><span>questions</span></div>
+        <div class="{% if missing %}warn{% else %}ok{% endif %}"><strong>{{ missing }}</strong><span>answers missing</span></div>
+        <div class="{% if blocked %}bad{% else %}ok{% endif %}"><strong>{{ blocked }}</strong><span>parts to fix</span></div>
+      </div>
+      <p class="small muted mb-0">{% if blocked %}Parts with problems are still created; their questions open in ⚡ Quick entry for fixing.{% elif missing %}You can create the mock now and add the missing answers later.{% else %}Everything looks right — press <b>Create mock</b>.{% endif %}</p>
+    </div>
+    {% for d in drafts %}
+    <details class="card im-part {% if d.errors %}bad{% elif d.warnings %}warn{% else %}ok{% endif %}" {% if d.errors %}open{% endif %}>
+      <summary>
+        <span class="im-dot"></span>
+        <span class="im-title"><b>{{ d.title }}</b><small>{{ d.items|length }} question{{ d.items|length|pluralize }}{% if d.items %} · {{ d.items.0.number }}–{% with d.items|last as l %}{{ l.number }}{% endwith %}{% endif %}{% if d.passage %} · text {{ d.passage|wordcount }} words{% endif %}</small></span>
+        <span class="im-state">{% if d.errors %}Fix{% elif d.warnings %}{{ d.warnings|length }} note{{ d.warnings|length|pluralize }}{% else %}Ready{% endif %}</span>
+      </summary>
+      {% if d.errors %}<ul class="qk-errors">{% for e in d.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      {% if d.warnings %}<ul class="im-warn">{% for w in d.warnings|slice:":6" %}<li>{{ w }}</li>{% endfor %}{% if d.warnings|length > 6 %}<li>… and {{ d.warnings|length|add:"-6" }} more</li>{% endif %}</ul>{% endif %}
+      {% if d.passage %}<p class="im-passage">{{ d.passage|truncatechars:260 }}</p>{% endif %}
+      {% if d.items %}
+      <div class="table-wrap"><table class="table qk-table">
+        <thead><tr><th>#</th><th>Type</th><th>Question</th><th>Answer</th></tr></thead>
+        <tbody>{% for it in d.items %}<tr>
+          <td><b>{{ it.number }}</b></td>
+          <td><span class="qk-type t-{{ it.qtype }}">{{ type_labels|get_item:it.qtype|default:"?" }}</span></td>
+          <td class="small">{{ it.prompt|truncatechars:60 }}{% if it.options and not it.shared %}<div class="muted">{{ it.options|length }} options</div>{% endif %}</td>
+          <td>{% if it.qtype == 'multiple_choice' %}{% for l, t, ok in it.options %}{% if ok %}<b>{{ l }}</b>{% endif %}{% endfor %}{% elif it.answer %}<b>{{ it.answer_display }}</b>{% else %}<span class="im-none">—</span>{% endif %}</td>
+        </tr>{% endfor %}</tbody></table></div>
+      {% endif %}
+    </details>
+    {% endfor %}
+    {% else %}
+    <div class="card qk-help">
+      <h3>How it works</h3>
+      <ol class="im-steps">
+        <li>Copy the <b>whole test</b> from the PDF / Word file and paste it on the left — parts, texts, questions and options together.</li>
+        <li>Paste the <b>answer key</b> if you have it.</li>
+        <li><b>Preview</b> shows what was found in every part: the text, each question, its type and answer.</li>
+        <li><b>Create mock</b> saves it as a draft. Then {% if section == 'listening' %}upload the audio for each part (and the map in Part 4) in ⚡ Quick entry and {% endif %}publish.</li>
+      </ol>
+      <p class="small muted mb-0">Question numbers that restart (e.g. Part 2 written as 1–8) are moved on automatically (7–14).</p>
+    </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

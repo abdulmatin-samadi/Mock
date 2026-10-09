@@ -3,6 +3,7 @@
 <div class="page-head"><div><div class="eyebrow">{{ exam.title }}</div><h1>⚡ {{ part.title }}</h1><p>Paste the text and all questions of this part at once, then press <b>Preview</b> to check before saving.</p></div>
 <a class="btn btn-secondary" href="{% url 'admin_dashboard:mock_manage' exam.pk %}">← Back to mock</a></div>
 
+{% if imported %}<div class="alert alert-info">📥 These questions came from the whole-mock import but need fixing. Press <b>Preview</b> to see what to change, then <b>Save part</b>.</div>{% endif %}
 {% if locked %}<div class="alert alert-warning">Students have already answered this part, so its questions can't be replaced. Use <b>Duplicate</b> on the mock page to make an editable copy.</div>{% endif %}
 
 <div class="qk">
