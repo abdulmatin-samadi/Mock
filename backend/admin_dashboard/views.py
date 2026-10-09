@@ -629,15 +629,40 @@ def quick_part(request, pk):
             else imported if imported is not None else quick.serialize_part(part))
     items, errors = ([], [])
     missing, needs_map = [], False
-    moved = ""
+    moved, warnings = "", []
     if request.method == "POST":
+        if not part.cefr_part or "gap_filling" in (cefr.PARTS.get(part.cefr_part, {}).get("types") or []):
+            text = quick.add_gap_questions(passage, text)  # gaps marked in the text become questions
         items, errors = quick.parse_part(text, part)
+        if not items and passage.strip():
+            # the whole part (questions too) was pasted into the text box: take the questions out of it
+            from .importer import separate
+
+            rest, found = separate(passage)
+            if found.strip():
+                passage, text = rest, found + ("\n\n" + text if text.strip() else "")
+                items, errors = quick.parse_part(text, part)
+                moved = "The questions were found in the text box and moved to the questions box."
         if any("list of options is missing" in e for e in errors):
             rest, opts = quick.pull_options(passage)  # options pasted into the text box
             if opts:
                 items, errors = quick.parse_part("OPTIONS\n" + opts + "\n\n" + text, part)
                 passage, text = rest, "OPTIONS\n" + opts + "\n\n" + text
                 moved = "The lettered list was moved from the text box to the questions box as OPTIONS."
+        # numbers that restart (Part 2 written as 1–8) continue after the earlier parts (7–14)
+        prev_max = (Question.objects.filter(exam=exam, part__order__lt=part.order)
+                    .order_by("-order").values_list("order", flat=True).first() or 0)
+        numbers = sorted(it.number for it in items)
+        if numbers and numbers[0] <= prev_max:
+            from .importer import GAP_NUM_RE, Q_NUM_RE, _renumber
+
+            shift = prev_max + 1 - numbers[0]
+            text = _renumber(text, shift, Q_NUM_RE)
+            passage = _renumber(passage, shift, GAP_NUM_RE)
+            items, errors = quick.parse_part(text, part)
+            moved = (moved + " " if moved else "") + (f"Question numbers {numbers[0]}–{numbers[-1]} clashed with the "
+                                                     f"earlier parts, so they now start at {prev_max + 1}.")
+        errors, warnings = quick.split_errors(errors)
         passage = quick.normalize_gaps(passage, {it.number for it in items if it.qtype == "gap_filling"})
         missing = quick.missing_gaps(passage, items) if passage.strip() else []
         needs_map = (any(it.qtype == "map_labelling" for it in items) and not part.image
@@ -659,13 +684,15 @@ def quick_part(request, pk):
                 else:
                     part.save()
                     n = quick.apply_part(part, items)
-                    messages.success(request, f"Saved {part.title}: {n} question{'s' if n != 1 else ''}.")
+                    note = (f" {len(warnings)} answer{'s are' if len(warnings) != 1 else ' is'} still missing — add "
+                            f"{'them' if len(warnings) != 1 else 'it'} before publishing.") if warnings else ""
+                    messages.success(request, f"Saved {part.title}: {n} question{'s' if n != 1 else ''}.{note}")
                     return redirect(f"{_manage_url(exam.pk)}?quick_saved={request.path}")
     preset = cefr.PARTS.get(part.cefr_part or "")
     return _quick_render(request, "admin_dashboard/quick_part.html", {
         "part": part, "exam": exam, "preset": preset, "passage": passage, "text": text, "items": items,
         "errors": errors, "locked": locked, "previewed": request.method == "POST", "missing": missing, "needs_map": needs_map,
-        "imported": imported is not None, "moved": moved,
+        "imported": imported is not None, "moved": moved, "warnings": warnings,
         "type_labels": {"gap_filling": "Gap filling", "multiple_choice": "Multiple choice",
                         "true_false_not_given": "True / False / NG", "matching": "Matching",
                         "headings": "Headings", "map_labelling": "Map"},

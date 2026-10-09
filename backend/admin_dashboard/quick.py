@@ -258,12 +258,36 @@ def parse_part(text, part):
             label = dict(Question.Type.choices)[it.qtype]
             errors.append(f"Question {it.number}: {label} is not used in {preset['title']}.")
     if not items and not errors:
-        errors.append("No questions found. Start each question with its number, e.g. “1. ______ = library”.")
+        errors.append("No questions found. Write the questions in box 2, one numbered line each (e.g. “7. Emma … = C”). "
+                      "For gap filling just mark the gaps in the text as “1. ______” — the questions are added for you.")
     return items, errors
 
 
 # a gap: number + a line of underscores, dots or "…" ("9. ______", "(9) ……………", "30 ........")
 GAP_ANY_RE = re.compile(r"(?<![\w(])\(?(\d{1,3})\)?\s*[.)]?\s*(?:_{2,}|…{2,}|\.{4,})[_….]*")
+
+
+# Errors that only mean "the answer is not written yet": the part can still be saved
+# (publishing stays blocked until every question has its answer).
+MISSING_ANSWER_HINTS = ("write the answer", "mark exactly one correct option", "write one of the OPTIONS letters",
+                        "add the answer (TRUE")
+GAP_NUMBER_RE = re.compile(r"\(?(\d{1,3})\)?\s*[.)]?\s*(?:_{2,}|…{2,}|\.{4,})")
+
+
+def split_errors(errors):
+    """(blocking errors, missing-answer warnings)."""
+    warn = [e for e in errors if any(h in e for h in MISSING_ANSWER_HINTS)]
+    return [e for e in errors if e not in warn], warn
+
+
+def add_gap_questions(passage, text):
+    """Questions for gaps written in the text ("1.______") that are not listed in the questions box."""
+    listed = {int(m.group(1)) for m in re.finditer(r"(?m)^\s*(\d{1,3})(?=\s*[.)]\s|\s+\*?[A-Za-z]\s*[).]\s)", text or "")}
+    gaps = []
+    for n in GAP_NUMBER_RE.findall(passage or ""):
+        if int(n) not in listed and f"{int(n)}. ______" not in gaps:
+            gaps.append(f"{int(n)}. ______")
+    return ("\n".join(gaps) + ("\n\n" + text if (text or "").strip() else "")) if gaps else text
 
 
 def pull_options(passage):

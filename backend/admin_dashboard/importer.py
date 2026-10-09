@@ -28,8 +28,7 @@ GAP_IN_TEXT_RE = re.compile(r"\(?\d{1,3}\)?\s*[.)]?\s*(?:_{2,}|…{2,}|\.{4,})")
 ROMAN_PARAGRAPH_RE = re.compile(r"^\s*(I|II|III|IV|V|VI|VII|VIII|IX|X)\.\s+(?=\S)")
 ROMAN = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 8, "IX": 9, "X": 10}
 LONG_LINE_WORDS = 30
-MISSING_ANSWER_HINTS = ("write the answer", "mark exactly one correct option", "write one of the OPTIONS letters",
-                        "add the answer (TRUE")
+MISSING_ANSWER_HINTS = quick.MISSING_ANSWER_HINTS
 
 
 @dataclass

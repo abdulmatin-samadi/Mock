@@ -42,7 +42,9 @@
         <ul class="qk-errors">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
       {% else %}
         <h3>✅ {{ items|length }} question{{ items|length|pluralize }} ready</h3>
-        <p class="muted small">Looks right? Press <b>Save part</b>.</p>
+        {% if warnings %}<div class="alert alert-warning small"><b>{{ warnings|length }} answer{{ warnings|length|pluralize }} still missing.</b> You can save now and add {{ warnings|length|pluralize:"it,them" }} later — the mock can't be published until every question has its answer.
+          <ul class="im-warn mt-1">{% for w in warnings|slice:":8" %}<li>{{ w }}</li>{% endfor %}</ul></div>
+        {% else %}<p class="muted small">Looks right? Press <b>Save part</b>.</p>{% endif %}
         {% if moved %}<div class="alert alert-info small">↪ {{ moved }}</div>{% endif %}
         {% if needs_map %}<div class="alert alert-error small">🗺 <b>Don't forget the map:</b> choose the map picture in <b>Map / picture</b> below before saving. Without it the mock can't be published.</div>{% endif %}
         {% if missing %}<div class="alert alert-warning small">Gap{{ missing|length|pluralize }} {{ missing|join:", " }} {{ missing|length|pluralize:"is,are" }} not marked in the text, so {{ missing|length|pluralize:"it,they" }} will appear as separate answer boxes under the text. To show {{ missing|length|pluralize:"it,them" }} inside the text, write <code>{{ missing.0 }}. ______</code> at the right place.</div>{% endif %}

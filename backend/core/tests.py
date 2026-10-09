@@ -1236,3 +1236,45 @@ class MatchingOptionsInTextBoxTests(BaseTest):
         self.assertEqual(q7.options.get(label="A").text, "THE ACE HOTEL Boutique hotel")
         part2.refresh_from_db()
         self.assertNotIn("ACE HOTEL", part2.passage)
+
+
+class QuickEntryGapsFromTextTests(BaseTest):
+    def test_gaps_in_text_become_questions_and_can_be_saved_without_answers(self):
+        from exams.services import validate_publishable
+
+        c = self.web(self.admin)
+        c.post("/admin-dashboard/mocks/section/reading/new/", {"title": "R gaps", "time_limit": 60, "cefr_layout": "on"})
+        exam = MockExam.objects.get(title="R gaps")
+        part1 = exam.parts.get(cefr_part="R1")
+        url = f"/admin-dashboard/parts/{part1.pk}/quick/"
+        body = {"passage": "At first the 1.___________ sold toys and the 2._____________ grew.", "questions": ""}
+        preview = c.post(url, {**body, "action": "preview"}).content.decode()
+        self.assertIn("2 questions ready", preview)
+        self.assertIn("2 answers still missing", preview)
+        r = c.post(url, {**body, "action": "save"})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(list(part1.questions.values_list("order", "correct_answer")), [(1, ""), (2, "")])
+        self.assertTrue(any("Question 1: set the correct answer" in p for p in validate_publishable(exam)))
+        # adding just the answers later works
+        c.post(url, {"passage": body["passage"], "questions": "1. shop\n2. business", "action": "save"})
+        self.assertEqual(list(part1.questions.values_list("correct_answer", flat=True)), ["shop", "business"])
+
+
+class QuickEntryWholePartInTextBoxTests(BaseTest):
+    def test_part2_pasted_into_text_box_with_restarting_numbers(self):
+        c = self.web(self.admin)
+        c.post("/admin-dashboard/mocks/section/reading/new/", {"title": "R p2", "time_limit": 60, "cefr_layout": "on"})
+        exam = MockExam.objects.get(title="R p2")
+        part1, part2 = exam.parts.get(cefr_part="R1"), exam.parts.get(cefr_part="R2")
+        c.post(f"/admin-dashboard/parts/{part1.pk}/quick/", {"action": "save", "passage": "",
+                                                             "questions": "1. a\n2. b\n3. c\n4. d\n5. e\n6. f"})
+        passage = ("Read the texts 7-14 and the statements A-J.\n"
+                   "1.\tThis expensive hotel is perfect for spending a romantic holiday.\n"
+                   "2.\tThis budget hotel is suitable for young people.\n"
+                   "A. THE ACE HOTEL\nBoutique hotel\nC. THE HYATT REGENCY\nUpscale hotel\nE. THE FOUR SEASONS\n")
+        r = c.post(f"/admin-dashboard/parts/{part2.pk}/quick/", {"action": "save", "passage": passage,
+                                                                 "questions": "ANSWERS: 7-E 8-A"})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(list(part2.questions.values_list("order", "question_type", "correct_answer")),
+                         [(7, "matching", "E"), (8, "matching", "A")])
+        self.assertEqual(part2.questions.get(order=7).options.count(), 3)
