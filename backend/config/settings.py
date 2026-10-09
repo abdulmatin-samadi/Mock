@@ -181,17 +181,22 @@ if USE_S3:
     _s3_common = {
         "bucket_name": env("AWS_STORAGE_BUCKET_NAME", required=True),
         "endpoint_url": env("AWS_S3_ENDPOINT_URL") or None,
-        "region_name": env("AWS_S3_REGION_NAME") or None,
+        "region_name": env("AWS_S3_REGION_NAME") or None,  # "auto" for Cloudflare R2
         "access_key": env("AWS_ACCESS_KEY_ID", required=True),
         "secret_key": env("AWS_SECRET_ACCESS_KEY", required=True),
         "file_overwrite": False,
+        "signature_version": "s3v4",
+        "default_acl": env("AWS_DEFAULT_ACL") or None,  # R2 has no ACLs: leave empty
     }
+    # Public files (pictures, maps, avatars): with a public domain (e.g. an R2 r2.dev URL) plain links,
+    # otherwise short-lived signed links, so the bucket itself can stay private.
+    _public_domain = env("AWS_S3_CUSTOM_DOMAIN") or None
     STORAGES = {
         "default": {"BACKEND": "storages.backends.s3.S3Storage",
-                    "OPTIONS": {**_s3_common, "location": "public", "default_acl": "public-read",
-                                "querystring_auth": False}},
+                    "OPTIONS": {**_s3_common, "location": "public", "custom_domain": _public_domain,
+                                "querystring_auth": not _public_domain, "querystring_expire": 6 * 3600}},
         "private": {"BACKEND": "storages.backends.s3.S3Storage",
-                    "OPTIONS": {**_s3_common, "location": "private", "default_acl": "private"}},
+                    "OPTIONS": {**_s3_common, "location": "private"}},
         "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     }
 else:

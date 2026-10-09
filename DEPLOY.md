@@ -43,10 +43,18 @@ GitHub'ga yangi kod yuklansa, Render ham, Netlify ham **o'zi qayta joylaydi**.
 ## Bilishingiz kerak
 - **Birinchi ochilish sekin.** Bepul Render server 15 daqiqa ishlatilmasa uxlaydi; uyg'onishi 30–60 soniya.
   Netlify shu paytda xato ko'rsatsa — 1 daqiqadan keyin sahifani yangilang.
-- **Yuklangan fayllar o'chadi.** Bepul Render diskida Listening audio, rasmlar va ovoz yozuvlari server
-  qayta ishga tushganda yo'qoladi. Saqlash uchun Cloudflare R2 (10 GB bepul) yoki AWS S3 ulang:
-  Render → Environment → `USE_S3=True`, `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`,
-  `AWS_SECRET_ACCESS_KEY`, `AWS_S3_ENDPOINT_URL` (R2 uchun `https://<account-id>.r2.cloudflarestorage.com`).
+- **Yuklangan fayllar o'chadi** (Listening audio, rasmlar, ovoz yozuvlari) — bepul Render diski har qayta
+  ishga tushganda tozalanadi. Saqlash uchun **Cloudflare R2** ulang (10 GB bepul):
+  1. dash.cloudflare.com → **R2 Object Storage** → (karta so'raladi, 10 GB gacha pul yechilmaydi) →
+     **Create bucket** → nomi `dreamzone-media` → Create. Bucket **yopiq** qoladi.
+  2. R2 → **Manage R2 API Tokens** → **Create API token** → ruxsat **Object Read & Write**, faqat shu bucket →
+     Create. Ko'rsatilgan **Access Key ID**, **Secret Access Key** va **S3 endpoint**
+     (`https://<account-id>.r2.cloudflarestorage.com`) ni nusxalab oling.
+  3. Render → `dreamzone-samadi-api` → **Environment** → qo'shing:
+     `USE_S3=True`, `AWS_STORAGE_BUCKET_NAME=dreamzone-media`, `AWS_ACCESS_KEY_ID=…`,
+     `AWS_SECRET_ACCESS_KEY=…`, `AWS_S3_ENDPOINT_URL=https://<account-id>.r2.cloudflarestorage.com`,
+     `AWS_S3_REGION_NAME=auto` → **Save Changes** (server o'zi qayta ishga tushadi).
+  4. Avval yuklangan audio va rasmlarni qaytadan yuklang.
 - **Bepul PostgreSQL** Render'da ma'lum muddatdan keyin o'chiriladi — Render'dagi ogohlantirishni kuzating.
 - **Mocklar bo'sh boshlanadi.** Yangi bazada mock yo'q — admin paneldagi ⚡ Quick entry bilan qo'shasiz.
 - **Kalitlar GitHub'da emas.** `AI_API_KEY` va admin paroli faqat Render sozlamalarida saqlanadi.
