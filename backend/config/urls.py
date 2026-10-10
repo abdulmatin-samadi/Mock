@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 from django.views.generic import RedirectView
 
 urlpatterns = [
@@ -18,9 +18,14 @@ urlpatterns = [
     path("", include("core.urls")),
 ]
 
-if settings.DEBUG:
-    # Public media only. Private media is never served from a static URL.
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if not settings.USE_S3:
+    # Public media only (pictures, maps, avatars) — private files (recordings, audio) are streamed by
+    # permission-checked views and never live under MEDIA_ROOT. Also needed with DEBUG=False on hosts
+    # without a separate file server (Render). With USE_S3 the files come from the bucket instead.
+    def public_media(request, path):
+        return serve(request, path, document_root=settings.MEDIA_ROOT)
+
+    urlpatterns += [re_path(rf"^{settings.MEDIA_URL.lstrip('/')}(?P<path>.*)$", public_media)]
 
 handler403 = "core.views.error_403"
 handler404 = "core.views.error_404"

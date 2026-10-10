@@ -1299,3 +1299,16 @@ class QuickEntryHotelsPart2Tests(BaseTest):
         self.assertIn("Keyless room entry", q7.options.get(label="J").text)
         part2.refresh_from_db()
         self.assertNotIn("This expensive hotel", part2.passage)  # already a question, not repeated as text
+
+
+class PublicMediaServedTests(BaseTest):
+    def test_uploaded_picture_is_served_without_debug(self):
+        from django.core.files.base import ContentFile
+        from django.core.files.storage import default_storage
+
+        name = default_storage.save("exams/test-map.png", ContentFile(b"\x89PNG\r\n\x1a\nfake"))
+        r = self.client.get(default_storage.url(name))
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(b"".join(r.streaming_content)[:4], b"\x89PNG")
+        self.assertIn(self.client.get("/media/../config/settings.py").status_code, (400, 404))  # never outside MEDIA_ROOT
+        default_storage.delete(name)
