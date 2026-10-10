@@ -27,6 +27,7 @@
   <span class="save-state" id="save-state" aria-live="polite"></span>
   {% if deadline %}<div class="rb-timer"><small>{% translate "TIME LEFT" %}</small><span class="timer" id="timer" aria-label="{% translate 'Time remaining' %}">--:--</span></div>{% endif %}
   {% if room_parts %}<button type="button" class="rb-btn rb-search" id="room-search-btn" aria-label="{% translate 'Search in text' %}">🔍<span class="rb-badge" id="room-search-count">0</span></button>{% endif %}
+  {% include "partials/theme_toggle.html" %}
   <button type="button" class="rb-btn" id="room-fullscreen" aria-label="{% translate 'Full screen' %}">⛶</button>
 </div>
 {% if room_parts %}

@@ -10,6 +10,7 @@
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
   <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
   <meta name="theme-color" content="#0197f8">
+  {% include "partials/theme_head.html" %}
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -40,6 +41,7 @@
     <div class="portal-top">
       <button class="btn btn-sm btn-secondary sidebar-toggle" data-toggle="#sidebar" aria-label="Open menu">☰</button>
       <div class="small muted">{% block crumbs %}{% endblock %}</div>
+      <span style="margin-left:auto"></span>{% include "partials/theme_toggle.html" %}
       <div class="dropdown">
         <button aria-haspopup="true"><span class="small">{{ user.get_full_name }}</span><span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span></button>
         <div class="dropdown-menu">

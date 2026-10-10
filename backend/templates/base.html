@@ -11,6 +11,7 @@
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
   <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
   <meta name="theme-color" content="#0197f8">
+  {% include "partials/theme_head.html" %}
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if shell %}has-shell{% endif %}{% endblock %}">
@@ -22,6 +23,7 @@
 <header class="app-top">
   <button class="btn btn-sm btn-secondary app-menu" data-toggle="#app-sidebar" aria-controls="app-sidebar" aria-label="{% translate 'Open menu' %}">{% include "partials/icon.html" with name="menu" size=18 %}</button>
   <span class="app-top-spacer"></span>
+  {% include "partials/theme_toggle.html" %}
   {% include "partials/lang_switch.html" %}
   {% if user.is_guest %}<span class="guest-pill">{% translate "Guest" %}</span><a class="btn btn-sm" href="{% url 'accounts:register' %}">{% translate "Create free account" %}</a>{% else %}
   <a class="btn btn-sm" href="{% url 'exams:hub' %}">{% translate "Take a mock" %}</a>
@@ -54,6 +56,7 @@
     </nav>
     {% endwith %}
     <div class="nav-right">
+      {% include "partials/theme_toggle.html" %}
       {% include "partials/lang_switch.html" %}
       {% if user.is_authenticated %}
         {% if user.is_admin %}<a class="btn btn-sm btn-secondary" href="{% url 'admin_dashboard:home' %}">{% translate "Admin" %}</a>{% endif %}

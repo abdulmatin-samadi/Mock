@@ -133,6 +133,14 @@
     }
   }
 
+  // Dark / light theme: one button flips it; the choice is remembered in this browser.
+  document.querySelectorAll("[data-theme-toggle]").forEach((btn) => btn.addEventListener("click", () => {
+    const dark = document.documentElement.getAttribute("data-theme") !== "dark";
+    if (dark) document.documentElement.setAttribute("data-theme", "dark");
+    else document.documentElement.removeAttribute("data-theme");
+    try { localStorage.setItem("dz-theme", dark ? "dark" : "light"); } catch (e) { /* private mode */ }
+  }));
+
   // Texts translated on the server ({% js_i18n %}); falls back to the English text.
   let texts = {};
   try { texts = JSON.parse((document.getElementById("dz-i18n") || {}).textContent || "{}"); } catch (e) { texts = {}; }
