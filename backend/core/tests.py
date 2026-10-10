@@ -1312,3 +1312,23 @@ class PublicMediaServedTests(BaseTest):
         self.assertEqual(b"".join(r.streaming_content)[:4], b"\x89PNG")
         self.assertIn(self.client.get("/media/../config/settings.py").status_code, (400, 404))  # never outside MEDIA_ROOT
         default_storage.delete(name)
+
+
+class DeleteMockWithAttemptsTests(BaseTest):
+    def test_mock_with_attempts_needs_the_confirmation_box(self):
+        c = self.web(self.admin)
+        exam = MockExam.objects.create(section="reading", title="Copy", time_limit=60, is_published=True)
+        part = ExamPart.objects.create(exam=exam, title="P1", order=1)
+        q = Question.objects.create(part=part, order=1, question_type="gap_filling", prompt="Gap 1", correct_answer="x")
+        api = self.api(self.student)
+        attempt = api.post(f"/api/exams/{exam.pk}/start/").json()["id"]
+        api.patch(f"/api/attempts/{attempt}/answers/", {"answers": {str(q.pk): "x"}}, format="json")
+        api.post(f"/api/attempts/{attempt}/submit/", {}, format="json")
+        page = c.get(f"/admin-dashboard/mocks/{exam.pk}/delete/").content.decode()
+        self.assertIn("1 attempt by 1 student will be deleted", page)
+        c.post(f"/admin-dashboard/mocks/{exam.pk}/delete/", {})  # box not ticked
+        self.assertTrue(MockExam.objects.filter(pk=exam.pk).exists())
+        r = c.post(f"/admin-dashboard/mocks/{exam.pk}/delete/", {"with_attempts": "yes"})
+        self.assertEqual(r.status_code, 302)
+        self.assertFalse(MockExam.objects.filter(pk=exam.pk).exists())
+        self.assertFalse(ExamAttempt.objects.filter(pk=attempt).exists())

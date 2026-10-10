@@ -2,8 +2,15 @@
 {% block content %}
 <div class="card" style="max-width:620px">
   <h1>Delete “{{ object }}”?</h1>
-  {% if warning %}<div class="alert {% if blocked %}alert-error{% else %}alert-warning{% endif %}">{{ warning }}</div>{% endif %}
+  {% if blocked_reason %}<div class="alert alert-error">{{ blocked_reason }}</div>
+  {% elif warning %}<div class="alert {% if attempts or blocked %}alert-error{% else %}alert-warning{% endif %}">{{ warning }}</div>{% endif %}
   <p>This action cannot be undone.</p>
-  <form method="post" class="row">{% csrf_token %}{% if not blocked %}<button class="btn btn-danger" type="submit">Yes, delete</button>{% endif %}<a class="btn btn-secondary" href="{{ back_url }}">Cancel</a></form>
+  <form method="post">{% csrf_token %}
+    {% if attempts and not blocked %}
+    <label class="form-check" style="margin-bottom:14px"><input type="checkbox" name="with_attempts" value="yes" required id="with_attempts">
+      <span>Yes, also delete the {{ attempts }} attempt{{ attempts|pluralize }} and {{ attempts|pluralize:"its result,their results" }}.</span></label>
+    {% endif %}
+    <div class="row">{% if not blocked %}<button class="btn btn-danger" type="submit">Yes, delete</button>{% endif %}<a class="btn btn-secondary" href="{{ back_url }}">Cancel</a></div>
+  </form>
 </div>
 {% endblock %}

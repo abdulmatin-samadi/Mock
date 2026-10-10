@@ -219,23 +219,40 @@ def mock_edit(request, pk):
 def mock_delete(request, pk):
     exam = get_object_or_404(MockExam, pk=pk)
     attempts = exam.attempts.count()
+    students = exam.attempts.values("student").distinct().count()
     in_full = FullMock.objects.filter(Q(listening=exam) | Q(reading=exam) | Q(writing=exam) | Q(speaking=exam))
     if request.method == "POST":
         if in_full.exists():
             messages.error(request, f"This mock is part of the full mock “{in_full.first().title}”. Remove it there first.")
             return redirect("admin_dashboard:mock_manage", pk=pk)
-        if attempts:
-            messages.error(request, "This mock has student attempts and cannot be deleted. Unpublish it instead.")
-            return redirect("admin_dashboard:mock_manage", pk=pk)
-        section = exam.section
-        exam.delete()
-        messages.success(request, "Mock deleted.")
+        if attempts and request.POST.get("with_attempts") != "yes":
+            messages.error(request, "Tick the box to confirm that the attempts and results are deleted too.")
+            return redirect("admin_dashboard:mock_delete", pk=pk)
+        section, title = exam.section, exam.title
+        _delete_mock_with_attempts(exam)
+        messages.success(request, f"Deleted “{title}”" + (f" and {attempts} attempt{'s' if attempts != 1 else ''}."
+                                                         if attempts else "."))
         return redirect("admin_dashboard:mocks", section=section)
     return render(request, "portal/confirm_delete.html", {
         "object": exam, "back_url": reverse("admin_dashboard:mock_manage", args=[pk]),
-        "warning": (f"{attempts} attempt(s) exist — deletion is blocked to preserve student results."
+        "warning": (f"{attempts} attempt{'s' if attempts != 1 else ''} by {students} student{'s' if students != 1 else ''} "
+                    f"will be deleted together with their results, essays and recordings."
                     if attempts else "All questions/tasks of this mock will be deleted."),
-        "blocked": bool(attempts), **PORTAL})
+        "attempts": attempts, "blocked": in_full.exists(),
+        "blocked_reason": (f"This mock is part of the full mock “{in_full.first().title}”. Remove it there first."
+                           if in_full.exists() else ""), **PORTAL})
+
+
+@transaction.atomic
+def _delete_mock_with_attempts(exam):
+    """Delete a mock and everything students did in it (attempts, answers, results, essays, recordings)."""
+    recordings = list(SpeakingSubmission.objects.filter(exam=exam).exclude(audio_file=""))
+    files = [(r.audio_file.storage, r.audio_file.name) for r in recordings]
+    SpeakingSubmission.objects.filter(exam=exam).delete()
+    WritingSubmission.objects.filter(attempt__exam=exam).delete()
+    exam.attempts.all().delete()
+    exam.delete()
+    transaction.on_commit(lambda: [storage.delete(name) for storage, name in files])
 
 
 @admin_required
