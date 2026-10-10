@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}Result · {{ exam.title }}{% endblock %}
+{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}{% translate "Result" %} · {{ exam.title }}{% endblock %}
 {% block content %}
 {% include "results/_header.html" %}
 {% if result.details.parts %}
@@ -6,7 +6,7 @@
 {% endif %}
 <div class="mk-review-head"><h2>{% translate "Answer review" %}</h2>{% if is_owner and attempt.incorrect_count|add:attempt.unanswered_count %}<a class="btn btn-sm btn-secondary" href="{% url 'dashboard:mistakes' %}?section={{ exam.section }}">🚩 {% translate "Practise my mistakes" %}</a>{% endif %}</div>
 <div class="table-wrap" data-explain-lang="{{ request.user.feedback_language }}"><table class="table">
-  <thead><tr><th>#</th><th>Question</th><th>Your answer</th><th>Correct answer</th><th>Points</th></tr></thead>
+  <thead><tr><th>#</th><th>{% translate "Question" %}</th><th>{% translate "Your answer" %}</th><th>{% translate "Correct answer" %}</th><th>{% translate "Points" %}</th></tr></thead>
   <tbody>
   {% for a in answers %}
   <tr class="answer-row {% if a.is_correct %}correct{% elif a.answer %}incorrect{% else %}unanswered{% endif %}"{% if attempt.status == 'completed' %} data-explain-url="{% url 'results:explain' a.question_id %}"{% endif %}>
@@ -16,8 +16,8 @@
     <td>{{ a.question.correct_display }}</td>
     <td>{% if a.is_correct %}<span class="badge badge-good">+{{ a.points|floatformat:"-2" }}</span>{% else %}<span class="badge badge-bad">0</span>{% endif %}</td>
   </tr>
-  {% empty %}<tr><td colspan="5" class="empty">No answers recorded.</td></tr>{% endfor %}
+  {% empty %}<tr><td colspan="5" class="empty">{% translate "No answers recorded." %}</td></tr>{% endfor %}
   </tbody></table></div>
-{% if exam.section == 'listening' and exam.transcript and attempt.status == 'completed' %}<details class="box mt-2"><summary>Transcript</summary><div class="pre mt-1">{{ exam.transcript }}</div></details>{% endif %}
+{% if exam.section == 'listening' and exam.transcript and attempt.status == 'completed' %}<details class="box mt-2"><summary>{% translate "Transcript" %}</summary><div class="pre mt-1">{{ exam.transcript }}</div></details>{% endif %}
 {% endblock %}
 {% block scripts %}<script src="{% vstatic 'js/misc.js' %}"></script><script src="{% vstatic 'js/mistakes.js' %}"></script>{% endblock %}

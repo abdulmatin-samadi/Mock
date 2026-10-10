@@ -1,10 +1,10 @@
-{% load static core_tags %}<!doctype html>
-<html lang="en">
+{% load static core_tags i18n %}<!doctype html>
+{% get_current_language as LANG %}<html lang="{{ LANG }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ SITE_NAME }}{% endblock %} · {{ SITE_NAME }}</title>
-  <meta name="description" content="{{ SITE_NAME }} — Multilevel (CEFR) mock exams with AI feedback.">
+  <meta name="description" content="{{ SITE_NAME }} — {% translate 'Multilevel (CEFR) mock exams with AI feedback.' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% vstatic 'css/app.css' %}">
@@ -14,23 +14,24 @@
   {% block head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if shell %}has-shell{% endif %}{% endblock %}">
-<a class="skip-link" href="#main">Skip to content</a>
+<a class="skip-link" href="#main">{% translate "Skip to content" %}</a>
 {% block sidebar %}{% if shell %}{% include "partials/student_sidebar.html" %}{% endif %}{% endblock %}
 <div class="page">
 {% block header %}
 {% if shell %}
 <header class="app-top">
-  <button class="btn btn-sm btn-secondary app-menu" data-toggle="#app-sidebar" aria-controls="app-sidebar" aria-label="Open menu">{% include "partials/icon.html" with name="menu" size=18 %}</button>
+  <button class="btn btn-sm btn-secondary app-menu" data-toggle="#app-sidebar" aria-controls="app-sidebar" aria-label="{% translate 'Open menu' %}">{% include "partials/icon.html" with name="menu" size=18 %}</button>
   <span class="app-top-spacer"></span>
-  {% if user.is_guest %}<span class="guest-pill">Guest</span><a class="btn btn-sm" href="{% url 'accounts:register' %}">Create free account</a>{% else %}
-  <a class="btn btn-sm" href="{% url 'exams:hub' %}">Take a mock</a>
+  {% include "partials/lang_switch.html" %}
+  {% if user.is_guest %}<span class="guest-pill">{% translate "Guest" %}</span><a class="btn btn-sm" href="{% url 'accounts:register' %}">{% translate "Create free account" %}</a>{% else %}
+  <a class="btn btn-sm" href="{% url 'exams:hub' %}">{% translate "Take a mock" %}</a>
   <div class="dropdown">
-    <button aria-haspopup="true" aria-label="Account menu"><span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span></button>
+    <button aria-haspopup="true" aria-label="{% translate 'Account menu' %}"><span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span></button>
     <div class="dropdown-menu" role="menu">
       <div class="small muted" style="padding:8px 12px">{{ user.get_full_name }}<br>{{ user.email }}</div>
-      <a href="{% url 'accounts:profile' %}">Profile</a>
-      <a href="{% url 'accounts:password_change' %}">Change password</a>
-      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link" type="submit">Log out</button></form>
+      <a href="{% url 'accounts:profile' %}">{% translate "Profile" %}</a>
+      <a href="{% url 'accounts:password_change' %}">{% translate "Change password" %}</a>
+      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link" type="submit">{% translate "Log out" %}</button></form>
     </div>
   </div>{% endif %}
 </header>
@@ -41,39 +42,40 @@
     <button class="nav-toggle" data-toggle="#nav-links" aria-controls="nav-links" aria-expanded="false" aria-label="Menu">☰</button>
     {% with p=request.path %}
     <nav class="nav-links" id="nav-links" aria-label="Main">
-      <a href="{% url 'core:home' %}" class="{% if p == '/' %}active{% endif %}">Home</a>
-      <a href="{% url 'exams:hub' %}" class="{% if p == '/exams/' %}active{% endif %}">Mock Exams</a>
+      <a href="{% url 'core:home' %}" class="{% if p == '/' %}active{% endif %}">{% translate "Home" %}</a>
+      <a href="{% url 'exams:hub' %}" class="{% if p == '/exams/' %}active{% endif %}">{% translate "Mock Exams" %}</a>
       <a href="{% url 'exams:section' 'reading' %}" class="{% if 'reading' in p %}active{% endif %}">Reading</a>
       <a href="{% url 'exams:section' 'listening' %}" class="{% if 'listening' in p %}active{% endif %}">Listening</a>
       <a href="{% url 'exams:section' 'writing' %}" class="{% if p == '/exams/writing/' %}active{% endif %}">Writing</a>
       <a href="{% url 'exams:section' 'speaking' %}" class="{% if p == '/exams/speaking/' %}active{% endif %}">Speaking</a>
       {% if user.is_authenticated and user.is_student %}
-      <a href="{% url 'dashboard:results' %}" class="{% if p == '/dashboard/results/' %}active{% endif %}">My Results</a>
+      <a href="{% url 'dashboard:results' %}" class="{% if p == '/dashboard/results/' %}active{% endif %}">{% translate "My Results" %}</a>
       {% endif %}
     </nav>
     {% endwith %}
     <div class="nav-right">
+      {% include "partials/lang_switch.html" %}
       {% if user.is_authenticated %}
-        {% if user.is_admin %}<a class="btn btn-sm btn-secondary" href="{% url 'admin_dashboard:home' %}">Admin</a>{% endif %}
+        {% if user.is_admin %}<a class="btn btn-sm btn-secondary" href="{% url 'admin_dashboard:home' %}">{% translate "Admin" %}</a>{% endif %}
         <div class="dropdown">
-          <button aria-haspopup="true" aria-label="Account menu">
+          <button aria-haspopup="true" aria-label="{% translate 'Account menu' %}">
             <span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span>
           </button>
           <div class="dropdown-menu" role="menu">
             <div class="small muted" style="padding:8px 12px">{{ user.get_full_name }}<br>{{ user.email }}</div>
-            <a href="{% url 'dashboard:home' %}">Dashboard</a>
-            <a href="{% url 'accounts:profile' %}">Profile</a>
+            <a href="{% url 'dashboard:home' %}">{% translate "Dashboard" %}</a>
+            <a href="{% url 'accounts:profile' %}">{% translate "Profile" %}</a>
             {% if user.is_student %}
-            <a href="{% url 'dashboard:writing' %}">Writing history</a>
-            <a href="{% url 'dashboard:speaking' %}">Speaking history</a>
+            <a href="{% url 'dashboard:writing' %}">{% translate "Writing history" %}</a>
+            <a href="{% url 'dashboard:speaking' %}">{% translate "Speaking history" %}</a>
             {% endif %}
-            <a href="{% url 'accounts:password_change' %}">Change password</a>
-            <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link" type="submit">Log out</button></form>
+            <a href="{% url 'accounts:password_change' %}">{% translate "Change password" %}</a>
+            <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link" type="submit">{% translate "Log out" %}</button></form>
           </div>
         </div>
       {% else %}
-        <a class="btn btn-sm btn-ghost" href="{% url 'accounts:login' %}">Log in</a>
-        <a class="btn btn-sm" href="{% url 'accounts:register' %}">Register</a>
+        <a class="btn btn-sm btn-ghost" href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
+        <a class="btn btn-sm" href="{% url 'accounts:register' %}">{% translate "Register" %}</a>
       {% endif %}
     </div>
   </div>
@@ -91,12 +93,13 @@
 {% block footer %}{% if not shell %}
 <footer class="site-footer">
   <div class="container row-between">
-    <span class="row"><a class="foot-brand" href="{% url 'core:home' %}"><img src="{% static 'img/logo.png' %}" alt="" width="28" height="28">{{ SITE_NAME }}</a><span>© {% now "Y" %} · practice smarter for the Multilevel exam.</span></span>
-    <nav class="foot-links" aria-label="Footer"><a href="{% url 'exams:hub' %}">Mock exams</a><a href="{% url 'exams:section' 'listening' %}">Listening</a><a href="{% url 'exams:section' 'reading' %}">Reading</a><a href="{% url 'exams:section' 'writing' %}">Writing</a><a href="{% url 'exams:section' 'speaking' %}">Speaking</a></nav>
+    <span class="row"><a class="foot-brand" href="{% url 'core:home' %}"><img src="{% static 'img/logo.png' %}" alt="" width="28" height="28">{{ SITE_NAME }}</a><span>© {% now "Y" %} · {% translate "practice smarter for the Multilevel exam." %}</span></span>
+    <nav class="foot-links" aria-label="Footer"><a href="{% url 'exams:hub' %}">{% translate "Mock exams" %}</a><a href="{% url 'exams:section' 'listening' %}">Listening</a><a href="{% url 'exams:section' 'reading' %}">Reading</a><a href="{% url 'exams:section' 'writing' %}">Writing</a><a href="{% url 'exams:section' 'speaking' %}">Speaking</a></nav>
   </div>
 </footer>
 {% endif %}{% endblock %}
 </div>
+{% js_i18n %}
 <script src="{% vstatic 'js/app.js' %}"></script>
 {% block scripts %}{% endblock %}
 </body>

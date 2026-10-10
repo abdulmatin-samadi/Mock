@@ -64,7 +64,7 @@ def make_user(email, role=User.Role.STUDENT, **kw):
                                     last_name="Test", role=role, **kw)
 
 
-@override_settings(MEDIA_ROOT=TMP_MEDIA, PRIVATE_MEDIA_ROOT=TMP_MEDIA, AI_TASK_MODE="sync",
+@override_settings(MEDIA_ROOT=TMP_MEDIA, PRIVATE_MEDIA_ROOT=TMP_MEDIA, AI_TASK_MODE="sync", LANGUAGE_CODE="en",
                    STORAGES={"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
                              "private": {"BACKEND": "django.core.files.storage.FileSystemStorage",
                                          "OPTIONS": {"location": TMP_MEDIA}},
@@ -686,7 +686,7 @@ class PartPracticeTests(BaseTest):
         self.assertNotIn("(1) ______", page)
         self.assertIn("data-slot-for", page)          # Part 2 matching uses drag & drop slots
         self.assertIn("Questions 10–14: True / False / No Information", page)
-        self.assertIn("Testdan chiqmoqchimisiz?", page)  # exit dialog
+        self.assertIn("Leave the test?", page)  # exit dialog
         self.assertIn("№01", page)
         self.assertNotIn("harvesting", page)          # never leak answers
         # writing drafts autosave server-side and come back on resume

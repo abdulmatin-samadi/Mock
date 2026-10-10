@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load static humanize %}{% block title %}Multilevel exam preparation{% endblock %}
+{% extends "base.html" %}{% load static humanize i18n %}{% block title %}{% translate "Multilevel exam preparation" %}{% endblock %}
 {% block body_class %}landing{% if shell %} has-shell{% endif %}{% endblock %}
 {% block full %}
 <section class="lp-hero">
@@ -6,44 +6,44 @@
   <div class="container lp-hero-grid">
     <div class="lp-hero-text">
       {% include "partials/messages.html" %}
-      <span class="lp-pill"><span class="lp-pill-dot"></span>Multilevel · CEFR mock exams</span>
-      <h1>Reach your <span class="lp-accent">dream</span> level in the Multilevel exam.</h1>
-      <p class="lp-lead">Practise Listening, Reading, Writing and Speaking under real exam conditions. Get your 0–75 score, CEFR level and AI feedback on every essay and answer.</p>
+      <span class="lp-pill"><span class="lp-pill-dot"></span>{% translate "Multilevel · CEFR mock exams" %}</span>
+      <h1>{% blocktranslate trimmed %}Reach your <span class="lp-accent">dream</span> level in the Multilevel exam.{% endblocktranslate %}</h1>
+      <p class="lp-lead">{% translate "Practise Listening, Reading, Writing and Speaking under real exam conditions. Get your 0–75 score, CEFR level and AI feedback on every essay and answer." %}</p>
       <div class="lp-cta">
         {% if user.is_authenticated %}
-          <a class="btn btn-lg lp-btn-main" href="{% url 'dashboard:home' %}">Go to my dashboard →</a>
-          <a class="btn btn-lg lp-btn-ghost" href="{% url 'exams:hub' %}">Browse mocks</a>
+          <a class="btn btn-lg lp-btn-main" href="{% url 'dashboard:home' %}">{% translate "Go to my dashboard →" %}</a>
+          <a class="btn btn-lg lp-btn-ghost" href="{% url 'exams:hub' %}">{% translate "Browse mocks" %}</a>
         {% else %}
-          <a class="btn btn-lg lp-btn-main" href="{% url 'accounts:register' %}">Start for free →</a>
-          <a class="btn btn-lg lp-btn-ghost" href="{% url 'exams:hub' %}">Browse mocks</a>
+          <a class="btn btn-lg lp-btn-main" href="{% url 'accounts:register' %}">{% translate "Start for free →" %}</a>
+          <a class="btn btn-lg lp-btn-ghost" href="{% url 'exams:hub' %}">{% translate "Browse mocks" %}</a>
         {% endif %}
       </div>
       <ul class="lp-trust">
-        <li><b>{{ mock_total }}</b> mock tests</li>
-        <li><b>{{ stats.attempts_all_time|intcomma }}</b> attempts taken</li>
-        <li><b>4</b> skills</li>
+        <li><b>{{ mock_total }}</b> {% translate "mock tests" %}</li>
+        <li><b>{{ stats.attempts_all_time|intcomma }}</b> {% translate "attempts taken" %}</li>
+        <li><b>4</b> {% translate "skills" %}</li>
       </ul>
     </div>
 
     <div class="lp-preview" aria-hidden="true">
       <div class="lp-card lp-result">
-        <div class="lp-result-head"><span class="lp-tag">Writing · Mock 01</span><span class="lp-ok">✓ AI evaluated</span></div>
+        <div class="lp-result-head"><span class="lp-tag">{% translate "Writing · Mock 01" %}</span><span class="lp-ok">{% translate "✓ AI evaluated" %}</span></div>
         <div class="lp-result-main">
           <div class="lp-ring" style="--pct:81"><div><strong>61</strong><small>/ 75</small></div></div>
           <div class="lp-result-side">
             <span class="lp-level">B2</span>
-            <p>Upper-intermediate</p>
+            <p>{% translate "Upper-intermediate" %}</p>
           </div>
         </div>
         <div class="lp-bars">
-          <div><span>Task achievement</span><i style="--w:84%"></i><b>63</b></div>
-          <div><span>Coherence</span><i style="--w:80%"></i><b>60</b></div>
-          <div><span>Vocabulary</span><i style="--w:77%"></i><b>58</b></div>
-          <div><span>Grammar</span><i style="--w:83%"></i><b>62</b></div>
+          <div><span>{% translate "Task achievement" %}</span><i style="--w:84%"></i><b>63</b></div>
+          <div><span>{% translate "Coherence" %}</span><i style="--w:80%"></i><b>60</b></div>
+          <div><span>{% translate "Vocabulary" %}</span><i style="--w:77%"></i><b>58</b></div>
+          <div><span>{% translate "Grammar" %}</span><i style="--w:83%"></i><b>62</b></div>
         </div>
       </div>
-      <div class="lp-card lp-float lp-float-1"><span class="lp-float-ico" style="--c:#10b981">{% include "partials/icon.html" with name="mic" size=18 %}</span><div><b>Speaking</b><small>Part 2 · recorded</small></div></div>
-      <div class="lp-card lp-float lp-float-2"><span class="lp-float-ico" style="--c:#f59e0b">{% include "partials/icon.html" with name="book" size=18 %}</span><div><b>Reading</b><small>32 / 35 correct</small></div></div>
+      <div class="lp-card lp-float lp-float-1"><span class="lp-float-ico" style="--c:#10b981">{% include "partials/icon.html" with name="mic" size=18 %}</span><div><b>Speaking</b><small>{% translate "Part 2 · recorded" %}</small></div></div>
+      <div class="lp-card lp-float lp-float-2"><span class="lp-float-ico" style="--c:#f59e0b">{% include "partials/icon.html" with name="book" size=18 %}</span><div><b>Reading</b><small>{% translate "32 / 35 correct" %}</small></div></div>
     </div>
   </div>
 </section>
@@ -51,9 +51,9 @@
 <section class="lp-section">
   <div class="container">
     <div class="lp-head">
-      <span class="lp-eyebrow">Choose a skill</span>
-      <h2>Every section of the real exam</h2>
-      <p>Take a full timed test, or practise one part at a time.</p>
+      <span class="lp-eyebrow">{% translate "Choose a skill" %}</span>
+      <h2>{% translate "Every section of the real exam" %}</h2>
+      <p>{% translate "Take a full timed test, or practise one part at a time." %}</p>
     </div>
     <div class="lp-skills">
       {% for s in sections %}
@@ -61,7 +61,7 @@
         <span class="lp-skill-ico">{% include "partials/icon.html" with name=s.icon size=24 %}</span>
         <h3>{{ s.label }}</h3>
         <p>{{ s.blurb }}</p>
-        <div class="lp-skill-foot"><span>{{ s.count }} mock{{ s.count|pluralize }} · {{ s.time }}</span><span class="lp-go">→</span></div>
+        <div class="lp-skill-foot"><span>{% blocktranslate count n=s.count trimmed %}{{ n }} mock{% plural %}{{ n }} mocks{% endblocktranslate %} · {{ s.time }}</span><span class="lp-go">→</span></div>
       </a>
       {% endfor %}
     </div>
@@ -71,17 +71,17 @@
 <section class="lp-section lp-alt">
   <div class="container lp-two">
     <div>
-      <span class="lp-eyebrow">How it works</span>
-      <h2>From first mock to your target level</h2>
+      <span class="lp-eyebrow">{% translate "How it works" %}</span>
+      <h2>{% translate "From first mock to your target level" %}</h2>
       <ol class="lp-steps">
-        <li><span>1</span><div><h3>Pick a mock</h3><p>Choose a section and take the full test, or select just one part to practise.</p></div></li>
-        <li><span>2</span><div><h3>Answer like the real exam</h3><p>Timed parts, audio, drag-and-drop matching, a map, essays and voice recording.</p></div></li>
-        <li><span>3</span><div><h3>Get your score and feedback</h3><p>Reading and Listening are marked instantly. AI scores Writing and Speaking with corrections and tips.</p></div></li>
+        <li><span>1</span><div><h3>{% translate "Pick a mock" %}</h3><p>{% translate "Choose a section and take the full test, or select just one part to practise." %}</p></div></li>
+        <li><span>2</span><div><h3>{% translate "Answer like the real exam" %}</h3><p>{% translate "Timed parts, audio, drag-and-drop matching, a map, essays and voice recording." %}</p></div></li>
+        <li><span>3</span><div><h3>{% translate "Get your score and feedback" %}</h3><p>{% translate "Reading and Listening are marked instantly. AI scores Writing and Speaking with corrections and tips." %}</p></div></li>
       </ol>
     </div>
     <div class="lp-scale">
-      <h3>Multilevel score → CEFR level</h3>
-      <p class="muted small">Every result is shown on the official 0–75 scale with its CEFR level.</p>
+      <h3>{% translate "Multilevel score → CEFR level" %}</h3>
+      <p class="muted small">{% translate "Every result is shown on the official 0–75 scale with its CEFR level." %}</p>
       <div class="lp-band" style="--c:#94a3b8"><div><b>Below B1</b><small>0 – 37</small></div><i style="--w:49%"></i></div>
       <div class="lp-band" style="--c:#0ea5e9"><div><b>B1</b><small>38 – 50</small></div><i style="--w:66%"></i></div>
       <div class="lp-band" style="--c:#0a74d6"><div><b>B2</b><small>51 – 64</small></div><i style="--w:85%"></i></div>
@@ -93,20 +93,20 @@
 <section class="lp-section">
   <div class="container">
     <div class="lp-feats">
-      <div class="lp-feat"><span class="lp-feat-ico">{% include "partials/icon.html" with name="zap" size=22 %}</span><h3>Instant marking</h3><p>Answers are checked on the server and turned into a 0–75 score with a CEFR level.</p></div>
-      <div class="lp-feat"><span class="lp-feat-ico">{% include "partials/icon.html" with name="star" size=22 %}</span><h3>Honest AI feedback</h3><p>Criterion scores, corrected mistakes and improved sentences. We say clearly what the AI can't assess.</p></div>
-      <div class="lp-feat"><span class="lp-feat-ico">{% include "partials/icon.html" with name="chart" size=22 %}</span><h3>Track your progress</h3><p>Every attempt is saved, with a learning curve and your level in each skill.</p></div>
+      <div class="lp-feat"><span class="lp-feat-ico">{% include "partials/icon.html" with name="zap" size=22 %}</span><h3>{% translate "Instant marking" %}</h3><p>{% translate "Answers are checked on the server and turned into a 0–75 score with a CEFR level." %}</p></div>
+      <div class="lp-feat"><span class="lp-feat-ico">{% include "partials/icon.html" with name="star" size=22 %}</span><h3>{% translate "Honest AI feedback" %}</h3><p>{% translate "Criterion scores, corrected mistakes and improved sentences. We say clearly what the AI can't assess." %}</p></div>
+      <div class="lp-feat"><span class="lp-feat-ico">{% include "partials/icon.html" with name="chart" size=22 %}</span><h3>{% translate "Track your progress" %}</h3><p>{% translate "Every attempt is saved, with a learning curve and your level in each skill." %}</p></div>
     </div>
 
     <div class="lp-final">
       <div>
-        <h2>Ready to see your real level?</h2>
-        <p>{% if full_total %}Try a full mock — all four skills in one sitting — or start with a single section.{% else %}Start with a single section — it takes less than an hour.{% endif %}</p>
+        <h2>{% translate "Ready to see your real level?" %}</h2>
+        <p>{% if full_total %}{% translate "Try a full mock — all four skills in one sitting — or start with a single section." %}{% else %}{% translate "Start with a single section — it takes less than an hour." %}{% endif %}</p>
       </div>
       {% if user.is_authenticated %}
-        <a class="btn btn-lg lp-btn-light" href="{% url 'exams:hub' %}">Take a mock →</a>
+        <a class="btn btn-lg lp-btn-light" href="{% url 'exams:hub' %}">{% translate "Take a mock →" %}</a>
       {% else %}
-        <a class="btn btn-lg lp-btn-light" href="{% url 'accounts:register' %}">Create a free account →</a>
+        <a class="btn btn-lg lp-btn-light" href="{% url 'accounts:register' %}">{% translate "Create a free account →" %}</a>
       {% endif %}
     </div>
   </div>

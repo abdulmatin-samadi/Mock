@@ -1,6 +1,6 @@
-{% extends "base.html" %}{% load static core_tags %}{% block title %}Writing result{% endblock %}
+{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}{% translate "Writing result" %}{% endblock %}
 {% block content %}
-<div class="page-head"><div><div class="eyebrow">Writing result</div><h1>{{ sub.attempt.exam.title }}</h1></div><a class="btn btn-secondary" href="{{ sub.attempt.get_absolute_url }}">Whole attempt</a></div>
+<div class="page-head"><div><div class="eyebrow">{% translate "Writing result" %}</div><h1>{{ sub.attempt.exam.title }}</h1></div><a class="btn btn-secondary" href="{{ sub.attempt.get_absolute_url }}">{% translate "Whole attempt" %}</a></div>
 <div class="card mb-2">{% include "partials/identity.html" with student=sub.student exam=sub.attempt.exam submitted=sub.submitted_at score=sub.score status=sub.get_status_display %}</div>
 <div class="card" {% if sub.status == 'pending' or sub.status == 'processing' %}data-poll-url="{% url 'attempt-detail' sub.attempt_id %}"{% endif %}>{% include "results/_writing_eval.html" %}</div>
 {% endblock %}

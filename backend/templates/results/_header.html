@@ -1,34 +1,34 @@
-{% load core_tags %}
+{% load core_tags i18n %}
 <div class="page-head">
-  <div><div class="eyebrow">Multilevel · {{ exam.get_section_display }} {% if attempt.practice %}practice · {{ attempt.practice_label }}{% else %}result{% endif %}</div><h1>{{ exam.title }}</h1></div>
+  <div><div class="eyebrow">Multilevel · {{ exam.get_section_display }} {% if attempt.practice %}{% translate "practice" %} · {{ attempt.practice_label }}{% else %}{% translate "result" %}{% endif %}</div><h1>{{ exam.title }}</h1></div>
   <div class="row no-print">
-    {% if is_owner %}<a class="btn btn-secondary" href="{% url 'dashboard:results' %}">All results</a><a class="btn" href="{% url 'exams:detail' exam.pk %}">Retake</a>
-    {% elif user.is_admin %}<a class="btn btn-secondary" href="{% url 'admin_dashboard:user_detail' attempt.student_id %}">Student profile</a><a class="btn btn-secondary" href="{% url 'admin_dashboard:results' %}">All results</a>{% endif %}
+    {% if is_owner %}<a class="btn btn-secondary" href="{% url 'dashboard:results' %}">{% translate "All results" %}</a><a class="btn" href="{% url 'exams:detail' exam.pk %}">{% translate "Retake" %}</a>
+    {% elif user.is_admin %}<a class="btn btn-secondary" href="{% url 'admin_dashboard:user_detail' attempt.student_id %}">{% translate "Student profile" %}</a><a class="btn btn-secondary" href="{% url 'admin_dashboard:results' %}">{% translate "All results" %}</a>{% endif %}
   </div>
 </div>
 {% if attempt.status == 'evaluating' %}
-  <div class="alert alert-info" {% if is_owner %}data-poll-url="{% url 'attempt-detail' attempt.pk %}"{% endif %}>⏳ AI evaluation in progress… This page refreshes automatically when it's done (usually under a minute).</div>
+  <div class="alert alert-info" {% if is_owner %}data-poll-url="{% url 'attempt-detail' attempt.pk %}"{% endif %}>⏳ {% translate "AI evaluation in progress… This page refreshes automatically when it's done (usually under a minute)." %}</div>
 {% elif attempt.status == 'failed' %}
-  <div class="alert alert-error">The AI evaluation could not be completed. Your submission is saved{% if user.is_admin %} — see the error below and use “Retry evaluation”{% else %}, and an administrator can re-run the evaluation{% endif %}.</div>
+  <div class="alert alert-error">{% if user.is_admin %}The AI evaluation could not be completed. Your submission is saved — see the error below and use “Retry evaluation”.{% else %}{% translate "The AI evaluation could not be completed. Your submission is saved, and an administrator can re-run the evaluation." %}{% endif %}</div>
 {% endif %}
 <div class="card mb-2">
   <div class="score-hero">
     <div class="score-ring" style="--pct: {{ attempt.percentage|default:0|floatformat:0 }}"><div>
       {% if result %}
-        {% if attempt.practice and exam.is_objective and attempt.status == 'completed' %}<strong>{{ attempt.correct_count }}/{{ attempt.correct_count|add:attempt.incorrect_count|add:attempt.unanswered_count }}</strong><span>CORRECT</span>
-        {% elif result.scaled_score is not None %}<strong>{{ result.scaled_score|floatformat:"-1" }}</strong><span>OF 75</span>
-        {% else %}<strong>{{ attempt.percentage|floatformat:0 }}%</strong><span>SCORE</span>{% endif %}
-      {% else %}<strong>…</strong><span>PENDING</span>{% endif %}
+        {% if attempt.practice and exam.is_objective and attempt.status == 'completed' %}<strong>{{ attempt.correct_count }}/{{ attempt.correct_count|add:attempt.incorrect_count|add:attempt.unanswered_count }}</strong><span>{% translate "CORRECT" %}</span>
+        {% elif result.scaled_score is not None %}<strong>{{ result.scaled_score|floatformat:"-1" }}</strong><span>{% translate "OF 75" %}</span>
+        {% else %}<strong>{{ attempt.percentage|floatformat:0 }}%</strong><span>{% translate "SCORE" %}</span>{% endif %}
+      {% else %}<strong>…</strong><span>{% translate "PENDING" %}</span>{% endif %}
     </div></div>
     <div style="flex:1;min-width:240px">
-      {% if attempt.practice %}<span class="badge badge-ok" style="font-size:.9rem">Part practice · {{ attempt.practice_label }}</span>{% elif result.cefr_level %}<span class="badge badge-good" style="font-size:.9rem">CEFR {{ result.cefr_level }}</span>{% endif %}
+      {% if attempt.practice %}<span class="badge badge-ok" style="font-size:.9rem">{% translate "Part practice" %} · {{ attempt.practice_label }}</span>{% elif result.cefr_level %}<span class="badge badge-good" style="font-size:.9rem">CEFR {{ result.cefr_level }}</span>{% endif %}
       {% status_badge attempt.status attempt.get_status_display %}
-      {% if attempt.is_late %}<span class="badge badge-ok">Submitted late</span>{% endif %}
-      {% if result.feedback %}<p class="mt-1 mb-0">{{ result.feedback }}</p>{% endif %}
+      {% if attempt.is_late %}<span class="badge badge-ok">{% translate "Submitted late" %}</span>{% endif %}
+      {% if result.feedback and not exam.is_objective %}<p class="mt-1 mb-0">{{ result.feedback }}</p>{% elif exam.is_objective and attempt.practice and attempt.status == 'completed' %}<p class="mt-1 mb-0">{% translate "Part practice gives no 0–75 score. Take the full test to get a Multilevel score and CEFR level." %}</p>{% endif %}
       {% if exam.is_objective and attempt.status == 'completed' %}
-      <div class="row mt-1 small"><span>✅ {{ attempt.correct_count }} correct</span><span>❌ {{ attempt.incorrect_count }} incorrect</span><span>⬜ {{ attempt.unanswered_count }} unanswered</span><span>Raw {{ attempt.score|floatformat:"-2" }}/{{ attempt.max_score|floatformat:"-2" }} ({{ attempt.percentage|floatformat:1 }}%)</span></div>
+      <div class="row mt-1 small"><span>✅ {{ attempt.correct_count }} {% translate "correct" %}</span><span>❌ {{ attempt.incorrect_count }} {% translate "incorrect" %}</span><span>⬜ {{ attempt.unanswered_count }} {% translate "unanswered" %}</span><span>{% translate "Raw" %} {{ attempt.score|floatformat:"-2" }}/{{ attempt.max_score|floatformat:"-2" }} ({{ attempt.percentage|floatformat:1 }}%)</span></div>
       {% endif %}
-      <p class="small muted mt-1 mb-0">Time spent: {{ attempt.time_spent|duration }}</p>
+      <p class="small muted mt-1 mb-0">{% translate "Time spent:" %} {{ attempt.time_spent|duration }}</p>
     </div>
   </div>
   <hr>

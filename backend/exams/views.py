@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.utils.translation import gettext
 
 from core.media import serve_private_file
 from results import services as result_services
@@ -101,14 +102,14 @@ def start(request, pk):
         user = guest.start_guest(request)
         if user is None:
             return _need_account(request, exam.get_absolute_url(),
-                                 "Create a free account to take this mock.")
+                                 gettext("Create a free account to take this mock."))
     try:
         attempt, _ = result_services.start_attempt(user, exam, practice=practice)
     except guest.GuestLimitReached:
         return _need_account(request, exam.get_absolute_url(),
-                             "You've used your free mock. Create a free account to continue — your result is kept.")
+                             gettext("You've used your free mock. Create a free account to continue — your result is kept."))
     except PermissionDenied:
-        messages.error(request, "Only student accounts can take mock exams.")
+        messages.error(request, gettext("Only student accounts can take mock exams."))
         return redirect(exam.get_absolute_url())
     except ValidationError as e:
         messages.error(request, " ".join(e.messages))
@@ -142,7 +143,7 @@ def take(request, pk):
         return redirect(attempt.get_absolute_url())
     if exam.is_objective and result_services.past_grace(attempt):
         result_services.grade_objective(attempt, late=True)
-        messages.warning(request, "Time ran out. Your saved answers were submitted automatically.")
+        messages.warning(request, gettext("Time ran out. Your saved answers were submitted automatically."))
         return redirect(attempt.get_absolute_url())
 
     deadline = result_services.deadline(attempt)
@@ -212,11 +213,11 @@ def discard(request, pk):
     """Stop an unfinished attempt. Nothing is deleted — it is marked "Discarded"."""
     attempt = get_object_or_404(ExamAttempt, pk=pk, student=request.user)
     if attempt.full_mock_attempt_id:
-        messages.error(request, "Sections of a full mock cannot be discarded separately.")
+        messages.error(request, gettext("Sections of a full mock cannot be discarded separately."))
     elif attempt.status == ExamAttempt.Status.IN_PROGRESS:
         ExamAttempt.objects.filter(pk=attempt.pk, status=ExamAttempt.Status.IN_PROGRESS).update(
             status=ExamAttempt.Status.DISCARDED)
-        messages.success(request, f"“{attempt.exam.title}” was discarded.")
+        messages.success(request, gettext("“%(title)s” was discarded.") % {"title": attempt.exam.title})
     nxt = request.POST.get("next", "")
     return redirect(nxt if nxt.startswith("/") and not nxt.startswith("//") else "dashboard:home")
 
@@ -266,13 +267,13 @@ def full_start(request, pk):
 
     fm = get_object_or_404(FullMock, pk=pk, is_published=True)
     if not request.user.is_authenticated:
-        return _need_account(request, fm.get_absolute_url(), "Create a free account to take a full mock.")
+        return _need_account(request, fm.get_absolute_url(), gettext("Create a free account to take a full mock."))
     try:
         full, _ = result_services.start_full_mock(request.user, fm)
     except GuestLimitReached:
-        return _need_account(request, fm.get_absolute_url(), "Create a free account to take a full mock.")
+        return _need_account(request, fm.get_absolute_url(), gettext("Create a free account to take a full mock."))
     except PermissionDenied:
-        messages.error(request, "Only student accounts can take full mocks.")
+        messages.error(request, gettext("Only student accounts can take full mocks."))
         return redirect(fm.get_absolute_url())
     return redirect("exams:full_progress", pk=full.pk)
 

@@ -1,27 +1,27 @@
-{% extends "base.html" %}{% load humanize %}{% block title %}Home{% endblock %}
+{% extends "base.html" %}{% load humanize i18n %}{% block title %}{% translate "Home" %}{% endblock %}
 {% block content %}
 <section class="dh-hero">
   <div class="dh-rings" aria-hidden="true"><span></span><span></span></div>
   <div class="dh-left">
     <span class="dh-date">{% now "l, j F" %}</span>
     <h1>{{ greeting }}, <span>{{ user.first_name|default:user.email|capfirst }}</span> 👋</h1>
-    <p>{% if stats.exams_completed %}You've completed {{ stats.exams_completed }} mock{{ stats.exams_completed|pluralize }}. Keep the momentum going!{% else %}Take your first mock to discover your Multilevel level.{% endif %}</p>
+    <p>{% if stats.exams_completed %}{% blocktranslate count n=stats.exams_completed trimmed %}You've completed {{ n }} mock. Keep the momentum going!{% plural %}You've completed {{ n }} mocks. Keep the momentum going!{% endblocktranslate %}{% else %}{% translate 'Take your first mock to discover your Multilevel level.' %}{% endif %}</p>
     <div class="dh-chips">
-      <span>🔥 <b>{{ activity.streak }}</b> day streak</span>
-      <span>📅 <b>{{ activity.this_week }}</b> this week</span>
-      <span>✅ <b>{{ activity.active_days }}</b> active days</span>
+      <span>🔥 <b>{{ activity.streak }}</b> {% translate "day streak" %}</span>
+      <span>📅 <b>{{ activity.this_week }}</b> {% translate "this week" %}</span>
+      <span>✅ <b>{{ activity.active_days }}</b> {% translate "active days" %}</span>
     </div>
     <div class="dh-cta">
-      <a class="btn btn-lg dh-btn" href="{% url 'exams:hub' %}">Take a mock →</a>
-      <a class="btn btn-lg dh-btn-ghost" href="{% url 'exams:full_list' %}">🎯 Full mock</a>
+      <a class="btn btn-lg dh-btn" href="{% url 'exams:hub' %}">{% translate "Take a mock →" %}</a>
+      <a class="btn btn-lg dh-btn-ghost" href="{% url 'exams:full_list' %}">🎯 {% translate "Full mock" %}</a>
     </div>
   </div>
   <div class="dh-medal">
-    <div class="dh-ring" style="--pct:{{ best_pct }}"><div>{% if best is not None %}<strong>{{ best }}</strong><small>/ 75</small>{% else %}<strong>—</strong><small>no score yet</small>{% endif %}</div></div>
+    <div class="dh-ring" style="--pct:{{ best_pct }}"><div>{% if best is not None %}<strong>{{ best }}</strong><small>/ 75</small>{% else %}<strong>—</strong><small>{% translate "no score yet" %}</small>{% endif %}</div></div>
     <div class="dh-medal-text">
-      <span>Best score</span>
+      <span>{% translate "Best score" %}</span>
       <b class="dh-level">{{ best_level|default:"—" }}</b>
-      {% if stats.current_level %}<small>Latest level · {{ stats.current_level }}</small>{% endif %}
+      {% if stats.current_level %}<small>{% translate "Latest level" %} · {{ stats.current_level }}</small>{% endif %}
     </div>
   </div>
 </section>
@@ -29,40 +29,40 @@
 <div class="mt-2">{% include "partials/continue.html" %}</div>
 
 <div class="dh-stats mt-2">
-  <div style="--c:#0197f8"><span class="dh-ico">{% include "partials/icon.html" with name="file" size=20 %}</span><div><strong>{{ stats.exams_completed }}</strong><small>Mocks taken</small></div></div>
-  <div style="--c:#f97316"><span class="dh-ico">{% include "partials/icon.html" with name="zap" size=20 %}</span><div><strong>{{ activity.today }}</strong><small>Attempts today</small></div></div>
-  <div style="--c:#8b5cf6"><span class="dh-ico">{% include "partials/icon.html" with name="pen" size=20 %}</span><div><strong>{{ stats.writing_submissions }}</strong><small>Essays written</small></div></div>
-  <div style="--c:#10b981"><span class="dh-ico">{% include "partials/icon.html" with name="mic" size=20 %}</span><div><strong>{{ stats.speaking_submissions }}</strong><small>Answers recorded</small></div></div>
+  <div style="--c:#0197f8"><span class="dh-ico">{% include "partials/icon.html" with name="file" size=20 %}</span><div><strong>{{ stats.exams_completed }}</strong><small>{% translate "Mocks taken" %}</small></div></div>
+  <div style="--c:#f97316"><span class="dh-ico">{% include "partials/icon.html" with name="zap" size=20 %}</span><div><strong>{{ activity.today }}</strong><small>{% translate "Attempts today" %}</small></div></div>
+  <div style="--c:#8b5cf6"><span class="dh-ico">{% include "partials/icon.html" with name="pen" size=20 %}</span><div><strong>{{ stats.writing_submissions }}</strong><small>{% translate "Essays written" %}</small></div></div>
+  <div style="--c:#10b981"><span class="dh-ico">{% include "partials/icon.html" with name="mic" size=20 %}</span><div><strong>{{ stats.speaking_submissions }}</strong><small>{% translate "Answers recorded" %}</small></div></div>
 </div>
 
 <div class="mt-3">{% include "partials/section_cards.html" %}</div>
 
 <div class="dh-grid mt-3">
 <div class="card curve">
-  <div class="label-dot" style="--dot:#0d9488">Learning curve</div>
+  <div class="label-dot" style="--dot:#0d9488">{% translate "Learning curve" %}</div>
   {% if curve %}
   <div class="row-between mt-1"><div class="curve-head"><strong>{{ curve.level }}</strong><span class="muted">{{ curve.latest }}/75</span>
-    {% if curve.change is not None %}<span class="{% if curve.change >= 0 %}delta-up{% else %}delta-down{% endif %}">{% if curve.change >= 0 %}▲ +{{ curve.change }}{% else %}▼ {{ curve.change }}{% endif %} pts</span>{% endif %}</div>
-    <span class="small muted">last {{ curve.count }} mock{{ curve.count|pluralize }}</span></div>
-  <svg viewBox="0 0 {{ curve.width }} {{ curve.height }}" preserveAspectRatio="none" role="img" aria-label="Score trend over your last mocks">
+    {% if curve.change is not None %}<span class="{% if curve.change >= 0 %}delta-up{% else %}delta-down{% endif %}">{% if curve.change >= 0 %}▲ +{{ curve.change }}{% else %}▼ {{ curve.change }}{% endif %} {% translate "pts" %}</span>{% endif %}</div>
+    <span class="small muted">{% blocktranslate count n=curve.count trimmed %}last {{ n }} mock{% plural %}last {{ n }} mocks{% endblocktranslate %}</span></div>
+  <svg viewBox="0 0 {{ curve.width }} {{ curve.height }}" preserveAspectRatio="none" role="img" aria-label="{% translate 'Score trend over your last mocks' %}">
     <defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#14b8a6" stop-opacity=".22"/><stop offset="1" stop-color="#14b8a6" stop-opacity="0"/></linearGradient></defs>
     <line x1="0" x2="{{ curve.width }}" y1="{{ curve.b1_y }}" y2="{{ curve.b1_y }}" stroke="#cbd5e1" stroke-dasharray="6 6" vector-effect="non-scaling-stroke"/>
     <polygon points="{{ curve.area }}" fill="url(#cg)"/>
     <polyline points="{{ curve.line }}" fill="none" stroke="#0d9488" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
   </svg>
-  <p class="tiny muted mb-0">Dashed line = B1 threshold (38/75).</p>
-  {% else %}<p class="muted mt-1 mb-0">Complete a mock to start your learning curve.</p>{% endif %}
+  <p class="tiny muted mb-0">{% translate "Dashed line = B1 threshold (38/75)." %}</p>
+  {% else %}<p class="muted mt-1 mb-0">{% translate "Complete a mock to start your learning curve." %}</p>{% endif %}
 </div>
 
 <div class="card">
-  <div class="label-dot" style="--dot:#64748b">Level by skill · Multilevel</div>
+  <div class="label-dot" style="--dot:#64748b">{% translate "Level by skill · Multilevel" %}</div>
   <div class="skills mt-2">
     {% for s in skills %}
     <div>
       <div class="skill-level" style="color:{{ s.color }}">{% if s.count %}{{ s.level }}{% else %}—{% endif %}</div>
       <div class="skill-bar" style="background:color-mix(in srgb, {{ s.color }} 15%, #fff)" title="{% if s.score is not None %}{{ s.score }}/75{% endif %}"><span style="height:{{ s.pct }}%;background:{{ s.color }}"></span></div>
       <strong>{{ s.label }}</strong>
-      <div class="small muted">{{ s.count }} mock{{ s.count|pluralize }}{% if s.score is not None %} · {{ s.score }}/75{% endif %}</div>
+      <div class="small muted">{% blocktranslate count n=s.count trimmed %}{{ n }} mock{% plural %}{{ n }} mocks{% endblocktranslate %}{% if s.score is not None %} · {{ s.score }}/75{% endif %}</div>
     </div>
     {% endfor %}
   </div>
@@ -74,7 +74,7 @@
 <div class="dh-grid3 mt-3">
 {% if word %}
 <div class="card word-card">
-  <div class="label-dot" style="--dot:#f59e0b;color:#b45309">Word of the day</div>
+  <div class="label-dot" style="--dot:#f59e0b;color:#b45309">{% translate "Word of the day" %}</div>
   <p class="mt-2 mb-1"><span class="word">{{ word.word }}</span>{% if word.ipa %}<span class="ipa">{{ word.ipa }}</span>{% endif %}{% if word.part_of_speech %}<span class="pos">{{ word.part_of_speech }}</span>{% endif %}{% if word.level %} <span class="badge">{{ word.level }}</span>{% endif %}</p>
   <p class="mb-0" style="color:var(--ink-2)">{{ word.definition }}</p>
   {% if word.example %}<p class="mt-1 mb-0 small muted"><em>“{{ word.example }}”</em></p>{% endif %}
@@ -83,34 +83,34 @@
 
 
   <div class="card">
-    <div class="label-dot" style="--dot:#f59e0b">Day vs night</div>
+    <div class="label-dot" style="--dot:#f59e0b">{% translate "Day vs night" %}</div>
     <div class="donut-wrap mt-2">
       <svg viewBox="0 0 100 100" role="img" aria-label="{{ activity.day }} day and {{ activity.night }} night attempts">
         <circle cx="50" cy="50" r="42" fill="none" stroke="{% if activity.total %}#6366f1{% else %}#e5e7eb{% endif %}" stroke-width="12"/>
         {% if activity.day %}<circle cx="50" cy="50" r="42" fill="none" stroke="#fbbf24" stroke-width="12" stroke-dasharray="{{ activity.donut_day }} {{ activity.donut_circ }}" transform="rotate(-90 50 50)"/>{% endif %}
         <text x="50" y="57" text-anchor="middle" font-size="20" font-weight="800" fill="#0f1b2d">{{ activity.total }}</text>
       </svg>
-      <div><p class="mb-1">🌞 Day <strong>{{ activity.day }}</strong> <span class="muted">{{ activity.day_pct }}%</span></p>
-      <p class="mb-0">🌙 Night <strong>{{ activity.night }}</strong> <span class="muted">{{ activity.night_pct }}%</span></p>
-      <p class="tiny muted mt-1 mb-0">Day = 06:00–18:00</p></div>
+      <div><p class="mb-1">🌞 {% translate "Day" %} <strong>{{ activity.day }}</strong> <span class="muted">{{ activity.day_pct }}%</span></p>
+      <p class="mb-0">🌙 {% translate "Night" %} <strong>{{ activity.night }}</strong> <span class="muted">{{ activity.night_pct }}%</span></p>
+      <p class="tiny muted mt-1 mb-0">{% translate "Day = 06:00–18:00" %}</p></div>
     </div>
   </div>
   <div class="card">
-    <div class="label-dot">This week</div>
-    <div class="week-bars mt-2">{% for d in activity.week %}<div class="wb" title="{{ d.n }} attempt{{ d.n|pluralize }}"><span class="{% if not d.n %}zero{% endif %}" style="height:{% if d.n %}{{ d.pct }}%{% else %}4px{% endif %}"></span><small>{{ d.label }}</small></div>{% endfor %}</div>
-    <p class="muted mt-1 mb-0">{{ activity.this_week }} attempt{{ activity.this_week|pluralize }} this week</p>
+    <div class="label-dot">{% translate "This week" %}</div>
+    <div class="week-bars mt-2">{% for d in activity.week %}<div class="wb" title="{% blocktranslate count n=d.n trimmed %}{{ n }} attempt{% plural %}{{ n }} attempts{% endblocktranslate %}"><span class="{% if not d.n %}zero{% endif %}" style="height:{% if d.n %}{{ d.pct }}%{% else %}4px{% endif %}"></span><small>{{ d.label }}</small></div>{% endfor %}</div>
+    <p class="muted mt-1 mb-0">{% blocktranslate count n=activity.this_week trimmed %}{{ n }} attempt this week{% plural %}{{ n }} attempts this week{% endblocktranslate %}</p>
   </div>
 </div>
 
 <div class="mt-3"><div class="card">
-  <div class="label-dot" style="--dot:#64748b">Mock library</div>
+  <div class="label-dot" style="--dot:#64748b">{% translate "Mock library" %}</div>
   <div class="mt-2">
     <div class="lib-card">
       <div class="row-between"><h3 class="mb-0">Multilevel</h3><strong>{{ library.total }}</strong></div>
       {% for r in library.sections %}<a class="lib-row" href="{% url 'exams:section' r.key %}" style="color:inherit"><span style="color:{{ r.color }}">{% include "partials/icon.html" with name=r.icon size=18 %}</span><span>{{ r.label }}</span><span class="bar"><span style="width:{{ r.pct }}%;background:{{ r.color }}"></span></span><b>{{ r.n }}</b></a>{% endfor %}
     </div>
   </div>
-  <div class="dh-community"><span><b>{{ platform.attempts_all_time }}</b> attempts on {{ SITE_NAME }}</span><span><b>{{ platform.attempts_today }}</b> today</span><span><b>{{ platform.new_mocks_week }}</b> new mocks this week</span></div>
+  <div class="dh-community"><span><b>{{ platform.attempts_all_time }}</b> {% blocktranslate with site=SITE_NAME %}attempts on {{ site }}{% endblocktranslate %}</span><span><b>{{ platform.attempts_today }}</b> {% translate "today" %}</span><span><b>{{ platform.new_mocks_week }}</b> {% translate "new mocks this week" %}</span></div>
 </div>
 
 </div>

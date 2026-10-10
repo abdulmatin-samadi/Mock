@@ -1,17 +1,17 @@
-{% extends "base.html" %}{% load core_tags %}{% block title %}Speaking history{% endblock %}
+{% extends "base.html" %}{% load core_tags i18n %}{% block title %}{% translate "Speaking history" %}{% endblock %}
 {% block content %}
 <section class="hx-hero" style="--c1:#065f46;--c2:#10b981;--c3:#6ee7b7">
   <div class="hx-head">
     <span class="hx-ico">{% include "partials/icon.html" with name="mic" size=26 %}</span>
-    <div><span class="hx-kicker">History</span><h1>Speaking history</h1><p>Listen back to your answers and read the AI feedback.</p></div>
+    <div><span class="hx-kicker">{% translate "History" %}</span><h1>{% translate "Speaking history" %}</h1><p>{% translate "Listen back to your answers and read the AI feedback." %}</p></div>
   </div>
   <div class="hx-figs">
-    <div><strong>{{ summary.n }}</strong><span>Recordings</span></div>
-    <div><strong>{{ summary.done }}</strong><span>Evaluated</span></div>
-    <div><strong>{{ summary.avg|floatformat:0|default:"—" }}</strong><span>Average /75</span></div>
-    <div><strong>{% widthratio summary.total_seconds 60 1 %}</strong><span>Minutes spoken</span></div>
+    <div><strong>{{ summary.n }}</strong><span>{% translate "Recordings" %}</span></div>
+    <div><strong>{{ summary.done }}</strong><span>{% translate "Evaluated" %}</span></div>
+    <div><strong>{{ summary.avg|floatformat:0|default:"—" }}</strong><span>{% translate "Average /75" %}</span></div>
+    <div><strong>{% widthratio summary.total_seconds 60 1 %}</strong><span>{% translate "Minutes spoken" %}</span></div>
   </div>
-  <a class="btn btn-lg hx-btn" href="{% url 'exams:section' 'speaking' %}">🎙️ New speaking mock</a>
+  <a class="btn btn-lg hx-btn" href="{% url 'exams:section' 'speaking' %}">🎙️ {% translate "New speaking mock" %}</a>
 </section>
 
 <div class="hx-list">
@@ -22,35 +22,35 @@
     <div class="sx-title">
       <h3>{{ a.exam.title }}</h3>
       <div class="wx-meta">
-        <span class="rs-sec" style="--c:#10b981">{% if a.practice %}Practice · {{ a.practice_label }}{% else %}Full test{% endif %}</span>
+        <span class="rs-sec" style="--c:#10b981">{% if a.practice %}{% translate 'Practice' %} · {{ a.practice_label }}{% else %}{% translate 'Full test' %}{% endif %}</span>
         <span>📅 {{ a.started_at|date:"j M Y, H:i" }}</span>
-        <span>🎙️ {{ a.recs|length }} answer{{ a.recs|length|pluralize }} · {% widthratio a.seconds 1 1 %}s</span>
+        <span>🎙️ {% blocktranslate count n=a.recs|length trimmed %}{{ n }} answer{% plural %}{{ n }} answers{% endblocktranslate %} · {% widthratio a.seconds 1 1 %}s</span>
         {% if a.status != 'completed' %}{% status_badge a.status a.get_status_display %}{% endif %}
       </div>
     </div>
-    <a class="btn btn-sm btn-secondary" href="{{ a.get_absolute_url }}">Full result →</a>
+    <a class="btn btn-sm btn-secondary" href="{{ a.get_absolute_url }}">{% translate "Full result →" %}</a>
   </header>
-  {% if a.failed %}<div class="wx-fail">⚠️ {{ a.failed }} answer{{ a.failed|pluralize }} couldn't be evaluated by the AI yet. An administrator can re-run the evaluation — your recordings are saved.</div>{% endif %}
+  {% if a.failed %}<div class="wx-fail">⚠️ {% blocktranslate count n=a.failed trimmed %}{{ n }} answer couldn't be evaluated by the AI yet. An administrator can re-run the evaluation — your recordings are saved.{% plural %}{{ n }} answers couldn't be evaluated by the AI yet. An administrator can re-run the evaluation — your recordings are saved.{% endblocktranslate %}</div>{% endif %}
   <ol class="sx-recs">
     {% for r in a.recs %}
     <li class="sx-rec">
       <div class="sx-rec-top">
         <span class="sx-part">{{ r.question.part_short }}</span>
         <p class="sx-q">{{ r.question.question }}</p>
-        <span class="sx-chip {% if r.processing_status == 'completed' %}ok{% elif r.processing_status == 'failed' %}bad{% else %}wait{% endif %}">{% if r.score is not None %}{{ r.score|floatformat:0 }}/75{% elif r.processing_status == 'failed' %}Not evaluated{% else %}{{ r.get_processing_status_display }}…{% endif %}</span>
+        <span class="sx-chip {% if r.processing_status == 'completed' %}ok{% elif r.processing_status == 'failed' %}bad{% else %}wait{% endif %}">{% if r.score is not None %}{{ r.score|floatformat:0 }}/75{% elif r.processing_status == 'failed' %}{% translate 'Not evaluated' %}{% else %}{{ r.get_processing_status_display }}…{% endif %}</span>
       </div>
       <audio controls preload="none" src="{% url 'speaking:audio' r.pk %}"></audio>
       {% if r.transcript or r.evaluation %}
       <details class="sx-more">
-        <summary>Transcript &amp; feedback</summary>
+        <summary>{% translate "Transcript &amp; feedback" %}</summary>
         {% if r.transcript %}<p class="sx-transcript">“{{ r.transcript }}”</p>{% endif %}
         {% with ev=r.evaluation %}{% if ev %}
         <div class="wx-crit">
-          <div><span>Fluency</span><i style="--w:{% widthratio ev.fluency_score 75 100 %}%"></i><b>{{ ev.fluency_score|floatformat:0 }}</b></div>
-          <div><span>Vocabulary</span><i style="--w:{% widthratio ev.vocabulary_score 75 100 %}%"></i><b>{{ ev.vocabulary_score|floatformat:0 }}</b></div>
-          <div><span>Grammar</span><i style="--w:{% widthratio ev.grammar_score 75 100 %}%"></i><b>{{ ev.grammar_score|floatformat:0 }}</b></div>
+          <div><span>{% translate "Fluency" %}</span><i style="--w:{% widthratio ev.fluency_score 75 100 %}%"></i><b>{{ ev.fluency_score|floatformat:0 }}</b></div>
+          <div><span>{% translate "Vocabulary" %}</span><i style="--w:{% widthratio ev.vocabulary_score 75 100 %}%"></i><b>{{ ev.vocabulary_score|floatformat:0 }}</b></div>
+          <div><span>{% translate "Grammar" %}</span><i style="--w:{% widthratio ev.grammar_score 75 100 %}%"></i><b>{{ ev.grammar_score|floatformat:0 }}</b></div>
         </div>
-        {% if ev.detailed_feedback %}<div class="wx-feedback"><span class="wx-ai">✨ AI feedback</span><p>{{ ev.detailed_feedback }}</p></div>{% endif %}
+        {% if ev.detailed_feedback %}<div class="wx-feedback"><span class="wx-ai">✨ {% translate "AI feedback" %}</span><p>{{ ev.detailed_feedback }}</p></div>{% endif %}
         {% endif %}{% endwith %}
       </details>
       {% endif %}
@@ -59,7 +59,7 @@
   </ol>
 </article>
 {% empty %}
-<div class="hx-empty"><span>🎙️</span><h3>No recordings yet</h3><p class="muted">Record your first speaking answers and get AI feedback on fluency, vocabulary and grammar.</p><a class="btn" href="{% url 'exams:section' 'speaking' %}">Start a speaking mock</a></div>
+<div class="hx-empty"><span>🎙️</span><h3>{% translate "No recordings yet" %}</h3><p class="muted">{% translate "Record your first speaking answers and get AI feedback on fluency, vocabulary and grammar." %}</p><a class="btn" href="{% url 'exams:section' 'speaking' %}">{% translate "Start a speaking mock" %}</a></div>
 {% endfor %}
 </div>
 {% include "partials/pagination.html" %}

@@ -1,4 +1,4 @@
-{% load core_tags %}
+{% load core_tags i18n %}
 {% for a in attempts %}
 <tr>
   <td><a href="{{ a.get_absolute_url }}"><strong>{{ a.exam.title }}</strong></a></td>
@@ -7,4 +7,4 @@
   <td><strong>{{ a.display_score|default:"—" }}</strong></td>
   <td>{% status_badge a.status a.get_status_display %}</td>
 </tr>
-{% empty %}<tr><td colspan="5" class="empty">No results yet — <a href="{% url 'exams:hub' %}">take your first mock exam</a>.</td></tr>{% endfor %}
+{% empty %}<tr><td colspan="5" class="empty">{% translate "No results yet" %} — <a href="{% url 'exams:hub' %}">{% translate "take your first mock" %}</a>.</td></tr>{% endfor %}

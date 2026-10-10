@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext
 
 from .forms import EmailAuthenticationForm, ProfileForm, RegisterForm
 from .guest import convert_guest, merge_guest_into
@@ -35,7 +36,7 @@ def register(request):
                 email=d["email"], password=d["password1"], first_name=d["first_name"], last_name=d["last_name"],
             )
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-        messages.success(request, f"Welcome to the platform, {user.first_name}! All mocks are now open.")
+        messages.success(request, gettext("Welcome, %(name)s! All mocks are now open.") % {"name": user.first_name})
         return redirect(_safe_next(request))
     return render(request, "accounts/register.html", {"form": form, "guest": guest,
                                                       "next": request.GET.get("next", "")})
@@ -55,7 +56,7 @@ class LoginView(auth_views.LoginView):
         guest = self.request.user if self.request.user.is_authenticated and self.request.user.is_guest else None
         response = super().form_valid(form)
         if merge_guest_into(guest, form.get_user()):
-            messages.success(self.request, "Your free mock result was added to your account.")
+            messages.success(self.request, gettext("Your free mock result was added to your account."))
         return response
 
     def get_context_data(self, **kwargs):
@@ -75,7 +76,7 @@ def profile(request):
     form = ProfileForm(request.POST or None, request.FILES or None, instance=request.user)
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Profile updated.")
+        messages.success(request, gettext("Profile updated."))
         return redirect("accounts:profile")
     overview = None
     if request.user.is_student:
@@ -94,7 +95,7 @@ class PasswordChangeView(auth_views.PasswordChangeView):
     success_url = reverse_lazy("accounts:profile")
 
     def form_valid(self, form):
-        messages.success(self.request, "Your password was changed.")
+        messages.success(self.request, gettext("Your password was changed."))
         return super().form_valid(form)
 
 

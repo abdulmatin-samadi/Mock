@@ -7,6 +7,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("api/", include("config.api_urls")),
+    path("i18n/", include("django.conf.urls.i18n")),  # set_language: the O'zbekcha / English switch
     path("accounts/", include("accounts.urls")),
     path("exams/", include("exams.urls")),
     path("results/", include("results.urls")),

@@ -1,13 +1,13 @@
-{% extends "base.html" %}{% block title %}Access denied{% endblock %}
-{% block content %}<div class="card center auth-card"><h1>403</h1><p>You don't have permission to view this page.</p>
+{% extends "base.html" %}{% load i18n %}{% block title %}{% translate "Access denied" %}{% endblock %}
+{% block content %}<div class="card center auth-card"><h1>403</h1><p>{% translate "You don't have permission to view this page." %}</p>
 {% if user.is_authenticated %}
-<p class="muted">You're signed in as <strong>{{ user.email }}</strong> ({{ user.get_role_display|lower }}).{% if request.path|slice:':16' == '/admin-dashboard' %} The admin panel needs an admin account.{% endif %}</p>
+<p class="muted">{% blocktranslate with email=user.email %}You're signed in as <strong>{{ email }}</strong>.{% endblocktranslate %}{% if request.path|slice:':16' == '/admin-dashboard' %} {% translate "The admin panel needs an admin account." %}{% endif %}</p>
 <div class="row" style="justify-content:center">
   <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
     <input type="hidden" name="next" value="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">
-    <button class="btn" type="submit">Log out &amp; sign in as another account</button>
+    <button class="btn" type="submit">{% translate "Log out &amp; sign in as another account" %}</button>
   </form>
-  <a class="btn btn-secondary" href="/">Go home</a>
+  <a class="btn btn-secondary" href="/">{% translate "Go home" %}</a>
 </div>
-{% else %}<a class="btn" href="/">Go home</a>{% endif %}
+{% else %}<a class="btn" href="/">{% translate "Go home" %}</a>{% endif %}
 </div>{% endblock %}

@@ -1,24 +1,24 @@
-{% extends "base.html" %}{% block title %}Part practice · {{ exam.title }}{% endblock %}
+{% extends "base.html" %}{% load i18n %}{% block title %}{% translate "Part practice" %} · {{ exam.title }}{% endblock %}
 {% block content %}
-<a class="back-link" href="{% url 'exams:detail' exam.pk %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>Back to {{ exam.title }}</span></a>
+<a class="back-link" href="{% url 'exams:detail' exam.pk %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>{% translate "Back" %} · {{ exam.title }}</span></a>
 <div class="select-card">
   <div style="font-size:2.6rem" aria-hidden="true">🎯</div>
-  <h1 style="color:{{ info.color }}">Select a {% if exam.section == 'writing' %}task{% else %}part{% endif %}</h1>
-  <p class="muted">{{ exam.title }} — choose which {% if exam.section == 'writing' %}task{% else %}part{% endif %} you'd like to practise</p>
-  {% if user.is_authenticated and not user.is_student %}<div class="alert alert-warning">Only student accounts can take mock exams.</div>{% endif %}
+  <h1 style="color:{{ info.color }}">{% if exam.section == 'writing' %}{% translate 'Select a task' %}{% else %}{% translate 'Select a part' %}{% endif %}</h1>
+  <p class="muted">{{ exam.title }} — {% if exam.section == 'writing' %}{% translate 'choose which task you would like to practise' %}{% else %}{% translate 'choose which part you would like to practise' %}{% endif %}</p>
+  {% if user.is_authenticated and not user.is_student %}<div class="alert alert-warning">{% translate "Only student accounts can take mock exams." %}</div>{% endif %}
   <div class="stack mt-2">
     {% for o in options %}
     <form method="post" action="{% url 'exams:start' exam.pk %}">{% csrf_token %}
       <input type="hidden" name="practice" value="{{ o.key }}">
       <button class="select-option" type="submit" {% if user.is_authenticated and not user.is_student %}disabled{% endif %}>
         <span class="select-badge b{{ forloop.counter }}">{{ o.badge }}</span>
-        <span class="grow"><strong>{{ o.title }}</strong><span class="small muted">{{ o.sub }}{% if o.minutes %} • {{ o.minutes }} min{% endif %}</span></span>
-        {% if o.resume %}<span class="badge badge-in_progress">Resume</span>{% endif %}
+        <span class="grow"><strong>{{ o.title }}</strong><span class="small muted">{{ o.sub }}{% if o.minutes %} • {{ o.minutes }} {% translate "min" %}{% endif %}</span></span>
+        {% if o.resume %}<span class="badge badge-in_progress">{% translate "Resume" %}</span>{% endif %}
       </button>
     </form>
     {% endfor %}
   </div>
-  {% if not user.is_authenticated %}<p class="guest-note mt-2">🎁 <b>Your first mock is free</b> — no account needed. <a href="{% url 'accounts:login' %}?next={{ request.path }}">Log in</a></p>{% endif %}
-  <a class="btn btn-secondary btn-lg mt-2" href="{% url 'exams:detail' exam.pk %}">Back</a>
+  {% if not user.is_authenticated %}<p class="guest-note mt-2">🎁 <b>{% translate "Your first mock is free" %}</b> — {% translate "no account needed." %} <a href="{% url 'accounts:login' %}?next={{ request.path }}">{% translate "Log in" %}</a></p>{% endif %}
+  <a class="btn btn-secondary btn-lg mt-2" href="{% url 'exams:detail' exam.pk %}">{% translate "Back" %}</a>
 </div>
 {% endblock %}

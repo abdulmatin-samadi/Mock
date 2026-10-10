@@ -1237,3 +1237,11 @@ body.font-lg .room, body.font-lg .writing-area { font-size: 1.12em; } body.font-
 td .mk-why { margin-top: 6px; padding: 3px 10px; font-size: .78rem; }
 @media (max-width: 640px) { .mk-head { flex-wrap: wrap; } .mk-figs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .mk-review-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; } .mk-review-head h2 { margin: 0; }
+
+/* ---------------------------------------------------------------- language switch */
+.lang-switch { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--primary-soft); border: 1px solid var(--line); gap: 2px; }
+.lang-switch button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: .75rem; font-weight: 800; letter-spacing: .04em; padding: 4px 9px; border-radius: 999px; cursor: pointer; }
+.lang-switch button.active { background: var(--brand); color: #fff; }
+.lang-switch.on-dark { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .25); }
+.lang-switch.on-dark button { color: rgba(255, 255, 255, .8); } .lang-switch.on-dark button.active { background: #fff; color: var(--brand-deep); }
+.lang-switch.auth-lang { align-self: flex-end; margin-bottom: 10px; }

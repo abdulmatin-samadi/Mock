@@ -3,7 +3,7 @@
    evaluates it in the background. */
 (function () {
   "use strict";
-  const { api, fmt, readConfig, countdown, roomChrome } = window.DreamZone;
+  const { api, fmt, readConfig, countdown, roomChrome, t } = window.DreamZone;
   const cfg = readConfig("exam-config");
   const $ = (id) => document.getElementById(id);
   const ui = {
@@ -47,7 +47,7 @@
       ui.steps.appendChild(s);
     });
     const done = questions.filter((q) => q.done).length;
-    ui.counter.textContent = `${done} / ${questions.length} answered`;
+    ui.counter.textContent = `${done} / ${questions.length} ${t("answered")}`;
   }
 
   function show(el) { [ui.intro, ui.stage, ui.finish].forEach((x) => { x.hidden = x !== el; }); }
@@ -83,7 +83,7 @@
       startMeter();
       next();
     } catch (e) {
-      $("sp-status-intro").textContent = "Microphone permission was denied. Allow microphone access in your browser and try again.";
+      $("sp-status-intro").textContent = t("Microphone permission was denied. Allow microphone access in your browser and try again.");
     }
   }
 
@@ -116,7 +116,7 @@
   function prepare(q) {
     clearTimer();
     let left = q.prep;
-    ui.phase.textContent = "Preparation time";
+    ui.phase.textContent = t("Preparation time");
     ui.clock.textContent = fmt(left);
     setButtons(["btnSkip"]);
     if (left <= 0) { record(q); return; }
@@ -143,14 +143,15 @@
       blob = new Blob(chunks, { type: mime });
       ui.playback.src = URL.createObjectURL(blob);
       ui.playback.hidden = false;
-      ui.phase.textContent = "Review your answer";
+      ui.phase.textContent = t("Review your answer");
       ui.clock.textContent = fmt(duration);
       setButtons(["btnRedo", "btnUpload"]);
     };
     recorder.start(1000);
     recordStart = Date.now();
     let left = q.speak;
-    ui.phase.innerHTML = '<span class="rec-dot"></span>Recording — speak now';
+    ui.phase.innerHTML = '<span class="rec-dot"></span>';
+    ui.phase.append(t("Recording — speak now"));
     ui.clock.textContent = fmt(left);
     setButtons(["btnStop"]);
     timer = setInterval(() => {
@@ -167,7 +168,7 @@
 
   async function upload() {
     if (!blob || blob.size < 1000) {
-      ui.status.textContent = "The recording is empty. Please record again.";
+      ui.status.textContent = t("The recording is empty. Please record again.");
       return;
     }
     const q = questions[index];
@@ -178,14 +179,14 @@
     fd.append("audio_file", blob, `answer.${extFor(mime)}`);
     ui.btnUpload.disabled = true;
     ui.btnRedo.disabled = true;
-    ui.status.textContent = "Uploading…";
+    ui.status.textContent = t("Uploading…");
     try {
       await api(cfg.uploadUrl, { method: "POST", formData: fd });
       q.done = true;
-      ui.status.textContent = "Saved. The AI is transcribing and evaluating it in the background.";
+      ui.status.textContent = t("Saved. The AI is transcribing and evaluating it in the background.");
       setTimeout(next, 700);
     } catch (e) {
-      ui.status.textContent = "Upload failed: " + e.message;
+      ui.status.textContent = t("Upload failed:") + " " + e.message;
       if (/already submitted/i.test(e.message)) { q.done = true; setTimeout(next, 900); }
     } finally {
       ui.btnUpload.disabled = false;
@@ -195,14 +196,14 @@
 
   async function finish() {
     ui.btnFinish.disabled = true;
-    ui.btnFinish.textContent = "Finishing…";
+    ui.btnFinish.textContent = t("Finishing…");
     try {
       await api(cfg.submitUrl, { method: "POST", json: {} });
       window.location.href = cfg.resultUrl;
     } catch (e) {
       if (/already/i.test(e.message)) { window.location.href = cfg.resultUrl; return; }
       ui.btnFinish.disabled = false;
-      ui.btnFinish.textContent = "Finish test";
+      ui.btnFinish.textContent = t("Finish test");
       alert(e.message);
     }
   }
@@ -225,6 +226,6 @@
   if (index === -1) show(ui.finish);
   countdown(document.getElementById("timer"), cfg.deadline, cfg.serverNow, () => {
     if (recorder && recorder.state === "recording") stop();
-    ui.status.textContent = "Time is up. Submit any recorded answer, then finish the test.";
+    ui.status.textContent = t("Time is up. Submit any recorded answer, then finish the test.");
   });
 })();

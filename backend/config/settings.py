@@ -83,6 +83,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",  # serves collected static files on Render
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "core.middleware.LanguageMiddleware",  # Uzbek by default, English with the switch
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -149,7 +150,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ------------------------------------------------------------------------- I18N
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = env("LANGUAGE_CODE", "uz")
+LANGUAGES = [("uz", "O'zbekcha"), ("en", "English")]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+LANGUAGE_COOKIE_AGE = 60 * 60 * 24 * 365
 TIME_ZONE = env("TIME_ZONE", "Asia/Tashkent")
 USE_I18N = True
 USE_TZ = True

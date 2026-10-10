@@ -1,9 +1,7 @@
 /* Mistakes notebook (retry, reveal, learned) and the "Why?" AI explanation, also used on result pages. */
 (function () {
   "use strict";
-  const { api } = window.DreamZone;
-  const T = (window.DZ_I18N || {});
-  const t = (k, d) => T[k] || d;
+  const { api, t } = window.DreamZone;
   const list = document.querySelector("[data-explain-lang]");
   let lang = list ? list.dataset.explainLang : "";
 
@@ -23,14 +21,14 @@
     if (!box.hidden && box.dataset.lang === lang) { box.hidden = true; return; }
     box.hidden = false;
     box.className = box.className.replace(/\s?is-\w+/g, "") + " is-loading";
-    box.textContent = t("thinking", "✨ AI is writing an explanation…");
+    box.textContent = t("✨ AI is writing an explanation…");
     button.disabled = true;
     try {
       const data = await post(card.dataset.explainUrl, { lang: lang });
       box.className = box.className.replace(/\s?is-\w+/g, "");
       box.textContent = "";
       const tag = document.createElement("b");
-      tag.textContent = data.source === "teacher" ? t("teacher", "Teacher's note") : t("ai", "✨ AI explanation");
+      tag.textContent = data.source === "teacher" ? t("Teacher's note") : t("✨ AI explanation");
       const p = document.createElement("p");
       p.textContent = data.text;
       box.append(tag, p);
@@ -56,8 +54,8 @@
     const show = (ok, answer) => {
       out.hidden = false;
       out.className = "mk-out " + (ok === null ? "is-info" : ok ? "is-good" : "is-bad");
-      out.textContent = ok === null ? `${t("answer", "Answer")}: ${answer}`
-        : ok ? `✓ ${t("right", "Correct!")} ${answer}` : `✗ ${t("wrong", "Not quite — try again.")}`;
+      out.textContent = ok === null ? `${t("Answer")}: ${answer}`
+        : ok ? `✓ ${t("Correct!")} ${answer}` : `✗ ${t("Not quite — try again.")}`;
       if (ok) card.classList.add("solved");
     };
     form.addEventListener("submit", async (e) => {

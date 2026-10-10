@@ -1,3 +1,4 @@
+from django.utils.safestring import mark_safe
 from django import template
 from django.utils.http import urlencode
 
@@ -81,3 +82,18 @@ def vstatic(path):
     if found:
         url += f"?v={int(os.path.getmtime(found))}"
     return url
+
+
+@register.simple_tag
+def js_i18n():
+    """<script> with the JavaScript texts in the current language (read by DreamZone.t())."""
+    import json
+
+    from django.utils.html import format_html
+    from django.utils.translation import gettext
+
+    from core.js_strings import JS_STRINGS
+
+    data = json.dumps({s: gettext(s) for s in JS_STRINGS}, ensure_ascii=False)
+    data = data.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+    return format_html('<script id="dz-i18n" type="application/json">{}</script>', mark_safe(data))

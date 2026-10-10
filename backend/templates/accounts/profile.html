@@ -1,34 +1,34 @@
-{% extends "base.html" %}{% block title %}Profile{% endblock %}
+{% extends "base.html" %}{% load i18n %}{% block title %}{% translate "Profile" %}{% endblock %}
 {% block content %}
 <form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
 <section class="pf-hero">
   <div class="pf-cover" aria-hidden="true"><span></span><span></span></div>
   <div class="pf-id">
-    <label class="pf-avatar" for="{{ form.profile_photo.id_for_label }}" title="Change photo">
+    <label class="pf-avatar" for="{{ form.profile_photo.id_for_label }}" title="{% translate 'Change photo' %}">
       {% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="" data-avatar-img>{% else %}<span data-avatar-initials>{{ user.initials }}</span><img alt="" data-avatar-img hidden>{% endif %}
       <span class="pf-cam" aria-hidden="true">📷</span>
-      <span class="sr-only">Change profile photo</span>
+      <span class="sr-only">{% translate "Change profile photo" %}</span>
     </label>
     <div class="pf-name">
       <h1>{{ user.get_full_name|default:user.email }}</h1>
-      <p>{{ user.email }} · <span class="badge badge-{{ user.role }}">{{ user.get_role_display }}</span> · Member since {{ user.date_joined|date:"d M Y" }}</p>
+      <p>{{ user.email }} · <span class="badge badge-{{ user.role }}">{{ user.get_role_display }}</span> · {% translate "Member since" %} {{ user.date_joined|date:"d M Y" }}</p>
     </div>
-    <a class="btn btn-secondary pf-pw" href="{% url 'accounts:password_change' %}">🔒 Change password</a>
+    <a class="btn btn-secondary pf-pw" href="{% url 'accounts:password_change' %}">🔒 {% translate "Change password" %}</a>
   </div>
   {% if overview %}
   <div class="pf-stats">
-    <div><strong>{{ overview.total }}</strong><span>Tests taken</span></div>
-    <div><strong>{% if overview.best is not None %}{{ overview.best }}<small>/75</small>{% else %}—{% endif %}</strong><span>Best score</span></div>
-    <div><strong>{{ overview.best_level|default:"—" }}</strong><span>Best level</span></div>
-    <div><strong>{{ overview.skills }}<small>/4</small></strong><span>Skills tested</span></div>
+    <div><strong>{{ overview.total }}</strong><span>{% translate "Tests taken" %}</span></div>
+    <div><strong>{% if overview.best is not None %}{{ overview.best }}<small>/75</small>{% else %}—{% endif %}</strong><span>{% translate "Best score" %}</span></div>
+    <div><strong>{{ overview.best_level|default:"—" }}</strong><span>{% translate "Best level" %}</span></div>
+    <div><strong>{{ overview.skills }}<small>/4</small></strong><span>{% translate "Skills tested" %}</span></div>
   </div>
   {% endif %}
 </section>
 
 <div class="split mt-2">
   <div class="card pf-card">
-    <h2>Personal details</h2>
-    <p class="muted small">This is how your name appears on your results.</p>
+    <h2>{% translate "Personal details" %}</h2>
+    <p class="muted small">{% translate "This is how your name appears on your results." %}</p>
     {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors }}</div>{% endif %}
     <div class="auth-pair">
       {% include "partials/form_field.html" with field=form.first_name %}
@@ -37,22 +37,22 @@
     {% include "partials/form_field.html" with field=form.phone_number %}
     {% include "partials/form_field.html" with field=form.feedback_language %}
     <div class="form-field">
-      <label for="{{ form.profile_photo.id_for_label }}">Profile photo</label>
-      <label class="pf-drop" for="{{ form.profile_photo.id_for_label }}"><span class="pf-drop-ico">🖼️</span><span><b data-file-name>{% if user.profile_photo %}Replace your photo{% else %}Upload a photo{% endif %}</b><small>JPG or PNG, square works best</small></span></label>
+      <label for="{{ form.profile_photo.id_for_label }}">{% translate "Profile photo" %}</label>
+      <label class="pf-drop" for="{{ form.profile_photo.id_for_label }}"><span class="pf-drop-ico">🖼️</span><span><b data-file-name>{% if user.profile_photo %}{% translate 'Replace your photo' %}{% else %}{% translate 'Upload a photo' %}{% endif %}</b><small>{% translate "JPG or PNG, square works best" %}</small></span></label>
       {{ form.profile_photo }}
       {{ form.profile_photo.errors }}
     </div>
-    <div class="pf-actions"><button class="btn btn-lg" type="submit">Save changes</button></div>
+    <div class="pf-actions"><button class="btn btn-lg" type="submit">{% translate "Save changes" %}</button></div>
   </div>
   <aside class="card pf-card">
-    <h2>Account</h2>
+    <h2>{% translate "Account" %}</h2>
     <dl class="pf-dl">
-      <dt>Email</dt><dd>{{ user.email }}</dd>
-      <dt>Role</dt><dd>{{ user.get_role_display }}</dd>
-      <dt>Last login</dt><dd>{{ user.last_login|date:"d M Y, H:i"|default:"—" }}</dd>
+      <dt>{% translate "Email" %}</dt><dd>{{ user.email }}</dd>
+      <dt>{% translate "Role" %}</dt><dd>{{ user.get_role_display }}</dd>
+      <dt>{% translate "Last login" %}</dt><dd>{{ user.last_login|date:"d M Y, H:i"|default:"—" }}</dd>
     </dl>
-    <p class="muted small mb-0">Your email and role can only be changed by an administrator.</p>
-    {% if overview %}<a class="btn btn-secondary btn-block mt-2" href="{% url 'dashboard:results' %}">View my results →</a>{% endif %}
+    <p class="muted small mb-0">{% translate "Your email and role can only be changed by an administrator." %}</p>
+    {% if overview %}<a class="btn btn-secondary btn-block mt-2" href="{% url 'dashboard:results' %}">{% translate "View my results →" %}</a>{% endif %}
   </aside>
 </div>
 </form>

@@ -1,0 +1,2179 @@
+# DreamZone — Uzbek interface.
+msgid ""
+msgstr "Project-Id-Version: DreamZone\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2026-10-10 16:49+0500\nPO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\nLast-Translator: FULL NAME <EMAIL@ADDRESS>\nLanguage-Team: LANGUAGE <LL@li.org>\nLanguage: uz\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+
+#: accounts/forms.py:10 accounts/forms.py:54 templates/partials/identity.html:7
+#: templates/results/full_detail.html:18
+msgid "First name"
+msgstr "Ism"
+
+#: accounts/forms.py:12 accounts/forms.py:54 templates/partials/identity.html:8
+#: templates/results/full_detail.html:18
+msgid "Last name"
+msgstr "Familiya"
+
+#: accounts/forms.py:14 accounts/forms.py:42 templates/accounts/profile.html:50
+#: templates/partials/identity.html:9 templates/results/full_detail.html:19
+msgid "Email"
+msgstr "Email"
+
+#: accounts/forms.py:15
+msgid "Password"
+msgstr "Parol"
+
+#: accounts/forms.py:16
+msgid "At least 8 characters"
+msgstr "Kamida 8 ta belgi"
+
+#: accounts/forms.py:17
+msgid "Confirm password"
+msgstr "Parolni tasdiqlang"
+
+#: accounts/forms.py:18
+msgid "Repeat your password"
+msgstr "Parolni takrorlang"
+
+#: accounts/forms.py:23
+msgid "An account with this email already exists."
+msgstr "Bu email bilan hisob allaqachon mavjud."
+
+#: accounts/forms.py:30
+msgid "Passwords do not match."
+msgstr "Parollar mos kelmadi."
+
+#: accounts/forms.py:47
+msgid "Your password"
+msgstr "Parolingiz"
+
+#: accounts/forms.py:54 templates/accounts/profile.html:40
+msgid "Profile photo"
+msgstr "Profil rasmi"
+
+#: accounts/forms.py:55
+msgid "Phone number"
+msgstr "Telefon raqami"
+
+#: accounts/forms.py:55
+msgid "AI feedback language"
+msgstr "AI fikr-mulohaza tili"
+
+#: accounts/forms.py:56
+msgid "Writing and speaking feedback and the “Why?” explanations are written in this language."
+msgstr "Writing va speaking fikr-mulohazalari hamda «Nega?» tushuntirishlari shu tilda yoziladi."
+
+#: accounts/views.py:39
+#, python-format
+msgid "Welcome, %(name)s! All mocks are now open."
+msgstr "Xush kelibsiz, %(name)s! Endi barcha mocklar ochiq."
+
+#: accounts/views.py:59
+msgid "Your free mock result was added to your account."
+msgstr "Bepul mock natijangiz hisobingizga qo'shildi."
+
+#: accounts/views.py:79
+msgid "Profile updated."
+msgstr "Profil yangilandi."
+
+#: accounts/views.py:98
+msgid "Your password was changed."
+msgstr "Parolingiz o'zgartirildi."
+
+#: dashboard/insights.py:83
+#, python-format
+msgid "%(n)d answer saved"
+msgid_plural "%(n)d answers saved"
+msgstr[0] "%(n)d ta javob saqlandi"
+
+#: dashboard/insights.py:85
+#, python-format
+msgid "%(n)d recording saved"
+msgid_plural "%(n)d recordings saved"
+msgstr[0] "%(n)d ta yozuv saqlandi"
+
+#: dashboard/insights.py:88
+#, python-format
+msgid "draft saved · %(n)d words"
+msgstr "qoralama saqlandi · %(n)d so'z"
+
+#: dashboard/insights.py:88
+msgid "no draft yet"
+msgstr "hali qoralama yo'q"
+
+#: dashboard/insights.py:266 results/models.py:87
+#, python-format
+msgid "%(n)d/%(total)d correct"
+msgstr "%(n)d/%(total)d to'g'ri"
+
+#: dashboard/insights.py:273
+msgid "Good morning"
+msgstr "Xayrli tong"
+
+#: dashboard/insights.py:275
+msgid "Good afternoon"
+msgstr "Xayrli kun"
+
+#: dashboard/insights.py:276
+msgid "Good evening"
+msgstr "Xayrli kech"
+
+#: exams/views.py:105
+msgid "Create a free account to take this mock."
+msgstr "Bu mockni topshirish uchun bepul hisob oching."
+
+#: exams/views.py:110
+msgid "You've used your free mock. Create a free account to continue — your result is kept."
+msgstr "Bepul mockdan foydalandingiz. Davom etish uchun bepul hisob oching — natijangiz saqlanadi."
+
+#: exams/views.py:112 templates/exams/detail.html:42
+#: templates/exams/full_detail.html:20 templates/exams/practice.html:8
+msgid "Only student accounts can take mock exams."
+msgstr "Faqat o'quvchi hisoblari mock topshira oladi."
+
+#: exams/views.py:146
+msgid "Time ran out. Your saved answers were submitted automatically."
+msgstr "Vaqt tugadi. Saqlangan javoblaringiz avtomatik topshirildi."
+
+#: exams/views.py:216
+msgid "Sections of a full mock cannot be discarded separately."
+msgstr "To'liq mock bo'limlarini alohida bekor qilib bo'lmaydi."
+
+#: exams/views.py:220
+#, python-format
+msgid "“%(title)s” was discarded."
+msgstr "«%(title)s» bekor qilindi."
+
+#: exams/views.py:270 exams/views.py:274
+msgid "Create a free account to take a full mock."
+msgstr "To'liq mock topshirish uchun bepul hisob oching."
+
+#: exams/views.py:276
+msgid "Only student accounts can take full mocks."
+msgstr "Faqat o'quvchi hisoblari to'liq mock topshira oladi."
+
+#: results/models.py:15 results/models.py:131
+msgid "In progress"
+msgstr "Jarayonda"
+
+#: results/models.py:16 results/models.py:132 speaking/models.py:17
+#: writing/models.py:12
+msgid "Evaluating"
+msgstr "Baholanmoqda"
+
+#: results/models.py:17 results/models.py:133 speaking/models.py:18
+#: writing/models.py:13
+msgid "Completed"
+msgstr "Yakunlangan"
+
+#: results/models.py:18 results/models.py:134
+msgid "Evaluation failed"
+msgstr "Baholash amalga oshmadi"
+
+#: results/models.py:19
+msgid "Discarded"
+msgstr "Bekor qilingan"
+
+#: results/services.py:49 results/services.py:68
+#, python-format
+msgid "%(n)d question"
+msgid_plural "%(n)d questions"
+msgstr[0] "%(n)d ta savol"
+
+#: results/services.py:56 templates/dashboard/writing_history.html:28
+#: templates/exams/take_writing.html:14 templates/exams/take_writing.html:21
+#: templates/results/_writing_eval.html:4
+msgid "words"
+msgstr "so'z"
+
+#: speaking/models.py:15
+msgid "Uploaded"
+msgstr "Yuklandi"
+
+#: speaking/models.py:16
+msgid "Transcribing"
+msgstr "Matnga o'girilmoqda"
+
+#: speaking/models.py:19 writing/models.py:14
+msgid "Failed"
+msgstr "Xato"
+
+#: templates/accounts/_auth_layout.html:14
+msgid "Reach your <span>dream</span> level."
+msgstr "<span>Orzuingizdagi</span> darajaga erishing."
+
+#: templates/accounts/_auth_layout.html:15
+msgid "Real Multilevel (CEFR) mock exams with instant AI feedback on your Writing and Speaking."
+msgstr "Writing va Speaking bo'yicha tezkor AI fikr-mulohazasi bilan haqiqiy Multilevel (CEFR) mock imtihonlari."
+
+#: templates/accounts/_auth_layout.html:23
+msgid "score with CEFR level — B1, B2, C1"
+msgstr "ball va CEFR darajasi — B1, B2, C1"
+
+#: templates/accounts/_auth_layout.html:24 templates/dashboard/home.html:16
+#: templates/dashboard/results.html:20 templates/dashboard/results.html:28
+#: templates/exams/_full_card.html:2 templates/exams/full_detail.html:6
+#: templates/exams/full_progress.html:5 templates/exams/hub.html:7
+#: templates/partials/continue.html:17
+msgid "Full mock"
+msgstr "To'liq mock"
+
+#: templates/accounts/_auth_layout.html:24
+msgid "or practise one part at a time"
+msgstr "yoki har bir qismni alohida mashq qilish"
+
+#: templates/accounts/_auth_layout.html:25
+#: templates/dashboard/speaking_history.html:53
+#: templates/dashboard/writing_history.html:37
+msgid "AI feedback"
+msgstr "AI fikr-mulohazasi"
+
+#: templates/accounts/_auth_layout.html:25
+msgid "on every essay and answer"
+msgstr "har bir insho va javob bo'yicha"
+
+#: templates/accounts/_auth_layout.html:38
+msgid "← Back to home"
+msgstr "← Bosh sahifaga qaytish"
+
+#: templates/accounts/_auth_layout.html:46
+msgid "Show"
+msgstr "Ko'rsatish"
+
+#: templates/accounts/_auth_layout.html:46
+msgid "Hide"
+msgstr "Yashirish"
+
+#: templates/accounts/_auth_layout.html:46
+msgid "Show password"
+msgstr "Parolni ko'rsatish"
+
+#: templates/accounts/_auth_layout.html:46
+msgid "Hide password"
+msgstr "Parolni yashirish"
+
+#: templates/accounts/login.html:1 templates/accounts/login.html:12
+#: templates/accounts/password_reset_complete.html:4
+#: templates/accounts/register.html:20 templates/base.html:77
+#: templates/exams/detail.html:23 templates/exams/full_detail.html:21
+#: templates/exams/practice.html:21
+msgid "Log in"
+msgstr "Kirish"
+
+#: templates/accounts/login.html:4
+msgid "Welcome back 👋"
+msgstr "Xush kelibsiz 👋"
+
+#: templates/accounts/login.html:5
+msgid "Log in to continue your Multilevel preparation."
+msgstr "Multilevel tayyorgarligingizni davom ettirish uchun kiring."
+
+#: templates/accounts/login.html:7
+msgid "✅ Your free mock result will be added to your account."
+msgstr "✅ Bepul mock natijangiz hisobingizga qo'shiladi."
+
+#: templates/accounts/login.html:11
+msgid "Forgot password?"
+msgstr "Parolni unutdingizmi?"
+
+#: templates/accounts/login.html:14
+#, python-format
+msgid "New to %(site)s?"
+msgstr "%(site)s'da yangimisiz?"
+
+#: templates/accounts/login.html:14 templates/partials/identity.html:5
+msgid "Create a free account"
+msgstr "Bepul hisob oching"
+
+#: templates/accounts/password_change.html:1
+#: templates/accounts/password_change.html:5 templates/accounts/profile.html:16
+#: templates/base.html:33 templates/base.html:72
+msgid "Change password"
+msgstr "Parolni o'zgartirish"
+
+#: templates/accounts/password_change.html:3
+msgid "Back to profile"
+msgstr "Profilga qaytish"
+
+#: templates/accounts/password_change.html:5
+msgid "Use at least 8 characters — a mix of letters and numbers is safest."
+msgstr "Kamida 8 ta belgi ishlating — harf va raqamlar aralashmasi eng xavfsiz."
+
+#: templates/accounts/password_change.html:6
+msgid "Update password"
+msgstr "Parolni yangilash"
+
+#: templates/accounts/password_reset.html:1
+msgid "Reset password"
+msgstr "Parolni tiklash"
+
+#: templates/accounts/password_reset.html:3
+msgid "Forgot your password?"
+msgstr "Parolingizni unutdingizmi?"
+
+#: templates/accounts/password_reset.html:3
+msgid "Enter your email and we'll send you a reset link."
+msgstr "Emailingizni kiriting — tiklash havolasini yuboramiz."
+
+#: templates/accounts/password_reset.html:4
+msgid "Send reset link"
+msgstr "Havolani yuborish"
+
+#: templates/accounts/password_reset.html:5
+msgid "← Back to log in"
+msgstr "← Kirishga qaytish"
+
+#: templates/accounts/password_reset_complete.html:1
+#: templates/accounts/password_reset_complete.html:3
+msgid "Password updated"
+msgstr "Parol yangilandi"
+
+#: templates/accounts/password_reset_complete.html:3
+msgid "You can now log in with your new password."
+msgstr "Endi yangi parolingiz bilan kirishingiz mumkin."
+
+#: templates/accounts/password_reset_confirm.html:1
+#: templates/accounts/password_reset_confirm.html:4
+msgid "Set a new password"
+msgstr "Yangi parol o'rnating"
+
+#: templates/accounts/password_reset_confirm.html:4
+msgid "Choose a strong password you don't use elsewhere."
+msgstr "Boshqa joyda ishlatmaydigan kuchli parol tanlang."
+
+#: templates/accounts/password_reset_confirm.html:5
+msgid "Save password"
+msgstr "Parolni saqlash"
+
+#: templates/accounts/password_reset_confirm.html:7
+msgid "Link expired"
+msgstr "Havola eskirgan"
+
+#: templates/accounts/password_reset_confirm.html:7
+msgid "This reset link is invalid or has already been used."
+msgstr "Bu tiklash havolasi yaroqsiz yoki allaqachon ishlatilgan."
+
+#: templates/accounts/password_reset_confirm.html:8
+msgid "Request a new link"
+msgstr "Yangi havola so'rash"
+
+#: templates/accounts/password_reset_done.html:1
+msgid "Check your email"
+msgstr "Emailingizni tekshiring"
+
+#: templates/accounts/password_reset_done.html:3
+msgid "Check your inbox"
+msgstr "Pochtangizni tekshiring"
+
+#: templates/accounts/password_reset_done.html:3
+msgid "If an account exists for that email, a password reset link is on its way."
+msgstr "Agar shu email bilan hisob bo'lsa, parolni tiklash havolasi yuborildi."
+
+#: templates/accounts/password_reset_done.html:4
+msgid "Back to log in"
+msgstr "Kirishga qaytish"
+
+#: templates/accounts/profile.html:1 templates/base.html:32
+#: templates/base.html:67 templates/partials/student_sidebar.html:12
+msgid "Profile"
+msgstr "Profil"
+
+#: templates/accounts/profile.html:7
+msgid "Change photo"
+msgstr "Rasmni o'zgartirish"
+
+#: templates/accounts/profile.html:10
+msgid "Change profile photo"
+msgstr "Profil rasmini o'zgartirish"
+
+#: templates/accounts/profile.html:14
+msgid "Member since"
+msgstr "A'zo bo'lgan sana:"
+
+#: templates/accounts/profile.html:20
+msgid "Tests taken"
+msgstr "Topshirilgan testlar"
+
+#: templates/accounts/profile.html:21 templates/dashboard/home.html:22
+msgid "Best score"
+msgstr "Eng yaxshi ball"
+
+#: templates/accounts/profile.html:22
+msgid "Best level"
+msgstr "Eng yaxshi daraja"
+
+#: templates/accounts/profile.html:23
+msgid "Skills tested"
+msgstr "Sinalgan ko'nikmalar"
+
+#: templates/accounts/profile.html:30
+msgid "Personal details"
+msgstr "Shaxsiy ma'lumotlar"
+
+#: templates/accounts/profile.html:31
+msgid "This is how your name appears on your results."
+msgstr "Ismingiz natijalarda shunday ko'rinadi."
+
+#: templates/accounts/profile.html:41
+msgid "Replace your photo"
+msgstr "Rasmni almashtirish"
+
+#: templates/accounts/profile.html:41
+msgid "Upload a photo"
+msgstr "Rasm yuklash"
+
+#: templates/accounts/profile.html:41
+msgid "JPG or PNG, square works best"
+msgstr "JPG yoki PNG, kvadrat rasm eng yaxshisi"
+
+#: templates/accounts/profile.html:45
+msgid "Save changes"
+msgstr "O'zgarishlarni saqlash"
+
+#: templates/accounts/profile.html:48 templates/partials/identity.html:5
+msgid "Account"
+msgstr "Hisob"
+
+#: templates/accounts/profile.html:51
+msgid "Role"
+msgstr "Rol"
+
+#: templates/accounts/profile.html:52
+msgid "Last login"
+msgstr "Oxirgi kirish"
+
+#: templates/accounts/profile.html:54
+msgid "Your email and role can only be changed by an administrator."
+msgstr "Email va rolingizni faqat administrator o'zgartira oladi."
+
+#: templates/accounts/profile.html:55
+msgid "View my results →"
+msgstr "Natijalarimni ko'rish →"
+
+#: templates/accounts/register.html:1 templates/base.html:78
+msgid "Register"
+msgstr "Ro'yxatdan o'tish"
+
+#: templates/accounts/register.html:4
+msgid "Create your account"
+msgstr "Hisob oching"
+
+#: templates/accounts/register.html:5
+msgid "Free Multilevel mock exams with AI feedback — start in a minute."
+msgstr "AI fikr-mulohazasi bilan bepul Multilevel mock imtihonlari — bir daqiqada boshlang."
+
+#: templates/accounts/register.html:7
+msgid "✅ Your free mock result will be saved to this account."
+msgstr "✅ Bepul mock natijangiz shu hisobga saqlanadi."
+
+#: templates/accounts/register.html:18
+msgid "Create account"
+msgstr "Hisob ochish"
+
+#: templates/accounts/register.html:20
+msgid "Already have an account?"
+msgstr "Hisobingiz bormi?"
+
+#: templates/base.html:7
+msgid "Multilevel (CEFR) mock exams with AI feedback."
+msgstr "AI fikr-mulohazasi bilan Multilevel (CEFR) mock imtihonlari."
+
+#: templates/base.html:17
+msgid "Skip to content"
+msgstr "Asosiy qismga o'tish"
+
+#: templates/base.html:23
+msgid "Open menu"
+msgstr "Menyuni ochish"
+
+#: templates/base.html:26 templates/partials/identity.html:4
+msgid "Guest"
+msgstr "Mehmon"
+
+#: templates/base.html:26 templates/exams/detail.html:21
+#: templates/exams/full_detail.html:21
+#: templates/partials/student_sidebar.html:26
+msgid "Create free account"
+msgstr "Bepul hisob ochish"
+
+#: templates/base.html:27 templates/dashboard/mistakes.html:64
+msgid "Take a mock"
+msgstr "Mock topshirish"
+
+#: templates/base.html:29 templates/base.html:61
+msgid "Account menu"
+msgstr "Hisob menyusi"
+
+#: templates/base.html:34 templates/base.html:73
+#: templates/partials/student_sidebar.html:35
+msgid "Log out"
+msgstr "Chiqish"
+
+#: templates/base.html:45 templates/dashboard/home.html:1
+#: templates/partials/student_sidebar.html:5
+msgid "Home"
+msgstr "Bosh sahifa"
+
+#: templates/base.html:46
+msgid "Mock Exams"
+msgstr "Mock imtihonlar"
+
+#: templates/base.html:52
+msgid "My Results"
+msgstr "Natijalarim"
+
+#: templates/base.html:59
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/base.html:66
+msgid "Dashboard"
+msgstr "Kabinet"
+
+#: templates/base.html:69 templates/dashboard/writing_history.html:1
+#: templates/dashboard/writing_history.html:6
+#: templates/partials/student_sidebar.html:10
+msgid "Writing history"
+msgstr "Writing tarixi"
+
+#: templates/base.html:70 templates/dashboard/speaking_history.html:1
+#: templates/dashboard/speaking_history.html:6
+#: templates/partials/student_sidebar.html:11
+msgid "Speaking history"
+msgstr "Speaking tarixi"
+
+#: templates/base.html:96
+msgid "practice smarter for the Multilevel exam."
+msgstr "Multilevel imtihoniga aqlli tayyorlaning."
+
+#: templates/base.html:97 templates/exams/full_list.html:4
+#: templates/exams/hub.html:1 templates/exams/hub.html:3
+msgid "Mock exams"
+msgstr "Mock imtihonlar"
+
+#: templates/core/home.html:1
+msgid "Multilevel exam preparation"
+msgstr "Multilevel imtihoniga tayyorgarlik"
+
+#: templates/core/home.html:9
+msgid "Multilevel · CEFR mock exams"
+msgstr "Multilevel · CEFR mock imtihonlari"
+
+#: templates/core/home.html:10
+msgid "Reach your <span class=\"lp-accent\">dream</span> level in the Multilevel exam."
+msgstr "Multilevel imtihonida <span class=\"lp-accent\">orzuingizdagi</span> darajaga erishing."
+
+#: templates/core/home.html:11
+msgid "Practise Listening, Reading, Writing and Speaking under real exam conditions. Get your 0–75 score, CEFR level and AI feedback on every essay and answer."
+msgstr "Listening, Reading, Writing va Speakingni haqiqiy imtihon sharoitida mashq qiling. 0–75 ball, CEFR darajasi va har bir insho hamda javob bo'yicha AI fikr-mulohazasini oling."
+
+#: templates/core/home.html:14
+msgid "Go to my dashboard →"
+msgstr "Kabinetimga o'tish →"
+
+#: templates/core/home.html:15 templates/core/home.html:18
+msgid "Browse mocks"
+msgstr "Mocklarni ko'rish"
+
+#: templates/core/home.html:17
+msgid "Start for free →"
+msgstr "Bepul boshlash →"
+
+#: templates/core/home.html:22
+msgid "mock tests"
+msgstr "ta mock test"
+
+#: templates/core/home.html:23
+msgid "attempts taken"
+msgstr "ta urinish"
+
+#: templates/core/home.html:24
+msgid "skills"
+msgstr "ko'nikma"
+
+#: templates/core/home.html:30
+msgid "Writing · Mock 01"
+msgstr "Writing · Mock 01"
+
+#: templates/core/home.html:30
+msgid "✓ AI evaluated"
+msgstr "✓ AI baholadi"
+
+#: templates/core/home.html:35
+msgid "Upper-intermediate"
+msgstr "Upper-intermediate"
+
+#: templates/core/home.html:39
+msgid "Task achievement"
+msgstr "Topshiriq bajarilishi"
+
+#: templates/core/home.html:40 templates/results/_speaking_eval.html:18
+#: templates/results/_writing_eval.html:21
+msgid "Coherence"
+msgstr "Izchillik"
+
+#: templates/core/home.html:41 templates/dashboard/speaking_history.html:50
+#: templates/results/_speaking_eval.html:12
+#: templates/results/_speaking_eval.html:19
+#: templates/results/_writing_eval.html:15
+#: templates/results/_writing_eval.html:22
+#: templates/results/detail_speaking.html:11
+msgid "Vocabulary"
+msgstr "Lug'at"
+
+#: templates/core/home.html:42 templates/dashboard/speaking_history.html:51
+#: templates/results/_speaking_eval.html:13
+#: templates/results/_speaking_eval.html:20
+#: templates/results/_writing_eval.html:16
+#: templates/results/_writing_eval.html:23
+#: templates/results/detail_speaking.html:12
+msgid "Grammar"
+msgstr "Grammatika"
+
+#: templates/core/home.html:45
+msgid "Part 2 · recorded"
+msgstr "Part 2 · yozib olindi"
+
+#: templates/core/home.html:46
+msgid "32 / 35 correct"
+msgstr "32 / 35 to'g'ri"
+
+#: templates/core/home.html:54
+msgid "Choose a skill"
+msgstr "Ko'nikmani tanlang"
+
+#: templates/core/home.html:55
+msgid "Every section of the real exam"
+msgstr "Haqiqiy imtihonning barcha bo'limlari"
+
+#: templates/core/home.html:56
+msgid "Take a full timed test, or practise one part at a time."
+msgstr "Vaqtli to'liq testni topshiring yoki har bir qismni alohida mashq qiling."
+
+#: templates/core/home.html:64 templates/dashboard/home.html:65
+#: templates/partials/section_cards.html:7
+#, python-format
+msgid "%(n)s mock"
+msgid_plural "%(n)s mocks"
+msgstr[0] "%(n)s ta mock"
+
+#: templates/core/home.html:74
+msgid "How it works"
+msgstr "Qanday ishlaydi"
+
+#: templates/core/home.html:75
+msgid "From first mock to your target level"
+msgstr "Birinchi mockdan maqsadli darajangizgacha"
+
+#: templates/core/home.html:77
+msgid "Pick a mock"
+msgstr "Mock tanlang"
+
+#: templates/core/home.html:77
+msgid "Choose a section and take the full test, or select just one part to practise."
+msgstr "Bo'limni tanlab to'liq testni topshiring yoki mashq uchun faqat bitta qismni tanlang."
+
+#: templates/core/home.html:78
+msgid "Answer like the real exam"
+msgstr "Haqiqiy imtihondagidek javob bering"
+
+#: templates/core/home.html:78
+msgid "Timed parts, audio, drag-and-drop matching, a map, essays and voice recording."
+msgstr "Vaqtli qismlar, audio, sudrab moslashtirish, xarita, insholar va ovoz yozish."
+
+#: templates/core/home.html:79
+msgid "Get your score and feedback"
+msgstr "Ball va fikr-mulohaza oling"
+
+#: templates/core/home.html:79
+msgid "Reading and Listening are marked instantly. AI scores Writing and Speaking with corrections and tips."
+msgstr "Reading va Listening darhol tekshiriladi. Writing va Speakingni AI tuzatishlar va maslahatlar bilan baholaydi."
+
+#: templates/core/home.html:83
+msgid "Multilevel score → CEFR level"
+msgstr "Multilevel ball → CEFR darajasi"
+
+#: templates/core/home.html:84
+msgid "Every result is shown on the official 0–75 scale with its CEFR level."
+msgstr "Har bir natija rasmiy 0–75 shkalada CEFR darajasi bilan ko'rsatiladi."
+
+#: templates/core/home.html:96
+msgid "Instant marking"
+msgstr "Darhol tekshirish"
+
+#: templates/core/home.html:96
+msgid "Answers are checked on the server and turned into a 0–75 score with a CEFR level."
+msgstr "Javoblar serverda tekshiriladi va CEFR darajasi bilan 0–75 ballga aylantiriladi."
+
+#: templates/core/home.html:97
+msgid "Honest AI feedback"
+msgstr "Halol AI fikr-mulohazasi"
+
+#: templates/core/home.html:97
+msgid "Criterion scores, corrected mistakes and improved sentences. We say clearly what the AI can't assess."
+msgstr "Mezonlar bo'yicha ballar, tuzatilgan xatolar va yaxshilangan gaplar. AI nimani baholay olmasligini ochiq aytamiz."
+
+#: templates/core/home.html:98
+msgid "Track your progress"
+msgstr "O'sishingizni kuzating"
+
+#: templates/core/home.html:98
+msgid "Every attempt is saved, with a learning curve and your level in each skill."
+msgstr "Har bir urinish saqlanadi — o'sish grafigi va har bir ko'nikma bo'yicha darajangiz bilan."
+
+#: templates/core/home.html:103
+msgid "Ready to see your real level?"
+msgstr "Haqiqiy darajangizni bilishga tayyormisiz?"
+
+#: templates/core/home.html:104
+msgid "Try a full mock — all four skills in one sitting — or start with a single section."
+msgstr "To'liq mockni sinab ko'ring — to'rtta ko'nikma bir o'tirishda — yoki bitta bo'limdan boshlang."
+
+#: templates/core/home.html:104
+msgid "Start with a single section — it takes less than an hour."
+msgstr "Bitta bo'limdan boshlang — bir soatdan kam vaqt oladi."
+
+#: templates/core/home.html:107 templates/dashboard/home.html:15
+#: templates/dashboard/results.html:46
+msgid "Take a mock →"
+msgstr "Mock topshirish →"
+
+#: templates/core/home.html:109
+msgid "Create a free account →"
+msgstr "Bepul hisob ochish →"
+
+#: templates/dashboard/_attempt_rows.html:10
+#: templates/dashboard/results.html:69
+msgid "No results yet"
+msgstr "Hali natijalar yo'q"
+
+#: templates/dashboard/_attempt_rows.html:10
+#: templates/dashboard/results.html:69
+msgid "take your first mock"
+msgstr "birinchi mockingizni topshiring"
+
+#: templates/dashboard/home.html:8
+#, python-format
+msgid "You've completed %(n)s mock. Keep the momentum going!"
+msgid_plural "You've completed %(n)s mocks. Keep the momentum going!"
+msgstr[0] "Siz %(n)s ta mock topshirdingiz. Shu sur'atda davom eting!"
+
+#: templates/dashboard/home.html:8
+msgid "Take your first mock to discover your Multilevel level."
+msgstr "Multilevel darajangizni bilish uchun birinchi mockingizni topshiring."
+
+#: templates/dashboard/home.html:10
+msgid "day streak"
+msgstr "kunlik seriya"
+
+#: templates/dashboard/home.html:11
+msgid "this week"
+msgstr "shu hafta"
+
+#: templates/dashboard/home.html:12
+msgid "active days"
+msgstr "faol kun"
+
+#: templates/dashboard/home.html:20
+msgid "no score yet"
+msgstr "hali ball yo'q"
+
+#: templates/dashboard/home.html:24
+msgid "Latest level"
+msgstr "Oxirgi daraja"
+
+#: templates/dashboard/home.html:32
+msgid "Mocks taken"
+msgstr "Topshirilgan mocklar"
+
+#: templates/dashboard/home.html:33 templates/exams/section_list.html:16
+msgid "Attempts today"
+msgstr "Bugungi urinishlar"
+
+#: templates/dashboard/home.html:34
+msgid "Essays written"
+msgstr "Yozilgan insholar"
+
+#: templates/dashboard/home.html:35
+msgid "Answers recorded"
+msgstr "Yozib olingan javoblar"
+
+#: templates/dashboard/home.html:42
+msgid "Learning curve"
+msgstr "O'sish grafigi"
+
+#: templates/dashboard/home.html:45
+msgid "pts"
+msgstr "ball"
+
+#: templates/dashboard/home.html:46
+#, python-format
+msgid "last %(n)s mock"
+msgid_plural "last %(n)s mocks"
+msgstr[0] "oxirgi %(n)s ta mock"
+
+#: templates/dashboard/home.html:47
+msgid "Score trend over your last mocks"
+msgstr "Oxirgi mocklardagi ball o'zgarishi"
+
+#: templates/dashboard/home.html:53
+msgid "Dashed line = B1 threshold (38/75)."
+msgstr "Uzuq chiziq = B1 chegarasi (38/75)."
+
+#: templates/dashboard/home.html:54
+msgid "Complete a mock to start your learning curve."
+msgstr "O'sish grafigini boshlash uchun mock topshiring."
+
+#: templates/dashboard/home.html:58
+msgid "Level by skill · Multilevel"
+msgstr "Ko'nikmalar bo'yicha daraja · Multilevel"
+
+#: templates/dashboard/home.html:77
+msgid "Word of the day"
+msgstr "Kun so'zi"
+
+#: templates/dashboard/home.html:86
+msgid "Day vs night"
+msgstr "Kunduz va kechasi"
+
+#: templates/dashboard/home.html:93
+msgid "Day"
+msgstr "Kunduz"
+
+#: templates/dashboard/home.html:94
+msgid "Night"
+msgstr "Kechasi"
+
+#: templates/dashboard/home.html:95
+msgid "Day = 06:00–18:00"
+msgstr "Kunduz = 06:00–18:00"
+
+#: templates/dashboard/home.html:99
+msgid "This week"
+msgstr "Shu hafta"
+
+#: templates/dashboard/home.html:100
+#, python-format
+msgid "%(n)s attempt"
+msgid_plural "%(n)s attempts"
+msgstr[0] "%(n)s ta urinish"
+
+#: templates/dashboard/home.html:101
+#, python-format
+msgid "%(n)s attempt this week"
+msgid_plural "%(n)s attempts this week"
+msgstr[0] "shu hafta %(n)s ta urinish"
+
+#: templates/dashboard/home.html:106
+msgid "Mock library"
+msgstr "Mocklar kutubxonasi"
+
+#: templates/dashboard/home.html:113
+#, python-format
+msgid "attempts on %(site)s"
+msgstr "ta urinish — %(site)s"
+
+#: templates/dashboard/home.html:113 templates/exams/section_list.html:16
+msgid "today"
+msgstr "bugun"
+
+#: templates/dashboard/home.html:113
+msgid "new mocks this week"
+msgstr "ta yangi mock shu hafta"
+
+#: templates/dashboard/mistakes.html:1 templates/dashboard/mistakes.html:6
+msgid "Mistakes notebook"
+msgstr "Xatolar daftari"
+
+#: templates/dashboard/mistakes.html:6 templates/dashboard/results.html:61
+#: templates/dashboard/speaking_history.html:25
+msgid "Practice"
+msgstr "Mashq"
+
+#: templates/dashboard/mistakes.html:6
+msgid "Every Reading and Listening question you got wrong — try it again until you get it right."
+msgstr "Reading va Listeningda xato qilgan har bir savolingiz — to'g'ri topguningizcha qayta ishlang."
+
+#: templates/dashboard/mistakes.html:9
+msgid "To review"
+msgstr "Takrorlash uchun"
+
+#: templates/dashboard/mistakes.html:17 templates/dashboard/results.html:18
+msgid "All"
+msgstr "Hammasi"
+
+#: templates/dashboard/mistakes.html:21
+msgid "Explanation language"
+msgstr "Tushuntirish tili"
+
+#: templates/dashboard/mistakes.html:22
+msgid "AI explains in"
+msgstr "AI tushuntirish tili"
+
+#: templates/dashboard/mistakes.html:34
+msgid "You:"
+msgstr "Siz:"
+
+#: templates/dashboard/mistakes.html:34
+msgid "Skipped"
+msgstr "O'tkazib yuborilgan"
+
+#: templates/dashboard/mistakes.html:50
+msgid "Type your answer"
+msgstr "Javobingizni yozing"
+
+#: templates/dashboard/mistakes.html:53
+msgid "Check"
+msgstr "Tekshirish"
+
+#: templates/dashboard/mistakes.html:54
+msgid "Show answer"
+msgstr "Javobni ko'rsatish"
+
+#: templates/dashboard/mistakes.html:55
+#: templates/results/detail_objective.html:14
+msgid "Why?"
+msgstr "Nega?"
+
+#: templates/dashboard/mistakes.html:56
+msgid "I've learned it"
+msgstr "O'rgandim"
+
+#: templates/dashboard/mistakes.html:63
+msgid "No mistakes to review"
+msgstr "Takrorlash uchun xatolar yo'q"
+
+#: templates/dashboard/mistakes.html:63
+msgid "Wrong answers from your Reading and Listening mocks will appear here."
+msgstr "Reading va Listening mocklaridagi xato javoblaringiz shu yerda paydo bo'ladi."
+
+#: templates/dashboard/mistakes.html:66
+#, python-format
+msgid "…and %(more)s more. Mark some as learned to see the rest."
+msgstr "…va yana %(more)s ta. Qolganlarini ko'rish uchun ba'zilarini «o'rgandim» deb belgilang."
+
+#: templates/dashboard/results.html:1 templates/dashboard/results.html:6
+#: templates/partials/student_sidebar.html:7
+msgid "My results"
+msgstr "Natijalarim"
+
+#: templates/dashboard/results.html:7
+#, python-format
+msgid "%(n)s test"
+msgid_plural "%(n)s tests"
+msgstr[0] "%(n)s ta test"
+
+#: templates/dashboard/results.html:7
+msgid "since"
+msgstr "boshlab"
+
+#: templates/dashboard/results.html:10
+msgid "Best"
+msgstr "Eng yaxshi"
+
+#: templates/dashboard/results.html:11
+msgid "Latest"
+msgstr "Oxirgi"
+
+#: templates/dashboard/results.html:12
+msgid "Skills"
+msgstr "Ko'nikmalar"
+
+#: templates/dashboard/results.html:13
+msgid "AI analysed"
+msgstr "AI tahlil qildi"
+
+#: templates/dashboard/results.html:24
+msgid "Full mock results"
+msgstr "To'liq mock natijalari"
+
+#: templates/dashboard/results.html:32
+msgid "No full mock sittings yet"
+msgstr "Hali to'liq mock topshirilmagan"
+
+#: templates/dashboard/results.html:32
+msgid "start one"
+msgstr "boshlash"
+
+#: templates/dashboard/results.html:36
+msgid "Score progression"
+msgstr "Ball o'sishi"
+
+#: templates/dashboard/results.html:38
+msgid "Scores of your last attempts"
+msgstr "Oxirgi urinishlar ballari"
+
+#: templates/dashboard/results.html:42
+#, python-format
+msgid "last %(n)s scored attempt"
+msgid_plural "last %(n)s scored attempts"
+msgstr[0] "oxirgi %(n)s ta baholangan urinish"
+
+#: templates/dashboard/results.html:43
+msgid "No scored attempts yet."
+msgstr "Hali baholangan urinishlar yo'q."
+
+#: templates/dashboard/results.html:46 templates/results/_header.html:5
+#: templates/results/_header.html:6 templates/results/full_detail.html:4
+msgid "All results"
+msgstr "Barcha natijalar"
+
+#: templates/dashboard/results.html:50
+msgid "Today"
+msgstr "Bugun"
+
+#: templates/dashboard/results.html:50
+msgid "Yesterday"
+msgstr "Kecha"
+
+#: templates/dashboard/results.html:55 templates/results/_header.html:29
+msgid "correct"
+msgstr "to'g'ri"
+
+#: templates/dashboard/results.html:61
+#: templates/dashboard/speaking_history.html:25
+#: templates/partials/continue.html:17
+msgid "Full test"
+msgstr "To'liq test"
+
+#: templates/dashboard/speaking_history.html:6
+#: templates/dashboard/writing_history.html:6
+#: templates/partials/student_sidebar.html:9
+msgid "History"
+msgstr "Tarix"
+
+#: templates/dashboard/speaking_history.html:6
+msgid "Listen back to your answers and read the AI feedback."
+msgstr "Javoblaringizni qayta tinglang va AI fikr-mulohazasini o'qing."
+
+#: templates/dashboard/speaking_history.html:9
+msgid "Recordings"
+msgstr "Yozuvlar"
+
+#: templates/dashboard/speaking_history.html:10
+msgid "Evaluated"
+msgstr "Baholangan"
+
+#: templates/dashboard/speaking_history.html:11
+#: templates/dashboard/writing_history.html:10
+msgid "Average /75"
+msgstr "O'rtacha /75"
+
+#: templates/dashboard/speaking_history.html:12
+msgid "Minutes spoken"
+msgstr "Gapirilgan daqiqalar"
+
+#: templates/dashboard/speaking_history.html:14
+msgid "New speaking mock"
+msgstr "Yangi speaking mock"
+
+#: templates/dashboard/speaking_history.html:27
+#: templates/results/detail_speaking.html:6
+#, python-format
+msgid "%(n)s answer"
+msgid_plural "%(n)s answers"
+msgstr[0] "%(n)s ta javob"
+
+#: templates/dashboard/speaking_history.html:31
+msgid "Full result →"
+msgstr "To'liq natija →"
+
+#: templates/dashboard/speaking_history.html:33
+#, python-format
+msgid "%(n)s answer couldn't be evaluated by the AI yet. An administrator can re-run the evaluation — your recordings are saved."
+msgid_plural "%(n)s answers couldn't be evaluated by the AI yet. An administrator can re-run the evaluation — your recordings are saved."
+msgstr[0] "%(n)s ta javobni AI hali baholay olmadi. Administrator baholashni qayta ishga tushirishi mumkin — yozuvlaringiz saqlangan."
+
+#: templates/dashboard/speaking_history.html:40
+msgid "Not evaluated"
+msgstr "Baholanmagan"
+
+#: templates/dashboard/speaking_history.html:45
+msgid "Transcript &amp; feedback"
+msgstr "Matn va fikr-mulohaza"
+
+#: templates/dashboard/speaking_history.html:49
+#: templates/results/_speaking_eval.html:17
+msgid "Fluency"
+msgstr "Ravonlik"
+
+#: templates/dashboard/speaking_history.html:62
+msgid "No recordings yet"
+msgstr "Hali yozuvlar yo'q"
+
+#: templates/dashboard/speaking_history.html:62
+msgid "Record your first speaking answers and get AI feedback on fluency, vocabulary and grammar."
+msgstr "Birinchi speaking javoblaringizni yozib oling va ravonlik, lug'at hamda grammatika bo'yicha AI fikr-mulohazasini oling."
+
+#: templates/dashboard/speaking_history.html:62
+msgid "Start a speaking mock"
+msgstr "Speaking mockni boshlash"
+
+#: templates/dashboard/writing_detail.html:1
+#: templates/dashboard/writing_detail.html:3
+msgid "Writing result"
+msgstr "Writing natijasi"
+
+#: templates/dashboard/writing_detail.html:3
+msgid "Whole attempt"
+msgstr "Butun urinish"
+
+#: templates/dashboard/writing_history.html:6
+msgid "Your letters and essays with AI scores and feedback."
+msgstr "Xatlaringiz va insholaringiz — AI ballari va fikr-mulohazalari bilan."
+
+#: templates/dashboard/writing_history.html:9
+msgid "Essays"
+msgstr "Insholar"
+
+#: templates/dashboard/writing_history.html:11
+msgid "Best /75"
+msgstr "Eng yaxshi /75"
+
+#: templates/dashboard/writing_history.html:12
+msgid "Avg words"
+msgstr "O'rtacha so'z"
+
+#: templates/dashboard/writing_history.html:14
+msgid "New writing mock"
+msgstr "Yangi writing mock"
+
+#: templates/dashboard/writing_history.html:30
+msgid "Open →"
+msgstr "Ochish →"
+
+#: templates/dashboard/writing_history.html:38
+msgid "grammar"
+msgstr "grammatika"
+
+#: templates/dashboard/writing_history.html:38
+msgid "vocabulary corrections"
+msgstr "lug'at tuzatishlari"
+
+#: templates/dashboard/writing_history.html:40
+msgid "The AI couldn't evaluate this essay yet. An administrator can re-run the evaluation."
+msgstr "AI bu inshoni hali baholay olmadi. Administrator baholashni qayta ishga tushirishi mumkin."
+
+#: templates/dashboard/writing_history.html:42
+msgid "AI evaluation in progress…"
+msgstr "AI baholamoqda…"
+
+#: templates/dashboard/writing_history.html:47
+msgid "No essays yet"
+msgstr "Hali insholar yo'q"
+
+#: templates/dashboard/writing_history.html:47
+msgid "Write your first letter or essay and get a 0–75 score with AI feedback."
+msgstr "Birinchi xat yoki inshoingizni yozing va AI fikr-mulohazasi bilan 0–75 ball oling."
+
+#: templates/dashboard/writing_history.html:47
+msgid "Start a writing mock"
+msgstr "Writing mockni boshlash"
+
+#: templates/errors/403.html:1
+msgid "Access denied"
+msgstr "Ruxsat yo'q"
+
+#: templates/errors/403.html:2
+msgid "You don't have permission to view this page."
+msgstr "Bu sahifani ko'rishga ruxsatingiz yo'q."
+
+#: templates/errors/403.html:4
+#, python-format
+msgid "You're signed in as <strong>%(email)s</strong>."
+msgstr "Siz <strong>%(email)s</strong> sifatida kirgansiz."
+
+#: templates/errors/403.html:4
+msgid "The admin panel needs an admin account."
+msgstr "Admin panel uchun admin hisobi kerak."
+
+#: templates/errors/403.html:8
+msgid "Log out &amp; sign in as another account"
+msgstr "Chiqib, boshqa hisob bilan kirish"
+
+#: templates/errors/403.html:10 templates/errors/403.html:12
+#: templates/errors/404.html:2
+msgid "Go home"
+msgstr "Bosh sahifaga"
+
+#: templates/errors/404.html:1
+msgid "Not found"
+msgstr "Topilmadi"
+
+#: templates/errors/404.html:2
+msgid "We couldn't find that page."
+msgstr "Bu sahifa topilmadi."
+
+#: templates/errors/csrf.html:1
+msgid "Page expired"
+msgstr "Sahifa eskirdi"
+
+#: templates/errors/csrf.html:5
+msgid "This page expired"
+msgstr "Bu sahifa eskirdi"
+
+#: templates/errors/csrf.html:6
+msgid "You signed in or out in another tab, so this form's security key changed and it couldn't be sent."
+msgstr "Boshqa oynada kirdingiz yoki chiqdingiz, shu sababli bu formaning xavfsizlik kaliti o'zgardi va u yuborilmadi."
+
+#: templates/errors/csrf.html:7
+msgid "Nothing was saved. Reload the page and send it again."
+msgstr "Hech narsa saqlanmadi. Sahifani yangilab, qayta yuboring."
+
+#: templates/errors/csrf.html:9
+msgid "Reload the page"
+msgstr "Sahifani yangilash"
+
+#: templates/errors/csrf.html:10
+msgid "Go back"
+msgstr "Orqaga"
+
+#: templates/exams/_exam_bar.html:3
+msgid "Leave the test"
+msgstr "Testdan chiqish"
+
+#: templates/exams/_exam_bar.html:7
+msgid "Parts"
+msgstr "Qismlar"
+
+#: templates/exams/_exam_bar.html:21
+msgid "Each recording is played twice"
+msgstr "Har bir audio ikki marta eshittiriladi"
+
+#: templates/exams/_exam_bar.html:22
+msgid "Playback speed"
+msgstr "Tezlik"
+
+#: templates/exams/_exam_bar.html:28
+msgid "TIME LEFT"
+msgstr "QOLGAN VAQT"
+
+#: templates/exams/_exam_bar.html:28
+msgid "Time remaining"
+msgstr "Qolgan vaqt"
+
+#: templates/exams/_exam_bar.html:29
+msgid "Search in text"
+msgstr "Matndan qidirish"
+
+#: templates/exams/_exam_bar.html:30
+msgid "Full screen"
+msgstr "To'liq ekran"
+
+#: templates/exams/_exam_bar.html:33
+msgid "Find in the text…"
+msgstr "Matndan topish…"
+
+#: templates/exams/_exam_bar.html:33 templates/exams/take_objective.html:85
+msgid "Close"
+msgstr "Yopish"
+
+#: templates/exams/_exam_card.html:4 templates/exams/_full_card.html:7
+#: templates/exams/detail.html:10 templates/exams/detail.html:30
+#: templates/exams/detail.html:37 templates/exams/full_detail.html:11
+#: templates/exams/full_detail.html:12 templates/exams/full_progress.html:10
+#: templates/exams/practice.html:15 templates/exams/take_writing.html:21
+msgid "min"
+msgstr "daq"
+
+#: templates/exams/_exam_card.html:4
+msgid "Untimed"
+msgstr "Vaqtsiz"
+
+#: templates/exams/_exit_modal.html:4
+msgid "Leave the test?"
+msgstr "Testdan chiqmoqchimisiz?"
+
+#: templates/exams/_exit_modal.html:5
+msgid "Your sent answers are saved."
+msgstr "Yuborilgan javoblaringiz saqlanadi."
+
+#: templates/exams/_exit_modal.html:5
+msgid "Your answers are saved."
+msgstr "Javoblaringiz saqlanadi."
+
+#: templates/exams/_exit_modal.html:5
+msgid "You can continue later on this or another device with the <strong>Resume</strong> button on the home page."
+msgstr "Keyinroq bosh sahifadagi <strong>Davom etish</strong> tugmasi orqali shu yoki boshqa qurilmada davom ettirishingiz mumkin."
+
+#: templates/exams/_exit_modal.html:5
+msgid "The timer does not stop."
+msgstr "Taymer to'xtamaydi."
+
+#: templates/exams/_exit_modal.html:7
+msgid "Continue the test"
+msgstr "Testni davom ettirish"
+
+#: templates/exams/_exit_modal.html:8
+msgid "Leave for now"
+msgstr "Hozircha chiqish"
+
+#: templates/exams/_full_card.html:7
+msgid "overall score /75 + CEFR"
+msgstr "umumiy ball /75 + CEFR"
+
+#: templates/exams/detail.html:3 templates/exams/section_list.html:1
+#: templates/exams/section_list.html:4
+#, python-format
+msgid "%(section_label)s mocks"
+msgstr "%(section_label)s mocklari"
+
+#: templates/exams/detail.html:6
+msgid "Multilevel"
+msgstr "Multilevel"
+
+#: templates/exams/detail.html:6 templates/exams/full_detail.html:6
+msgid "Draft (admin preview)"
+msgstr "Qoralama (admin ko'rinishi)"
+
+#: templates/exams/detail.html:10
+msgid "Time limit"
+msgstr "Vaqt chegarasi"
+
+#: templates/exams/detail.html:11
+msgid "Tasks"
+msgstr "Topshiriqlar"
+
+#: templates/exams/detail.html:11
+msgid "Questions"
+msgstr "Savollar"
+
+#: templates/exams/detail.html:12
+msgid "Scoring"
+msgstr "Baholash"
+
+#: templates/exams/detail.html:12
+msgid "Multilevel 0–75 + CEFR"
+msgstr "Multilevel 0–75 + CEFR"
+
+#: templates/exams/detail.html:14
+msgid "Instructions"
+msgstr "Ko'rsatmalar"
+
+#: templates/exams/detail.html:15
+msgid "Structure"
+msgstr "Tuzilishi"
+
+#: templates/exams/detail.html:15
+#, python-format
+msgid "%(n)s question"
+msgid_plural "%(n)s questions"
+msgstr[0] "%(n)s ta savol"
+
+#: templates/exams/detail.html:16
+msgid "You'll need a working microphone. Your browser will ask for permission. Each answer is recorded, then transcribed and evaluated by AI. Pronunciation is only assessed if the configured AI provider genuinely analyses audio."
+msgstr "Sizga ishlaydigan mikrofon kerak bo'ladi. Brauzer ruxsat so'raydi. Har bir javob yozib olinadi, so'ng matnga o'giriladi va AI tomonidan baholanadi. Talaffuz faqat AI audioni haqiqatan tahlil qila olsagina baholanadi."
+
+#: templates/exams/detail.html:17
+msgid "Write directly in the browser. A live word counter shows your progress. When you submit, your essay is saved and evaluated by AI against official criteria."
+msgstr "To'g'ridan-to'g'ri brauzerda yozing. So'z hisoblagich jarayonni ko'rsatib turadi. Topshirganingizda inshoingiz saqlanadi va AI rasmiy mezonlar bo'yicha baholaydi."
+
+#: templates/exams/detail.html:20
+msgid "You've used your free mock"
+msgstr "Bepul mockingizdan foydalandingiz"
+
+#: templates/exams/detail.html:20
+msgid "Create a free account to take this one — your first result is kept."
+msgstr "Buni topshirish uchun bepul hisob oching — birinchi natijangiz saqlanib qoladi."
+
+#: templates/exams/detail.html:23 templates/exams/practice.html:21
+msgid "Your first mock is free"
+msgstr "Birinchi mock bepul"
+
+#: templates/exams/detail.html:23 templates/exams/practice.html:21
+msgid "no account needed."
+msgstr "hisob shart emas."
+
+#: templates/exams/detail.html:24
+msgid "Choose your mode"
+msgstr "Rejimni tanlang"
+
+#: templates/exams/detail.html:29
+msgid "Resume full test"
+msgstr "To'liq testni davom ettirish"
+
+#: templates/exams/detail.html:29
+#, python-format
+msgid "Full %(section_label)s test"
+msgstr "To'liq %(section_label)s testi"
+
+#: templates/exams/detail.html:30
+#, python-format
+msgid "All %(n)s parts"
+msgstr "Barcha %(n)s qism"
+
+#: templates/exams/detail.html:30
+#, python-format
+msgid "All %(n)s tasks"
+msgstr "Barcha %(n)s topshiriq"
+
+#: templates/exams/detail.html:30
+#, python-format
+msgid "All %(n)s questions"
+msgstr "Barcha %(n)s savol"
+
+#: templates/exams/detail.html:36 templates/exams/practice.html:1
+#: templates/results/_header.html:24
+msgid "Part practice"
+msgstr "Qism bo'yicha mashq"
+
+#: templates/exams/detail.html:37
+msgid "Pick one task"
+msgstr "Bitta topshiriqni tanlang"
+
+#: templates/exams/detail.html:37
+msgid "Pick one part"
+msgstr "Bitta qismni tanlang"
+
+#: templates/exams/detail.html:41
+msgid "The timer starts as soon as you choose a mode."
+msgstr "Rejimni tanlashingiz bilan taymer boshlanadi."
+
+#: templates/exams/detail.html:47
+msgid "Your attempts"
+msgstr "Urinishlaringiz"
+
+#: templates/exams/detail.html:51 templates/exams/full_detail.html:28
+#: templates/exams/full_progress.html:14
+msgid "Continue"
+msgstr "Davom etish"
+
+#: templates/exams/detail.html:51 templates/exams/full_detail.html:28
+msgid "View result"
+msgstr "Natijani ko'rish"
+
+#: templates/exams/detail.html:53
+msgid "No attempts yet."
+msgstr "Hali urinishlar yo'q."
+
+#: templates/exams/full_detail.html:3 templates/exams/full_progress.html:3
+msgid "Back to Full mocks"
+msgstr "To'liq mocklarga qaytish"
+
+#: templates/exams/full_detail.html:9
+msgid "You take the four sections in the official order. Each section has its own timer; you can take a break between sections. Your overall score is the average of the four section scores (0–75), converted to a CEFR level."
+msgstr "To'rtta bo'limni rasmiy tartibda topshirasiz. Har bir bo'limning o'z taymeri bor; bo'limlar orasida dam olishingiz mumkin. Umumiy ball to'rtta bo'lim ballarining (0–75) o'rtachasi bo'lib, CEFR darajasiga aylantiriladi."
+
+#: templates/exams/full_detail.html:10 templates/partials/identity.html:12
+#: templates/results/full_detail.html:20
+msgid "Section"
+msgstr "Bo'lim"
+
+#: templates/exams/full_detail.html:10
+msgid "Mock"
+msgstr "Mock"
+
+#: templates/exams/full_detail.html:10
+msgid "Time"
+msgstr "Vaqt"
+
+#: templates/exams/full_detail.html:12
+msgid "Total"
+msgstr "Jami"
+
+#: templates/exams/full_detail.html:14
+msgid "Speaking needs a working microphone. Writing and Speaking are evaluated by AI, so the overall result appears a little after you finish."
+msgstr "Speaking uchun ishlaydigan mikrofon kerak. Writing va Speakingni AI baholaydi, shuning uchun umumiy natija tugatganingizdan biroz keyin chiqadi."
+
+#: templates/exams/full_detail.html:18
+msgid "Continue full mock"
+msgstr "To'liq mockni davom ettirish"
+
+#: templates/exams/full_detail.html:19
+msgid "Start full mock"
+msgstr "To'liq mockni boshlash"
+
+#: templates/exams/full_detail.html:21
+msgid "Full mocks need a free account."
+msgstr "To'liq mocklar uchun bepul hisob kerak."
+
+#: templates/exams/full_detail.html:24
+msgid "Your sittings"
+msgstr "Topshirishlaringiz"
+
+#: templates/exams/full_detail.html:30
+msgid "No sittings yet."
+msgstr "Hali topshirishlar yo'q."
+
+#: templates/exams/full_list.html:1 templates/exams/full_list.html:4
+msgid "Full mocks"
+msgstr "To'liq mocklar"
+
+#: templates/exams/full_list.html:3 templates/exams/section_list.html:3
+msgid "Back to Mock exams"
+msgstr "Mock imtihonlarga qaytish"
+
+#: templates/exams/full_list.html:4
+msgid "All four skills in one sitting — Listening, Reading, Writing, Speaking — with an overall Multilevel score."
+msgstr "To'rtta ko'nikma bir o'tirishda — Listening, Reading, Writing, Speaking — umumiy Multilevel ball bilan."
+
+#: templates/exams/full_list.html:6
+msgid "No full mocks have been published yet."
+msgstr "Hali to'liq mocklar e'lon qilinmagan."
+
+#: templates/exams/full_progress.html:5
+#, python-format
+msgid "%(done)s of 4 sections done"
+msgstr "4 bo'limdan %(done)s tasi bajarildi"
+
+#: templates/exams/full_progress.html:10
+msgid "untimed"
+msgstr "vaqtsiz"
+
+#: templates/exams/full_progress.html:14
+msgid "Start"
+msgstr "Boshlash"
+
+#: templates/exams/full_progress.html:15
+msgid "Waiting"
+msgstr "Kutilmoqda"
+
+#: templates/exams/full_progress.html:20
+msgid "Take a short break if you need one — the next section's timer starts only when you press Start. Your overall result appears when all four sections are done."
+msgstr "Kerak bo'lsa qisqa tanaffus qiling — keyingi bo'lim taymeri faqat «Boshlash» tugmasini bosganingizda boshlanadi. Umumiy natija to'rtta bo'lim tugagach chiqadi."
+
+#: templates/exams/hub.html:3
+msgid "Multilevel (CEFR) practice tests for every skill."
+msgstr "Har bir ko'nikma uchun Multilevel (CEFR) mashq testlari."
+
+#: templates/exams/hub.html:7
+#, python-format
+msgid "Listening → Reading → Writing → Speaking in one sitting, with an overall Multilevel score. %(n)s available."
+msgstr "Listening → Reading → Writing → Speaking bir o'tirishda, umumiy Multilevel ball bilan. %(n)s ta mavjud."
+
+#: templates/exams/hub.html:8
+msgid "Browse full mocks →"
+msgstr "To'liq mocklarni ko'rish →"
+
+#: templates/exams/practice.html:3 templates/exams/practice.html:22
+msgid "Back"
+msgstr "Orqaga"
+
+#: templates/exams/practice.html:6
+msgid "Select a task"
+msgstr "Topshiriqni tanlang"
+
+#: templates/exams/practice.html:6
+msgid "Select a part"
+msgstr "Qismni tanlang"
+
+#: templates/exams/practice.html:7
+msgid "choose which task you would like to practise"
+msgstr "qaysi topshiriqni mashq qilmoqchisiz, tanlang"
+
+#: templates/exams/practice.html:7
+msgid "choose which part you would like to practise"
+msgstr "qaysi qismni mashq qilmoqchisiz, tanlang"
+
+#: templates/exams/practice.html:16 templates/partials/continue.html:24
+msgid "Resume"
+msgstr "Davom etish"
+
+#: templates/exams/section_list.html:11
+msgid "READY"
+msgstr "TAYYOR"
+
+#: templates/exams/section_list.html:13
+msgid "Done"
+msgstr "Bajarildi"
+
+#: templates/exams/section_list.html:16
+msgid "Trending"
+msgstr "Ommabop"
+
+#: templates/exams/section_list.html:16
+msgid "All-time attempts"
+msgstr "Jami urinishlar"
+
+#: templates/exams/section_list.html:23 templates/exams/section_list.html:26
+msgid "Ready"
+msgstr "Tayyor"
+
+#: templates/exams/section_list.html:23 templates/exams/section_list.html:26
+msgid "Not ready"
+msgstr "Tayyor emas"
+
+#: templates/exams/section_list.html:33
+msgid "Begin →"
+msgstr "Boshlash →"
+
+#: templates/exams/section_list.html:36
+#, python-format
+msgid "No %(section)s mocks yet."
+msgstr "Hali %(section)s mocklari yo'q."
+
+#: templates/exams/take_objective.html:21
+msgid "Drag an item onto a question — or tap one, then tap the slot."
+msgstr "Variantni savolga sudrab olib boring — yoki uni bosib, so'ng bo'sh joyni bosing."
+
+#: templates/exams/take_objective.html:30
+msgid "Enlarge"
+msgstr "Kattalashtirish"
+
+#: templates/exams/take_objective.html:30
+msgid "Pen"
+msgstr "Qalam"
+
+#: templates/exams/take_objective.html:30
+msgid "Clear"
+msgstr "Tozalash"
+
+#: templates/exams/take_objective.html:37
+#: templates/exams/take_objective.html:66
+msgid "Type answer…"
+msgstr "Javobni yozing…"
+
+#: templates/exams/take_objective.html:41
+msgid "Drag to resize"
+msgstr "O'lchamni o'zgartirish uchun suring"
+
+#: templates/exams/take_objective.html:53
+msgid "Drop an answer here"
+msgstr "Javobni shu yerga tashlang"
+
+#: templates/exams/take_objective.html:77
+msgid "Question navigator"
+msgstr "Savollar navigatori"
+
+#: templates/exams/take_objective.html:79
+msgid "answered"
+msgstr "javob berildi"
+
+#: templates/exams/take_objective.html:82
+msgid "Submit Test"
+msgstr "Testni topshirish"
+
+#: templates/exams/take_objective.html:83
+msgid "Next part →"
+msgstr "Keyingi qism →"
+
+#: templates/exams/take_objective.html:84 templates/exams/take_writing.html:33
+msgid "Text size"
+msgstr "Matn o'lchami"
+
+#: templates/exams/take_speaking.html:8
+msgid "Question progress"
+msgstr "Savollar bo'yicha jarayon"
+
+#: templates/exams/take_speaking.html:11
+msgid "Recording isn't supported"
+msgstr "Ovoz yozish qo'llab-quvvatlanmaydi"
+
+#: templates/exams/take_speaking.html:11
+msgid "Your browser doesn't support audio recording. Please use a recent version of Chrome, Edge, Firefox or Safari."
+msgstr "Brauzeringiz ovoz yozishni qo'llab-quvvatlamaydi. Chrome, Edge, Firefox yoki Safari'ning yangi versiyasidan foydalaning."
+
+#: templates/exams/take_speaking.html:16
+msgid "Speaking test"
+msgstr "Speaking testi"
+
+#: templates/exams/take_speaking.html:17
+#, python-format
+msgid "%(n)s question in four parts: Part 1.1 (personal questions), Part 1.2 (comparison), Part 2 (long turn) and Part 3 (argument). For each question you get preparation time, then the recording starts automatically. You can replay your answer and re-record before submitting it."
+msgid_plural "%(n)s questions in four parts: Part 1.1 (personal questions), Part 1.2 (comparison), Part 2 (long turn) and Part 3 (argument). For each question you get preparation time, then the recording starts automatically. You can replay your answer and re-record before submitting it."
+msgstr[0] "To'rt qismda %(n)s ta savol: Part 1.1 (shaxsiy savollar), Part 1.2 (taqqoslash), Part 2 (uzun javob) va Part 3 (bahs). Har bir savol uchun tayyorlanish vaqti beriladi, so'ng yozib olish avtomatik boshlanadi. Javobingizni yuborishdan oldin qayta tinglab, qayta yozishingiz mumkin."
+
+#: templates/exams/take_speaking.html:18
+msgid "Allow microphone &amp; begin"
+msgstr "Mikrofonga ruxsat berish va boshlash"
+
+#: templates/exams/take_speaking.html:25
+msgid "Pictures to compare"
+msgstr "Taqqoslanadigan rasmlar"
+
+#: templates/exams/take_speaking.html:26
+msgid "You should say:"
+msgstr "Quyidagilarni ayting:"
+
+#: templates/exams/take_speaking.html:28
+msgid "For"
+msgstr "Tarafdor"
+
+#: templates/exams/take_speaking.html:29
+msgid "Against"
+msgstr "Qarshi"
+
+#: templates/exams/take_speaking.html:32
+msgid "Preparation"
+msgstr "Tayyorlanish"
+
+#: templates/exams/take_speaking.html:37
+msgid "Start speaking now"
+msgstr "Hozir gapirishni boshlash"
+
+#: templates/exams/take_speaking.html:38
+msgid "Stop recording"
+msgstr "Yozishni to'xtatish"
+
+#: templates/exams/take_speaking.html:39
+msgid "Re-record"
+msgstr "Qayta yozish"
+
+#: templates/exams/take_speaking.html:40
+msgid "Submit answer"
+msgstr "Javobni yuborish"
+
+#: templates/exams/take_speaking.html:44
+msgid "Finish test early"
+msgstr "Testni muddatidan oldin yakunlash"
+
+#: templates/exams/take_speaking.html:49
+msgid "All answers recorded"
+msgstr "Barcha javoblar yozib olindi"
+
+#: templates/exams/take_speaking.html:50
+msgid "Finish the test to get your overall result. Transcription and AI evaluation continue in the background."
+msgstr "Umumiy natijani olish uchun testni yakunlang. Matnga o'girish va AI baholashi orqa fonda davom etadi."
+
+#: templates/exams/take_speaking.html:51
+msgid "Finish test"
+msgstr "Testni yakunlash"
+
+#: templates/exams/take_writing.html:14
+msgid "Your response"
+msgstr "Javobingiz"
+
+#: templates/exams/take_writing.html:15
+msgid "Start writing here…"
+msgstr "Shu yerda yozishni boshlang…"
+
+#: templates/exams/take_writing.html:16
+msgid "Spell-check is disabled, as in the real exam. Your draft is saved automatically, so you can resume on any device."
+msgstr "Haqiqiy imtihondagidek imlo tekshiruvi o'chirilgan. Qoralamangiz avtomatik saqlanadi — istalgan qurilmada davom ettirishingiz mumkin."
+
+#: templates/exams/take_writing.html:21
+msgid "Target:"
+msgstr "Maqsad:"
+
+#: templates/exams/take_writing.html:21
+msgid "suggested time"
+msgstr "tavsiya etilgan vaqt"
+
+#: templates/exams/take_writing.html:23
+msgid "Task chart / diagram"
+msgstr "Topshiriq grafigi / diagrammasi"
+
+#: templates/exams/take_writing.html:29
+msgid "Your essays are evaluated by AI after you submit. You can leave the page and check results later in your dashboard."
+msgstr "Topshirganingizdan so'ng insholaringizni AI baholaydi. Sahifadan chiqib, natijalarni keyinroq kabinetingizda ko'rishingiz mumkin."
+
+#: templates/exams/take_writing.html:30
+msgid "Submit for evaluation"
+msgstr "Baholashga yuborish"
+
+#: templates/partials/continue.html:3 templates/partials/continue.html:11
+msgid "Continue where you left off"
+msgstr "To'xtagan joyingizdan davom eting"
+
+#: templates/partials/continue.html:12
+#, python-format
+msgid "%(n)s unfinished"
+msgstr "%(n)s ta tugallanmagan"
+
+#: templates/partials/continue.html:18
+msgid "⏱ Time's up"
+msgstr "⏱ Vaqt tugadi"
+
+#: templates/partials/continue.html:18
+#, python-format
+msgid "%(n)s min left"
+msgstr "%(n)s daqiqa qoldi"
+
+#: templates/partials/continue.html:20
+msgid "Progress"
+msgstr "Jarayon"
+
+#: templates/partials/continue.html:21
+msgid "answers recorded"
+msgstr "ta javob yozildi"
+
+#: templates/partials/continue.html:21
+msgid "tasks drafted"
+msgstr "ta topshiriq yozildi"
+
+#: templates/partials/continue.html:21
+#, python-format
+msgid "%(n)s word"
+msgid_plural "%(n)s words"
+msgstr[0] "%(n)s so'z"
+
+#: templates/partials/continue.html:21
+msgid "questions answered"
+msgstr "ta savolga javob berildi"
+
+#: templates/partials/continue.html:21
+msgid "saved"
+msgstr "saqlandi"
+
+#: templates/partials/continue.html:24
+msgid "Finish &amp; see result"
+msgstr "Yakunlash va natijani ko'rish"
+
+#: templates/partials/continue.html:25
+msgid "Discard this unfinished mock? Your saved answers will not be graded."
+msgstr "Bu tugallanmagan mock bekor qilinsinmi? Saqlangan javoblaringiz baholanmaydi."
+
+#: templates/partials/continue.html:25
+msgid "Discard"
+msgstr "Bekor qilish"
+
+#: templates/partials/continue.html:30
+msgid "Also unfinished"
+msgstr "Yana tugallanmaganlar"
+
+#: templates/partials/continue.html:30
+msgid "more in My results →"
+msgstr "ta yana — Natijalarim →"
+
+#: templates/partials/identity.html:4
+msgid "Student"
+msgstr "O'quvchi"
+
+#: templates/partials/identity.html:4
+msgid "free trial"
+msgstr "bepul sinov"
+
+#: templates/partials/identity.html:5
+msgid "to keep this result"
+msgstr "— natija saqlanib qoladi"
+
+#: templates/partials/identity.html:11 templates/results/full_detail.html:19
+msgid "Exam"
+msgstr "Imtihon"
+
+#: templates/partials/identity.html:13
+msgid "Submitted"
+msgstr "Topshirildi"
+
+#: templates/partials/identity.html:14 templates/results/full_detail.html:20
+msgid "Score"
+msgstr "Ball"
+
+#: templates/partials/identity.html:15 templates/results/full_detail.html:21
+msgid "Status"
+msgstr "Holat"
+
+#: templates/partials/pagination.html:2
+msgid "Pagination"
+msgstr "Sahifalar"
+
+#: templates/partials/pagination.html:3
+msgid "← Prev"
+msgstr "← Oldingi"
+
+#: templates/partials/pagination.html:4
+#, python-format
+msgid "Page %(n)s of %(total)s"
+msgstr "%(n)s / %(total)s sahifa"
+
+#: templates/partials/pagination.html:5
+msgid "Next →"
+msgstr "Keyingi →"
+
+#: templates/partials/section_cards.html:9
+msgid "taken today"
+msgstr "bugun topshirildi"
+
+#: templates/partials/section_cards.html:9
+msgid "all-time"
+msgstr "jami"
+
+#: templates/partials/student_sidebar.html:2
+msgid "Main navigation"
+msgstr "Asosiy navigatsiya"
+
+#: templates/partials/student_sidebar.html:6
+msgid "Mocks"
+msgstr "Mocklar"
+
+#: templates/partials/student_sidebar.html:8
+msgid "Mistakes"
+msgstr "Xatolar daftari"
+
+#: templates/partials/student_sidebar.html:24
+msgid "Free trial"
+msgstr "Bepul sinov"
+
+#: templates/partials/student_sidebar.html:25
+msgid "Create a free account to save your result and unlock every mock."
+msgstr "Natijangizni saqlash va barcha mocklarni ochish uchun bepul hisob oching."
+
+#: templates/partials/student_sidebar.html:27
+msgid "I already have an account"
+msgstr "Menda hisob bor"
+
+#: templates/results/_header.html:3
+msgid "practice"
+msgstr "mashq"
+
+#: templates/results/_header.html:3
+msgid "result"
+msgstr "natija"
+
+#: templates/results/_header.html:5 templates/results/full_detail.html:4
+msgid "Retake"
+msgstr "Qayta topshirish"
+
+#: templates/results/_header.html:6 templates/results/full_detail.html:4
+msgid "Student profile"
+msgstr "O'quvchi profili"
+
+#: templates/results/_header.html:10
+msgid "AI evaluation in progress… This page refreshes automatically when it's done (usually under a minute)."
+msgstr "AI baholamoqda… Tugagach sahifa avtomatik yangilanadi (odatda bir daqiqadan kam)."
+
+#: templates/results/_header.html:12
+msgid "The AI evaluation could not be completed. Your submission is saved, and an administrator can re-run the evaluation."
+msgstr "AI baholashni yakunlab bo'lmadi. Javobingiz saqlangan, administrator baholashni qayta ishga tushirishi mumkin."
+
+#: templates/results/_header.html:18
+msgid "CORRECT"
+msgstr "TO'G'RI"
+
+#: templates/results/_header.html:19 templates/results/full_detail.html:9
+msgid "OF 75"
+msgstr "75 DAN"
+
+#: templates/results/_header.html:20
+msgid "SCORE"
+msgstr "BALL"
+
+#: templates/results/_header.html:21 templates/results/full_detail.html:9
+msgid "PENDING"
+msgstr "KUTILMOQDA"
+
+#: templates/results/_header.html:26
+msgid "Submitted late"
+msgstr "Kech topshirildi"
+
+#: templates/results/_header.html:27
+msgid "Part practice gives no 0–75 score. Take the full test to get a Multilevel score and CEFR level."
+msgstr "Qism bo'yicha mashqda 0–75 ball berilmaydi. Multilevel ball va CEFR darajasini olish uchun to'liq testni topshiring."
+
+#: templates/results/_header.html:29
+msgid "incorrect"
+msgstr "noto'g'ri"
+
+#: templates/results/_header.html:29
+msgid "unanswered"
+msgstr "javobsiz"
+
+#: templates/results/_header.html:29
+msgid "Raw"
+msgstr "Xom ball"
+
+#: templates/results/_header.html:31
+msgid "Time spent:"
+msgstr "Sarflangan vaqt:"
+
+#: templates/results/_speaking_eval.html:6
+msgid "Processing failed:"
+msgstr "Qayta ishlash amalga oshmadi:"
+
+#: templates/results/_speaking_eval.html:7
+#: templates/results/detail_objective.html:21
+msgid "Transcript"
+msgstr "Matn (transcript)"
+
+#: templates/results/_speaking_eval.html:10
+#: templates/results/_writing_eval.html:12
+msgid "Overall"
+msgstr "Umumiy"
+
+#: templates/results/_speaking_eval.html:11
+#: templates/results/detail_speaking.html:10
+msgid "Fluency &amp; Coherence"
+msgstr "Ravonlik va izchillik"
+
+#: templates/results/_speaking_eval.html:14
+#: templates/results/detail_speaking.html:13
+msgid "Pronunciation"
+msgstr "Talaffuz"
+
+#: templates/results/_speaking_eval.html:14
+msgid "Not assessed"
+msgstr "Baholanmadi"
+
+#: templates/results/_speaking_eval.html:22
+msgid "Pronunciation:"
+msgstr "Talaffuz:"
+
+#: templates/results/_speaking_eval.html:24
+msgid "Mistakes &amp; corrections"
+msgstr "Xatolar va tuzatishlar"
+
+#: templates/results/_speaking_eval.html:25
+msgid "Improvement suggestions"
+msgstr "Yaxshilash bo'yicha tavsiyalar"
+
+#: templates/results/_writing_eval.html:4
+msgid "target"
+msgstr "maqsad"
+
+#: templates/results/_writing_eval.html:4
+msgid "submitted"
+msgstr "topshirildi"
+
+#: templates/results/_writing_eval.html:5
+msgid "Task prompt"
+msgstr "Topshiriq matni"
+
+#: templates/results/_writing_eval.html:6
+msgid "Original essay"
+msgstr "Asl insho"
+
+#: templates/results/_writing_eval.html:7
+msgid "(no response)"
+msgstr "(javob yo'q)"
+
+#: templates/results/_writing_eval.html:8
+msgid "Evaluation failed:"
+msgstr "Baholash amalga oshmadi:"
+
+#: templates/results/_writing_eval.html:10
+msgid "AI evaluation"
+msgstr "AI baholashi"
+
+#: templates/results/_writing_eval.html:13
+msgid "Task completion"
+msgstr "Topshiriq bajarilishi"
+
+#: templates/results/_writing_eval.html:14
+msgid "Coherence &amp; Organisation"
+msgstr "Izchillik va tuzilish"
+
+#: templates/results/_writing_eval.html:18
+msgid "Overall feedback"
+msgstr "Umumiy fikr"
+
+#: templates/results/_writing_eval.html:20
+msgid "Task"
+msgstr "Topshiriq"
+
+#: templates/results/_writing_eval.html:25
+msgid "Grammar corrections"
+msgstr "Grammatik tuzatishlar"
+
+#: templates/results/_writing_eval.html:26
+msgid "Vocabulary corrections"
+msgstr "Lug'at bo'yicha tuzatishlar"
+
+#: templates/results/_writing_eval.html:27
+msgid "Suggested rewrites"
+msgstr "Tavsiya etilgan qayta yozishlar"
+
+#: templates/results/_writing_eval.html:28
+msgid "Weak sentences"
+msgstr "Zaif gaplar"
+
+#: templates/results/_writing_eval.html:28
+msgid "Better:"
+msgstr "Yaxshiroq:"
+
+#: templates/results/_writing_eval.html:29
+msgid "Strong sentences"
+msgstr "Kuchli gaplar"
+
+#: templates/results/_writing_eval.html:30
+msgid "How to improve"
+msgstr "Qanday yaxshilash mumkin"
+
+#: templates/results/_writing_eval.html:31
+msgid "AI scores are estimates, not official results."
+msgstr "AI ballari taxminiy, rasmiy natija emas."
+
+#: templates/results/_writing_eval.html:32
+msgid "Waiting for AI evaluation…"
+msgstr "AI baholashi kutilmoqda…"
+
+#: templates/results/detail_objective.html:1
+#: templates/results/detail_speaking.html:1
+#: templates/results/detail_writing.html:1
+msgid "Result"
+msgstr "Natija"
+
+#: templates/results/detail_objective.html:7
+msgid "Answer review"
+msgstr "Javoblar tahlili"
+
+#: templates/results/detail_objective.html:7
+msgid "Practise my mistakes"
+msgstr "Xatolarimni ishlash"
+
+#: templates/results/detail_objective.html:9
+msgid "Question"
+msgstr "Savol"
+
+#: templates/results/detail_objective.html:9
+msgid "Your answer"
+msgstr "Sizning javobingiz"
+
+#: templates/results/detail_objective.html:9
+msgid "Correct answer"
+msgstr "To'g'ri javob"
+
+#: templates/results/detail_objective.html:9
+msgid "Points"
+msgstr "Ball"
+
+#: templates/results/detail_objective.html:19
+msgid "No answers recorded."
+msgstr "Javoblar yo'q."
+
+#: templates/results/detail_speaking.html:5
+msgid "Score by part"
+msgstr "Qismlar bo'yicha ball"
+
+#: templates/results/detail_speaking.html:13
+msgid "Assessed"
+msgstr "Baholandi"
+
+#: templates/results/detail_speaking.html:13
+msgid "Not assessed (transcript-based AI)"
+msgstr "Baholanmadi (AI matn asosida ishlaydi)"
+
+#: templates/results/detail_speaking.html:16
+msgid "No recordings."
+msgstr "Yozuvlar yo'q."
+
+#: templates/results/detail_writing.html:4
+msgid "No essays submitted."
+msgstr "Insholar topshirilmagan."
+
+#: templates/results/full_detail.html:1 templates/results/full_detail.html:3
+msgid "Full mock result"
+msgstr "To'liq mock natijasi"
+
+#: templates/results/full_detail.html:5
+msgid "Writing and Speaking are still being evaluated by AI. This page refreshes automatically."
+msgstr "Writing va Speaking hali AI tomonidan baholanmoqda. Sahifa avtomatik yangilanadi."
+
+#: templates/results/full_detail.html:6
+msgid "One of the AI evaluations failed. Your answers are saved; an administrator can re-run the evaluation."
+msgstr "AI baholashlaridan biri amalga oshmadi. Javoblaringiz saqlangan; administrator baholashni qayta ishga tushirishi mumkin."
+
+#: templates/results/full_detail.html:11
+msgid "Overall CEFR"
+msgstr "Umumiy CEFR"
+
+#: templates/results/full_detail.html:12
+msgid "Overall score = average of the four section scores."
+msgstr "Umumiy ball = to'rtta bo'lim ballarining o'rtachasi."
+
+#: templates/results/full_detail.html:13
+msgid "Started"
+msgstr "Boshlangan"
+
+#: templates/results/full_detail.html:13
+msgid "completed"
+msgstr "yakunlangan"
+
+#: templates/results/full_detail.html:20
+msgid "Full mock (4 skills)"
+msgstr "To'liq mock (4 ko'nikma)"
+
+#: templates/results/full_detail.html:30
+msgid "not taken"
+msgstr "topshirilmagan"
+
+#: writing/models.py:11
+msgid "Pending"
+msgstr "Kutilmoqda"

@@ -1,10 +1,10 @@
-{% extends "accounts/_auth_layout.html" %}{% block title %}Register{% endblock %}
+{% extends "accounts/_auth_layout.html" %}{% load i18n %}{% block title %}{% translate "Register" %}{% endblock %}
 {% block auth %}
 <div class="auth-head">
-  <h1>Create your account</h1>
-  <p>Free Multilevel mock exams with AI feedback — start in a minute.</p>
+  <h1>{% translate "Create your account" %}</h1>
+  <p>{% translate "Free Multilevel mock exams with AI feedback — start in a minute." %}</p>
 </div>
-{% if guest %}<div class="guest-saved">✅ Your free mock result will be saved to this account.</div>{% endif %}
+{% if guest %}<div class="guest-saved">{% translate "✅ Your free mock result will be saved to this account." %}</div>{% endif %}
 <form method="post" novalidate class="auth-form">{% csrf_token %}
   <input type="hidden" name="next" value="{{ next }}">
   {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors }}</div>{% endif %}
@@ -15,7 +15,7 @@
   {% include "partials/form_field.html" with field=form.email %}
   {% include "partials/form_field.html" with field=form.password1 %}
   {% include "partials/form_field.html" with field=form.password2 %}
-  <button class="btn btn-block btn-lg auth-submit" type="submit">Create account</button>
+  <button class="btn btn-block btn-lg auth-submit" type="submit">{% translate "Create account" %}</button>
 </form>
-<p class="auth-switch">Already have an account? <a href="{% url 'accounts:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Log in</a></p>
+<p class="auth-switch">{% translate "Already have an account?" %} <a href="{% url 'accounts:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">{% translate "Log in" %}</a></p>
 {% endblock %}

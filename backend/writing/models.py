@@ -1,16 +1,17 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from exams.models import WritingTask
 from results.models import ExamAttempt
 
 
 class ProcessingStatus(models.TextChoices):
-    PENDING = "pending", "Pending"
-    PROCESSING = "processing", "Evaluating"
-    COMPLETED = "completed", "Completed"
-    FAILED = "failed", "Failed"
+    PENDING = "pending", _("Pending")
+    PROCESSING = "processing", _("Evaluating")
+    COMPLETED = "completed", _("Completed")
+    FAILED = "failed", _("Failed")
 
 
 class WritingSubmission(models.Model):

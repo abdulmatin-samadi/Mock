@@ -1,15 +1,15 @@
-{% load static %}{% with p=request.path %}
-<aside class="app-sidebar" id="app-sidebar" aria-label="Main navigation">
+{% load static i18n %}{% with p=request.path %}
+<aside class="app-sidebar" id="app-sidebar" aria-label="{% translate 'Main navigation' %}">
   <a class="brand" href="{% url 'dashboard:home' %}"><img class="brand-mark" src="{% static 'img/logo.png' %}" alt="" width="36" height="36"><span>{{ SITE_NAME }}<small>MULTILEVEL · CEFR</small></span></a>
   <nav class="side-nav">
-    <a href="{% url 'dashboard:home' %}" class="{% if p == '/dashboard/' %}active{% endif %}"><span class="tile t-indigo">{% include "partials/icon.html" with name="home" %}</span>Home</a>
-    <a href="{% url 'exams:hub' %}" class="{% if p|slice:':7' == '/exams/' %}active{% endif %}"><span class="tile t-violet">{% include "partials/icon.html" with name="file" %}</span>Mocks</a>
-    <a href="{% url 'dashboard:results' %}" class="{% if p == '/dashboard/results/' or p|slice:':9' == '/results/' %}active{% endif %}"><span class="tile t-sky">{% include "partials/icon.html" with name="chart" %}</span>My results</a>
-    <a href="{% url 'dashboard:mistakes' %}" class="{% if p == '/dashboard/mistakes/' %}active{% endif %}"><span class="tile t-rose">{% include "partials/icon.html" with name="flag" %}</span>Mistakes</a>
-    <div class="side-group">History</div>
-    <a href="{% url 'dashboard:writing' %}" class="{% if '/dashboard/writing' in p %}active{% endif %}"><span class="tile t-amber">{% include "partials/icon.html" with name="pen" %}</span>Writing history</a>
-    <a href="{% url 'dashboard:speaking' %}" class="{% if p == '/dashboard/speaking/' %}active{% endif %}"><span class="tile t-purple">{% include "partials/icon.html" with name="mic" %}</span>Speaking history</a>
-    <a href="{% url 'accounts:profile' %}" class="{% if p|slice:':10' == '/accounts/' %}active{% endif %}"><span class="tile t-slate">{% include "partials/icon.html" with name="user" %}</span>Profile</a>
+    <a href="{% url 'dashboard:home' %}" class="{% if p == '/dashboard/' %}active{% endif %}"><span class="tile t-indigo">{% include "partials/icon.html" with name="home" %}</span>{% translate "Home" %}</a>
+    <a href="{% url 'exams:hub' %}" class="{% if p|slice:':7' == '/exams/' %}active{% endif %}"><span class="tile t-violet">{% include "partials/icon.html" with name="file" %}</span>{% translate "Mocks" %}</a>
+    <a href="{% url 'dashboard:results' %}" class="{% if p == '/dashboard/results/' or p|slice:':9' == '/results/' %}active{% endif %}"><span class="tile t-sky">{% include "partials/icon.html" with name="chart" %}</span>{% translate "My results" %}</a>
+    <a href="{% url 'dashboard:mistakes' %}" class="{% if p == '/dashboard/mistakes/' %}active{% endif %}"><span class="tile t-rose">{% include "partials/icon.html" with name="flag" %}</span>{% translate "Mistakes" %}</a>
+    <div class="side-group">{% translate "History" %}</div>
+    <a href="{% url 'dashboard:writing' %}" class="{% if '/dashboard/writing' in p %}active{% endif %}"><span class="tile t-amber">{% include "partials/icon.html" with name="pen" %}</span>{% translate "Writing history" %}</a>
+    <a href="{% url 'dashboard:speaking' %}" class="{% if p == '/dashboard/speaking/' %}active{% endif %}"><span class="tile t-purple">{% include "partials/icon.html" with name="mic" %}</span>{% translate "Speaking history" %}</a>
+    <a href="{% url 'accounts:profile' %}" class="{% if p|slice:':10' == '/accounts/' %}active{% endif %}"><span class="tile t-slate">{% include "partials/icon.html" with name="user" %}</span>{% translate "Profile" %}</a>
   </nav>
   <div class="side-bottom">
     {% if daily_quote %}
@@ -21,10 +21,10 @@
     {% endif %}
     {% if user.is_guest %}
     <div class="side-guest">
-      <b>🎁 Free trial</b>
-      <p>Create a free account to save your result and unlock every mock.</p>
-      <a class="btn btn-block" href="{% url 'accounts:register' %}">Create free account</a>
-      <a class="side-guest-login" href="{% url 'accounts:login' %}">I already have an account</a>
+      <b>🎁 {% translate "Free trial" %}</b>
+      <p>{% translate "Create a free account to save your result and unlock every mock." %}</p>
+      <a class="btn btn-block" href="{% url 'accounts:register' %}">{% translate "Create free account" %}</a>
+      <a class="side-guest-login" href="{% url 'accounts:login' %}">{% translate "I already have an account" %}</a>
     </div>
     {% else %}
     <div class="side-user">
@@ -32,7 +32,7 @@
         <span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span>
         <span class="su-text"><strong>{{ user.get_full_name }}</strong><small>{{ user.email }}</small></span>
       </a>
-      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="su-out" title="Log out" aria-label="Log out">{% include "partials/icon.html" with name="logout" size=18 %}</button></form>
+      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="su-out" title="{% translate 'Log out' %}" aria-label="{% translate 'Log out' %}">{% include "partials/icon.html" with name="logout" size=18 %}</button></form>
     </div>
     {% endif %}
   </div>

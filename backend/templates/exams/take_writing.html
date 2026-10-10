@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load static core_tags %}{% block title %}{{ exam.title }}{% endblock %}
+{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}{{ exam.title }}{% endblock %}
 {% block body_class %}room-body{% endblock %}
 {% block sidebar %}{% endblock %}
 {% block header %}{% include "exams/_exam_bar.html" %}{% endblock %}
@@ -11,26 +11,26 @@
   {% for t in tasks %}
   <div data-task-panel="{{ t.pk }}" {% if not forloop.first %}hidden{% endif %} class="split">
     <div class="card">
-      <div class="row-between"><label for="essay-{{ t.pk }}"><strong>Your response</strong></label><span class="word-count" data-count-for="{{ t.pk }}" aria-live="polite">0 words</span></div>
-      <textarea id="essay-{{ t.pk }}" class="writing-area mt-1" data-task="{{ t.pk }}" data-min="{{ t.minimum_word_count }}" data-max="{{ t.maximum_word_count|default:'' }}" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Start writing here…"></textarea>
-      <p class="small muted mt-1">Spell-check is disabled, as in the real exam. Your draft is saved automatically, so you can resume on any device.</p>
+      <div class="row-between"><label for="essay-{{ t.pk }}"><strong>{% translate "Your response" %}</strong></label><span class="word-count" data-count-for="{{ t.pk }}" aria-live="polite">0 {% translate "words" %}</span></div>
+      <textarea id="essay-{{ t.pk }}" class="writing-area mt-1" data-task="{{ t.pk }}" data-min="{{ t.minimum_word_count }}" data-max="{{ t.maximum_word_count|default:'' }}" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="{% translate 'Start writing here…' %}"></textarea>
+      <p class="small muted mt-1">{% translate "Spell-check is disabled, as in the real exam. Your draft is saved automatically, so you can resume on any device." %}</p>
     </div>
     <div class="card">
       <span class="badge badge-writing">{{ t.get_task_type_display }}</span>
       <h2 class="mt-1">{{ t.title }}</h2>
-      <p class="small"><strong>🎯 Target: {{ t.minimum_word_count }}{% if t.maximum_word_count %}–{{ t.maximum_word_count }}{% else %}+{% endif %} words</strong> <span class="muted">· suggested time {{ t.time_limit }} min</span></p>
+      <p class="small"><strong>🎯 {% translate "Target:" %} {{ t.minimum_word_count }}{% if t.maximum_word_count %}–{{ t.maximum_word_count }}{% else %}+{% endif %} {% translate "words" %}</strong> <span class="muted">· {% translate "suggested time" %} {{ t.time_limit }} {% translate "min" %}</span></p>
       <div class="pre" style="font-weight:500">{{ t.topic }}</div>
-      {% if t.image %}<img class="mt-2" src="{{ t.image.url }}" alt="Task chart / diagram" style="border:1px solid var(--line);border-radius:10px">{% endif %}
+      {% if t.image %}<img class="mt-2" src="{{ t.image.url }}" alt="{% translate 'Task chart / diagram' %}" style="border:1px solid var(--line);border-radius:10px">{% endif %}
       {% if t.instructions %}<p class="mt-2 small pre">{{ t.instructions }}</p>{% endif %}
     </div>
   </div>
   {% endfor %}
   <div class="row-between mt-2" style="padding-bottom:40px">
-    <span class="small muted">Your essays are evaluated by AI after you submit. You can leave the page and check results later in your dashboard.</span>
-    <button class="btn btn-lg btn-good" id="submit-btn">Submit for evaluation</button>
+    <span class="small muted">{% translate "Your essays are evaluated by AI after you submit. You can leave the page and check results later in your dashboard." %}</span>
+    <button class="btn btn-lg btn-good" id="submit-btn">{% translate "Submit for evaluation" %}</button>
   </div>
 </div>
-<button type="button" class="font-fab" id="font-btn" aria-label="Text size" title="Text size">A+</button>
+<button type="button" class="font-fab" id="font-btn" aria-label="{% translate 'Text size' %}" title="{% translate 'Text size' %}">A+</button>
 {% include "exams/_exit_modal.html" %}
 {{ config|json_script:"exam-config" }}
 {% endblock %}

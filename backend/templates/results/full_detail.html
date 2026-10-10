@@ -1,24 +1,24 @@
-{% extends "base.html" %}{% load static core_tags %}{% block title %}Full mock result{% endblock %}
+{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}{% translate "Full mock result" %}{% endblock %}
 {% block content %}
-<div class="page-head"><div><div class="eyebrow">🎯 Full mock result</div><h1>{{ full.full_mock.title }}</h1></div>
-<div class="row no-print">{% if is_owner %}<a class="btn btn-secondary" href="{% url 'dashboard:results' %}?section=full">All results</a><a class="btn" href="{{ full.full_mock.get_absolute_url }}">Retake</a>{% elif user.is_admin %}<a class="btn btn-secondary" href="{% url 'admin_dashboard:user_detail' full.student_id %}">Student profile</a>{% endif %}</div></div>
-{% if full.status == 'evaluating' %}<div class="alert alert-info" data-poll-reload="1">⏳ Writing and Speaking are still being evaluated by AI. This page refreshes automatically.</div>
-{% elif full.status == 'failed' %}<div class="alert alert-error">One of the AI evaluations failed. Your answers are saved{% if user.is_admin %} — retry it from the section result{% else %}; an administrator can re-run the evaluation{% endif %}.</div>{% endif %}
+<div class="page-head"><div><div class="eyebrow">🎯 {% translate "Full mock result" %}</div><h1>{{ full.full_mock.title }}</h1></div>
+<div class="row no-print">{% if is_owner %}<a class="btn btn-secondary" href="{% url 'dashboard:results' %}?section=full">{% translate "All results" %}</a><a class="btn" href="{{ full.full_mock.get_absolute_url }}">{% translate "Retake" %}</a>{% elif user.is_admin %}<a class="btn btn-secondary" href="{% url 'admin_dashboard:user_detail' full.student_id %}">{% translate "Student profile" %}</a>{% endif %}</div></div>
+{% if full.status == 'evaluating' %}<div class="alert alert-info" data-poll-reload="1">⏳ {% translate "Writing and Speaking are still being evaluated by AI. This page refreshes automatically." %}</div>
+{% elif full.status == 'failed' %}<div class="alert alert-error">{% if user.is_admin %}One of the AI evaluations failed. Your answers are saved — retry it from the section result.{% else %}{% translate "One of the AI evaluations failed. Your answers are saved; an administrator can re-run the evaluation." %}{% endif %}</div>{% endif %}
 <div class="card mb-2">
   <div class="score-hero">
-    <div class="score-ring" style="--pct: {{ pct }}"><div>{% if full.score is not None %}<strong>{{ full.score|floatformat:0 }}</strong><span>OF 75</span>{% else %}<strong>…</strong><span>PENDING</span>{% endif %}</div></div>
+    <div class="score-ring" style="--pct: {{ pct }}"><div>{% if full.score is not None %}<strong>{{ full.score|floatformat:0 }}</strong><span>{% translate "OF 75" %}</span>{% else %}<strong>…</strong><span>{% translate "PENDING" %}</span>{% endif %}</div></div>
     <div style="flex:1;min-width:240px">
-      {% if full.cefr_level %}<span class="badge badge-good" style="font-size:.95rem">Overall CEFR {{ full.cefr_level }}</span>{% endif %} {% status_badge full.status full.get_status_display %}
-      <p class="mt-1 mb-0">Overall score = average of the four section scores.</p>
-      <p class="small muted">Started {{ full.started_at|date:"d M Y, H:i" }}{% if full.completed_at %} · completed {{ full.completed_at|date:"d M Y, H:i" }}{% endif %}</p>
+      {% if full.cefr_level %}<span class="badge badge-good" style="font-size:.95rem">{% translate "Overall CEFR" %} {{ full.cefr_level }}</span>{% endif %} {% status_badge full.status full.get_status_display %}
+      <p class="mt-1 mb-0">{% translate "Overall score = average of the four section scores." %}</p>
+      <p class="small muted">{% translate "Started" %} {{ full.started_at|date:"d M Y, H:i" }}{% if full.completed_at %} · {% translate "completed" %} {{ full.completed_at|date:"d M Y, H:i" }}{% endif %}</p>
     </div>
   </div>
   <hr>
   <dl class="identity">
-    <div><dt>First name</dt><dd>{{ full.student.first_name }}</dd></div><div><dt>Last name</dt><dd>{{ full.student.last_name }}</dd></div>
-    <div><dt>Email</dt><dd>{{ full.student.email }}</dd></div><div><dt>Exam</dt><dd>{{ full.full_mock.title }}</dd></div>
-    <div><dt>Section</dt><dd>Full mock (4 skills)</dd></div><div><dt>Score</dt><dd>{% if full.score is not None %}{{ full.score|floatformat:0 }}/75 · {{ full.cefr_level }}{% else %}—{% endif %}</dd></div>
-    <div><dt>Status</dt><dd>{{ full.get_status_display }}</dd></div>
+    <div><dt>{% translate "First name" %}</dt><dd>{{ full.student.first_name }}</dd></div><div><dt>{% translate "Last name" %}</dt><dd>{{ full.student.last_name }}</dd></div>
+    <div><dt>{% translate "Email" %}</dt><dd>{{ full.student.email }}</dd></div><div><dt>{% translate "Exam" %}</dt><dd>{{ full.full_mock.title }}</dd></div>
+    <div><dt>{% translate "Section" %}</dt><dd>{% translate "Full mock (4 skills)" %}</dd></div><div><dt>{% translate "Score" %}</dt><dd>{% if full.score is not None %}{{ full.score|floatformat:0 }}/75 · {{ full.cefr_level }}{% else %}—{% endif %}</dd></div>
+    <div><dt>{% translate "Status" %}</dt><dd>{{ full.get_status_display }}</dd></div>
   </dl>
 </div>
 <div class="grid grid-4">
@@ -27,7 +27,7 @@
     <span class="badge badge-{{ s.section }}">{{ s.exam.get_section_display }}</span>
     <div class="skill-bar" style="height:120px;width:60px;background:#eef1f6"><span style="height:{{ s.pct }}%;background:var(--{{ s.section }})"></span></div>
     <strong style="font-size:1.4rem">{% if s.score is not None %}{{ s.score|floatformat:0 }}/75{% else %}—{% endif %}</strong>
-    <div class="small muted">{% if s.level %}{{ s.level }}{% elif s.attempt %}{{ s.attempt.get_status_display }}{% else %}not taken{% endif %}</div>
+    <div class="small muted">{% if s.level %}{{ s.level }}{% elif s.attempt %}{{ s.attempt.get_status_display }}{% else %}{% translate "not taken" %}{% endif %}</div>
   </a>
   {% endfor %}
 </div>

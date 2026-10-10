@@ -1,5 +1,5 @@
-<a class="card card-link" href="{% url 'exams:detail' exam.pk %}">
+{% load i18n %}<a class="card card-link" href="{% url 'exams:detail' exam.pk %}">
   <div class="row"><span class="badge badge-{{ exam.section }}">{{ exam.get_section_display }}</span>{% if exam.level %}<span class="badge">{{ exam.level }}</span>{% endif %}</div>
   <h3 class="mt-1">{{ exam.title }}</h3>
-  <p class="muted small mb-0">{% if exam.time_limit %}{{ exam.time_limit }} min{% else %}Untimed{% endif %}{% if exam.description %} · {{ exam.description|truncatechars:90 }}{% endif %}</p>
+  <p class="muted small mb-0">{% if exam.time_limit %}{{ exam.time_limit }} {% translate "min" %}{% else %}{% translate "Untimed" %}{% endif %}{% if exam.description %} · {{ exam.description|truncatechars:90 }}{% endif %}</p>
 </a>

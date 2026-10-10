@@ -1,18 +1,19 @@
 from django.db.models import Count
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _l
 
 from exams.models import MockExam, Section
 
 
 HOME_SECTIONS = {
-    "listening": {"icon": "headphones", "color": "#3b82f6", "time": "~35 min",
-                  "blurb": "Short conversations, notes, speakers, a map and a lecture — 6 parts."},
-    "reading": {"icon": "book", "color": "#f59e0b", "time": "60 min",
-                "blurb": "Gap filling, matching, headings, True/False/No Information — 5 parts."},
-    "writing": {"icon": "pen", "color": "#8b5cf6", "time": "60 min",
-                "blurb": "Informal letter, formal letter and an essay, scored by AI."},
-    "speaking": {"icon": "mic", "color": "#10b981", "time": "~15 min",
-                 "blurb": "8 questions recorded in your browser, transcribed and scored by AI."},
+    "listening": {"icon": "headphones", "color": "#3b82f6", "time": _l("~35 min"),
+                  "blurb": _l("Short conversations, notes, speakers, a map and a lecture — 6 parts.")},
+    "reading": {"icon": "book", "color": "#f59e0b", "time": _l("60 min"),
+                "blurb": _l("Gap filling, matching, headings, True/False/No Information — 5 parts.")},
+    "writing": {"icon": "pen", "color": "#8b5cf6", "time": _l("60 min"),
+                "blurb": _l("Informal letter, formal letter and an essay, scored by AI.")},
+    "speaking": {"icon": "mic", "color": "#10b981", "time": _l("~15 min"),
+                 "blurb": _l("8 questions recorded in your browser, transcribed and scored by AI.")},
 }
 
 

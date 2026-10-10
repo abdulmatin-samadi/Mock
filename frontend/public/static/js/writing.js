@@ -1,7 +1,7 @@
 /* Writing exam room: live word count, local draft backup, server submission. */
 (function () {
   "use strict";
-  const { api, countdown, readConfig, roomChrome } = window.DreamZone;
+  const { api, countdown, readConfig, roomChrome, t } = window.DreamZone;
   const cfg = readConfig("exam-config");
   const WORD_RE = /[A-Za-z0-9]+(?:['’\-][A-Za-z0-9]+)*/g;
   const submitBtn = document.getElementById("submit-btn");
@@ -22,7 +22,7 @@
     const el = document.querySelector(`[data-count-for="${id}"]`);
     if (el) {
       const target = min ? ` · target ${min}${max ? "–" + max : "+"}` : "";
-      el.textContent = `${n} word${n === 1 ? "" : "s"}${target}`;
+      el.textContent = `${n} ${t(n === 1 ? "word" : "words")}${target}`;
       el.classList.toggle("under", !!min && n < min);
       el.classList.toggle("met", !!min && n >= min && (!max || n <= max));
       el.classList.toggle("over", !!max && n > max);
@@ -37,10 +37,10 @@
     areas.forEach((a) => { drafts[a.getAttribute("data-task")] = a.value; });
     try {
       await api(cfg.draftsUrl, { method: "PATCH", json: { drafts }, keepalive: !!keepalive });
-      saveState.textContent = "Draft saved";
+      saveState.textContent = t("Draft saved");
     } catch (e) {
       dirty = true;
-      saveState.textContent = "Draft kept on this device — will retry";
+      saveState.textContent = t("Draft kept on this device — will retry");
     }
   }
 
@@ -56,7 +56,7 @@
       refresh(area);
       store(() => localStorage.setItem(key(area.getAttribute("data-task")), area.value));
       dirty = true;
-      saveState.textContent = "Unsaved changes";
+      saveState.textContent = t("Unsaved changes");
     });
     area.addEventListener("paste", () => { saveState.textContent = "Pasted text — make sure it is your own work"; });
   });
@@ -75,7 +75,7 @@
     areas.forEach((a) => { essays[a.getAttribute("data-task")] = a.value; });
     submitting = true;
     submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting…";
+    submitBtn.textContent = t("Submitting…");
     try {
       await api(cfg.submitUrl, { method: "POST", json: { essays } });
       areas.forEach((a) => store(() => localStorage.removeItem(key(a.getAttribute("data-task")))));
@@ -84,8 +84,8 @@
       if (e.status === 400 && /already/i.test(e.message)) { window.location.href = cfg.resultUrl; return; }
       submitting = false;
       submitBtn.disabled = false;
-      submitBtn.textContent = "Submit for evaluation";
-      alert("Could not submit: " + e.message);
+      submitBtn.textContent = t("Submit for evaluation");
+      alert(t("Could not submit:") + " " + e.message);
     }
   }
 
@@ -94,7 +94,7 @@
   roomChrome({ onLeave: () => saveDrafts(true), isBusy: () => submitting });
   window.addEventListener("beforeunload", () => { if (dirty && !submitting) saveDrafts(true); });
   countdown(document.getElementById("timer"), cfg.deadline, cfg.serverNow, () => {
-    saveState.textContent = "Time is up — submitting…";
+    saveState.textContent = t("Time is up — submitting…");
     if (areas.some((a) => a.value.trim())) submit(true);
   });
 })();

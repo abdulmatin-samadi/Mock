@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext, ngettext
 
 from exams import scoring
 from exams.models import MockExam, Question, Section
@@ -45,13 +46,14 @@ def practice_options(exam):
         for i, p in enumerate(parts, start=1):
             minutes = max(5, round(exam.time_limit * p.n / total)) if exam.time_limit else None
             options.append({"key": f"part:{p.pk}", "badge": str(i), "title": p.title,
-                            "sub": f"{p.n} question{'s' if p.n != 1 else ''}", "minutes": minutes})
+                            "sub": ngettext("%(n)d question", "%(n)d questions", p.n) % {"n": p.n},
+                            "minutes": minutes})
     elif exam.section == Section.WRITING:
         for t in exam.writing_tasks.filter(is_published=True):
             words = f"{t.minimum_word_count}–{t.maximum_word_count}" if t.maximum_word_count else f"{t.minimum_word_count}+"
             kind = t.get_task_type_display().split("—")[-1].strip()
             options.append({"key": f"task:{t.pk}", "badge": t.title.replace("Task", "").strip() or str(t.order),
-                            "title": t.title, "sub": f"{kind} • {words} words", "minutes": t.time_limit})
+                            "title": t.title, "sub": f"{kind} • {words} " + gettext("words"), "minutes": t.time_limit})
     else:
         from exams.models import SpeakingQuestion
 
@@ -62,8 +64,8 @@ def practice_options(exam):
             seconds = sum(q.preparation_time + q.speaking_time for q in qs)
             label = SpeakingQuestion.SHORT_LABELS.get(part, f"Part {part}")
             options.append({"key": f"part:{part}", "badge": label.replace("Part", "").strip(), "title": label,
-                            "sub": f"{SpeakingQuestion.Part(part).label.split('—')[-1].strip()} • {len(qs)} "
-                                   f"question{'s' if len(qs) != 1 else ''}",
+                            "sub": f"{SpeakingQuestion.Part(part).label.split('—')[-1].strip()} • "
+                                   + ngettext("%(n)d question", "%(n)d questions", len(qs)) % {"n": len(qs)},
                             "minutes": ceil(seconds / 60) + 2})
     return options
 

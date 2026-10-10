@@ -7,6 +7,7 @@ from datetime import timedelta
 
 from django.db.models import Count, Q
 from django.utils import timezone
+from django.utils.translation import gettext as _, ngettext
 
 from exams.models import MockExam, Section
 from exams.scoring import MAX_SCORE, multilevel_to_cefr
@@ -79,12 +80,12 @@ def continue_items(user):
         recordings = list(a.speaking_submissions.all())
         last = max([a.started_at] + [x.answered_at for x in answers] + [r.submitted_at for r in recordings])
         if a.exam.is_objective:
-            saved = f"{len(answers)} answer{'s' if len(answers) != 1 else ''} saved"
+            saved = ngettext("%(n)d answer saved", "%(n)d answers saved", len(answers)) % {"n": len(answers)}
         elif a.exam.section == Section.SPEAKING:
-            saved = f"{len(recordings)} recording{'s' if len(recordings) != 1 else ''} saved"
+            saved = ngettext("%(n)d recording saved", "%(n)d recordings saved", len(recordings)) % {"n": len(recordings)}
         else:
             words = sum(len(str(t).split()) for t in (a.drafts or {}).values())
-            saved = f"draft saved · {words} words" if words else "no draft yet"
+            saved = _("draft saved · %(n)d words") % {"n": words} if words else _("no draft yet")
             if a.drafts_saved_at:
                 last = max(last, a.drafts_saved_at)
         in_full = bool(a.full_mock_attempt_id)
@@ -262,14 +263,14 @@ def attempt_parts(attempt):
         return ", ".join(SpeakingQuestion.SHORT_LABELS.get(p, f"Part {p}") for p in parts)
     if attempt.status == ExamAttempt.Status.COMPLETED:
         total = attempt.correct_count + attempt.incorrect_count + attempt.unanswered_count
-        return f"{attempt.correct_count}/{total} correct" if total else ""
+        return _("%(n)d/%(total)d correct") % {"n": attempt.correct_count, "total": total} if total else ""
     return ""
 
 
 def greeting():
     hour = timezone.localtime().hour
     if hour < 12:
-        return "Good morning"
+        return _("Good morning")
     if hour < 18:
-        return "Good afternoon"
-    return "Good evening"
+        return _("Good afternoon")
+    return _("Good evening")

@@ -1,9 +1,9 @@
-{% extends "base.html" %}{% block title %}Full mocks{% endblock %}
+{% extends "base.html" %}{% load i18n %}{% block title %}{% translate "Full mocks" %}{% endblock %}
 {% block content %}
-<a class="back-link" href="{% url 'exams:hub' %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>Back to Mock exams</span></a>
-<div class="page-head"><div><div class="eyebrow">🎯 Mock exams</div><h1>Full mocks</h1><p>All four skills in one sitting — Listening, Reading, Writing, Speaking — with an overall Multilevel score.</p></div></div>
+<a class="back-link" href="{% url 'exams:hub' %}">{% include "partials/icon.html" with name="chevron" size=16 %}<span>{% translate "Back to Mock exams" %}</span></a>
+<div class="page-head"><div><div class="eyebrow">🎯 {% translate "Mock exams" %}</div><h1>{% translate "Full mocks" %}</h1><p>{% translate "All four skills in one sitting — Listening, Reading, Writing, Speaking — with an overall Multilevel score." %}</p></div></div>
 <div class="grid grid-3">
-{% for fm in page %}{% include "exams/_full_card.html" %}{% empty %}<div class="card empty">No full mocks have been published yet.</div>{% endfor %}
+{% for fm in page %}{% include "exams/_full_card.html" %}{% empty %}<div class="card empty">{% translate "No full mocks have been published yet." %}</div>{% endfor %}
 </div>
 {% include "partials/pagination.html" %}
 {% endblock %}

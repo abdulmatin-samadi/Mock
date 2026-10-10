@@ -1,8 +1,8 @@
-<a class="card card-link full-card" href="{% url 'exams:full_detail' fm.pk %}">
-  <div class="row"><span class="badge badge-multilevel">🎯 Full mock</span>{% if fm.level %}<span class="badge">{{ fm.level }}</span>{% endif %}</div>
+{% load i18n %}<a class="card card-link full-card" href="{% url 'exams:full_detail' fm.pk %}">
+  <div class="row"><span class="badge badge-multilevel">🎯 {% translate "Full mock" %}</span>{% if fm.level %}<span class="badge">{{ fm.level }}</span>{% endif %}</div>
   <h3 class="mt-1">{{ fm.title }}</h3>
   <div class="full-steps small">
     <span style="--c:#3b82f6">🎧 Listening</span><span style="--c:#10b981">📖 Reading</span><span style="--c:#f59e0b">✍️ Writing</span><span style="--c:#8b5cf6">🎙️ Speaking</span>
   </div>
-  <p class="muted small mb-0 mt-1">≈ {{ fm.total_minutes }} min · overall score /75 + CEFR</p>
+  <p class="muted small mb-0 mt-1">≈ {{ fm.total_minutes }} {% translate "min" %} · {% translate "overall score /75 + CEFR" %}</p>
 </a>

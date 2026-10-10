@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load static core_tags %}{% block title %}{{ exam.title }}{% endblock %}
+{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}{{ exam.title }}{% endblock %}
 {% block body_class %}room-body{% endblock %}
 {% block sidebar %}{% endblock %}
 {% block header %}{% include "exams/_exam_bar.html" %}{% endblock %}
@@ -18,7 +18,7 @@
         {% if rp.pool %}
         <div class="pool" data-pool>
           <h3>📋 {{ rp.pool.title }} ({{ rp.pool.options.0.label }}–{% with rp.pool.options|last as l %}{{ l.label }}{% endwith %})</h3>
-          <p class="small muted">Drag an item onto a question — or tap one, then tap the slot.</p>
+          <p class="small muted">{% translate "Drag an item onto a question — or tap one, then tap the slot." %}</p>
           {% for o in rp.pool.options %}
           <button type="button" class="pool-item" draggable="true" data-label="{{ o.label }}" data-text="{{ o.text }}"><span class="pool-letter">{{ o.label }}</span><span>{{ o.text }}</span></button>
           {% endfor %}
@@ -27,18 +27,18 @@
         {% if rp.part.image %}
         <div class="map-card">
           <div class="row-between"><h3 class="mb-0">{{ rp.part.title }}</h3>
-            <div class="row"><button type="button" class="tool tool-enlarge" data-enlarge>🔍 Enlarge</button><button type="button" class="tool" data-pen>✏️ Pen</button><button type="button" class="tool tool-clear" data-clear>🗑 Clear</button></div></div>
+            <div class="row"><button type="button" class="tool tool-enlarge" data-enlarge>🔍 {% translate "Enlarge" %}</button><button type="button" class="tool" data-pen>✏️ {% translate "Pen" %}</button><button type="button" class="tool tool-clear" data-clear>🗑 {% translate "Clear" %}</button></div></div>
           <div class="map-wrap"><img src="{{ rp.part.image.url }}" alt="{{ rp.part.title }}"><canvas class="map-canvas"></canvas></div>
         </div>
         {% endif %}
         {% if rp.segments or rp.passage_body %}
         <article class="passage-card">
           {% if rp.passage_title %}<h3 class="passage-title">{{ rp.passage_title }}</h3>{% endif %}
-          <div class="passage" data-searchable>{% if rp.segments %}{% for s in rp.segments %}{% if s.gap %}<span class="gap"><span class="gap-num">{{ s.gap.order }}</span><input type="text" maxlength="60" data-qid="{{ s.gap.pk }}" id="q-{{ s.gap.pk }}" placeholder="Type answer…" aria-label="Answer {{ s.gap.order }}"></span>{% else %}{{ s.text }}{% endif %}{% endfor %}{% else %}{{ rp.passage_body }}{% endif %}</div>
+          <div class="passage" data-searchable>{% if rp.segments %}{% for s in rp.segments %}{% if s.gap %}<span class="gap"><span class="gap-num">{{ s.gap.order }}</span><input type="text" maxlength="60" data-qid="{{ s.gap.pk }}" id="q-{{ s.gap.pk }}" placeholder="{% translate 'Type answer…' %}" aria-label="Answer {{ s.gap.order }}"></span>{% else %}{{ s.text }}{% endif %}{% endfor %}{% else %}{{ rp.passage_body }}{% endif %}</div>
         </article>
         {% endif %}
       </div>
-      {% if not rp.full_width %}<div class="divider" role="separator" aria-orientation="vertical" title="Drag to resize"></div>{% endif %}
+      {% if not rp.full_width %}<div class="divider" role="separator" aria-orientation="vertical" title="{% translate 'Drag to resize' %}"></div>{% endif %}
       {% endif %}
 
       {% if rp.groups %}
@@ -50,7 +50,7 @@
           <div class="qcard q-{{ g.kind }}" id="q-{{ q.pk }}">
             {% if g.kind == 'matching' %}
               <div class="row-between"><strong>{{ q.prompt }}</strong></div>
-              <button type="button" class="slot" data-slot-for="{{ q.pk }}"><span class="slot-empty">↳ Drop an answer here</span><span class="slot-value"></span></button>
+              <button type="button" class="slot" data-slot-for="{{ q.pk }}"><span class="slot-empty">↳ {% translate "Drop an answer here" %}</span><span class="slot-value"></span></button>
               <input type="hidden" data-qid="{{ q.pk }}" class="slot-input">
             {% elif g.kind == 'map' %}
               <div class="q-line"><span class="q-n">{{ q.order }}.</span><span class="q-text" data-searchable>{{ q.prompt }}</span></div>
@@ -63,7 +63,7 @@
               <div class="pills">{% for c in q.fixed_choices %}<label class="pill-choice"><input type="radio" name="q_{{ q.pk }}" value="{{ c }}" data-qid="{{ q.pk }}"><span>{{ c }}</span></label>{% endfor %}</div>
             {% else %}
               <div class="q-line"><span class="q-n">{{ q.order }}.</span><span class="q-text" data-searchable>{{ q.prompt }}</span></div>
-              <input class="answer-input" type="text" maxlength="200" data-qid="{{ q.pk }}" placeholder="Type answer…" aria-label="Answer {{ q.order }}">
+              <input class="answer-input" type="text" maxlength="200" data-qid="{{ q.pk }}" placeholder="{% translate 'Type answer…' %}" aria-label="Answer {{ q.order }}">
             {% endif %}
           </div>
           {% endfor %}
@@ -74,15 +74,15 @@
     </div>
   </section>
   {% endfor %}
-  <nav class="q-palette" aria-label="Question navigator">
+  <nav class="q-palette" aria-label="{% translate 'Question navigator' %}">
     {% for rp in room_parts %}{% for q in rp.part.questions.all %}<a href="#q-{{ q.pk }}" data-qid="{{ q.pk }}" data-part-id="{{ rp.part.pk }}">{{ q.order }}</a>{% endfor %}{% endfor %}
-    <span class="small muted" style="margin-left:auto"><span id="answered-count">0</span> / {{ total_questions }} answered</span>
+    <span class="small muted" style="margin-left:auto"><span id="answered-count">0</span> / {{ total_questions }} {% translate "answered" %}</span>
   </nav>
 </form>
-<button type="button" class="submit-fab" id="submit-btn"{% if room_parts|length > 1 %} hidden{% endif %}>✓ Submit Test</button>
-<button type="button" class="submit-fab next-fab" id="next-part-btn" hidden>Next part →</button>
-<button type="button" class="font-fab" id="font-btn" aria-label="Text size" title="Text size">A+</button>
-<div class="enlarge-modal" id="enlarge-modal" hidden><img alt=""><button type="button" class="btn btn-secondary" data-close-enlarge>Close</button></div>
+<button type="button" class="submit-fab" id="submit-btn"{% if room_parts|length > 1 %} hidden{% endif %}>✓ {% translate "Submit Test" %}</button>
+<button type="button" class="submit-fab next-fab" id="next-part-btn" hidden>{% translate "Next part →" %}</button>
+<button type="button" class="font-fab" id="font-btn" aria-label="{% translate 'Text size' %}" title="{% translate 'Text size' %}">A+</button>
+<div class="enlarge-modal" id="enlarge-modal" hidden><img alt=""><button type="button" class="btn btn-secondary" data-close-enlarge>{% translate "Close" %}</button></div>
 {% include "exams/_exit_modal.html" %}
 {{ config|json_script:"exam-config" }}
 {% endblock %}

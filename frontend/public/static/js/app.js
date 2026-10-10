@@ -133,5 +133,10 @@
     }
   }
 
-  window.DreamZone = { api, fmt, countdown, readConfig, getCookie, roomChrome };
+  // Texts translated on the server ({% js_i18n %}); falls back to the English text.
+  let texts = {};
+  try { texts = JSON.parse((document.getElementById("dz-i18n") || {}).textContent || "{}"); } catch (e) { texts = {}; }
+  const t = (s) => texts[s] || s;
+
+  window.DreamZone = { api, fmt, countdown, readConfig, getCookie, roomChrome, t };
 })();

@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from core.storage import private_storage, speaking_recording_path
 from core.validators import validate_recording
@@ -11,11 +12,11 @@ from results.models import ExamAttempt
 
 
 class SpeakingStatus(models.TextChoices):
-    PENDING = "pending", "Uploaded"
-    TRANSCRIBING = "transcribing", "Transcribing"
-    EVALUATING = "evaluating", "Evaluating"
-    COMPLETED = "completed", "Completed"
-    FAILED = "failed", "Failed"
+    PENDING = "pending", _("Uploaded")
+    TRANSCRIBING = "transcribing", _("Transcribing")
+    EVALUATING = "evaluating", _("Evaluating")
+    COMPLETED = "completed", _("Completed")
+    FAILED = "failed", _("Failed")
 
 
 class SpeakingSubmission(models.Model):

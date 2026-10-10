@@ -2,7 +2,7 @@
    only on the server — this script never sees correct answers. */
 (function () {
   "use strict";
-  const { api, countdown, readConfig, fmt, roomChrome } = window.DreamZone;
+  const { api, countdown, readConfig, fmt, roomChrome, t } = window.DreamZone;
   const cfg = readConfig("exam-config");
   const form = document.getElementById("exam-form");
   const saveState = document.getElementById("save-state");
@@ -58,20 +58,20 @@
 
   function changed() {
     dirty = true;
-    saveState.textContent = "Unsaved changes";
+    saveState.textContent = t("Unsaved changes");
     updatePalette();
   }
 
   async function save(keepalive) {
     if (!dirty || submitting) return;
     dirty = false;
-    saveState.textContent = "Saving…";
+    saveState.textContent = t("Saving…");
     try {
       await api(cfg.answersUrl, { method: "PATCH", json: { answers: collect() }, keepalive: !!keepalive });
-      saveState.textContent = "All answers saved";
+      saveState.textContent = t("All answers saved");
     } catch (e) {
       dirty = true;
-      saveState.textContent = e.status === 400 ? e.message : "Offline — will retry";
+      saveState.textContent = e.status === 400 ? e.message : t("Offline — will retry");
     }
   }
 
@@ -79,7 +79,7 @@
     if (submitting) return;
     submitting = true;
     submitBtn.disabled = true;
-    submitBtn.textContent = "Submitting…";
+    submitBtn.textContent = t("Submitting…");
     try {
       await api(cfg.submitUrl, { method: "POST", json: { answers: collect() } });
       window.location.href = cfg.resultUrl;
@@ -87,8 +87,8 @@
       if (e.status === 400 && /already/i.test(e.message)) { window.location.href = cfg.resultUrl; return; }
       submitting = false;
       submitBtn.disabled = false;
-      submitBtn.textContent = "✓ Submit Test";
-      alert("Could not submit: " + e.message);
+      submitBtn.textContent = t("✓ Submit Test");
+      alert(t("Could not submit:") + " " + e.message);
     }
   }
 
@@ -353,7 +353,7 @@
   updatePalette();
   setInterval(save, 15000);
   countdown(document.getElementById("timer"), cfg.deadline, cfg.serverNow, () => {
-    saveState.textContent = "Time is up — submitting…";
+    saveState.textContent = t("Time is up — submitting…");
     submit(true);
   });
 })();

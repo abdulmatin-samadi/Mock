@@ -1,54 +1,54 @@
-{% extends "base.html" %}{% load static core_tags %}{% block title %}{{ exam.title }}{% endblock %}
+{% extends "base.html" %}{% load static core_tags i18n %}{% block title %}{{ exam.title }}{% endblock %}
 {% block body_class %}room-body{% endblock %}
 {% block sidebar %}{% endblock %}
 {% block header %}{% include "exams/_exam_bar.html" %}{% endblock %}
 {% block footer %}{% endblock %}
 {% block full %}
 <div class="container container-narrow" style="padding-top:22px;padding-bottom:40px">
-  <div class="row-between mb-2"><div class="q-steps" id="sp-steps" aria-label="Question progress"></div><span class="small muted" id="sp-counter"></span></div>
+  <div class="row-between mb-2"><div class="q-steps" id="sp-steps" aria-label="{% translate 'Question progress' %}"></div><span class="small muted" id="sp-counter"></span></div>
 
   <div class="card center" id="sp-unsupported" hidden>
-    <h2>Recording isn't supported</h2><p>Your browser doesn't support audio recording. Please use a recent version of Chrome, Edge, Firefox or Safari.</p>
+    <h2>{% translate "Recording isn't supported" %}</h2><p>{% translate "Your browser doesn't support audio recording. Please use a recent version of Chrome, Edge, Firefox or Safari." %}</p>
   </div>
 
   <div class="card center" id="sp-intro">
     <div style="font-size:2.4rem" aria-hidden="true">🎙️</div>
-    <h1>Speaking test</h1>
-    <p class="muted">{{ questions|length }} question{{ questions|length|pluralize }} in four parts: Part 1.1 (personal questions), Part 1.2 (comparison), Part 2 (long turn) and Part 3 (argument). For each question you get preparation time, then the recording starts automatically. You can replay your answer and re-record before submitting it.</p>
-    <button class="btn btn-lg" id="btn-mic">Allow microphone &amp; begin</button>
+    <h1>{% translate "Speaking test" %}</h1>
+    <p class="muted">{% blocktranslate count n=questions|length trimmed %}{{ n }} question in four parts: Part 1.1 (personal questions), Part 1.2 (comparison), Part 2 (long turn) and Part 3 (argument). For each question you get preparation time, then the recording starts automatically. You can replay your answer and re-record before submitting it.{% plural %}{{ n }} questions in four parts: Part 1.1 (personal questions), Part 1.2 (comparison), Part 2 (long turn) and Part 3 (argument). For each question you get preparation time, then the recording starts automatically. You can replay your answer and re-record before submitting it.{% endblocktranslate %}</p>
+    <button class="btn btn-lg" id="btn-mic">{% translate "Allow microphone &amp; begin" %}</button>
     <p class="small muted mt-1" id="sp-status-intro"></p>
   </div>
 
   <div class="card" id="sp-stage" hidden>
     <span class="badge badge-speaking" id="sp-part"></span>
     <h2 class="mt-1" id="sp-question"></h2>
-    <img id="sp-image" class="mt-1" alt="Pictures to compare" hidden style="max-height:320px;border-radius:12px;border:1px solid var(--line)">
-    <div class="cue-card mt-1" id="sp-cue" hidden><strong>You should say:</strong><ul id="sp-cue-list"></ul></div>
+    <img id="sp-image" class="mt-1" alt="{% translate 'Pictures to compare' %}" hidden style="max-height:320px;border-radius:12px;border:1px solid var(--line)">
+    <div class="cue-card mt-1" id="sp-cue" hidden><strong>{% translate "You should say:" %}</strong><ul id="sp-cue-list"></ul></div>
     <div class="args mt-1" id="sp-args" hidden>
-      <div><strong>For</strong><ul id="sp-for"></ul></div>
-      <div><strong>Against</strong><ul id="sp-against"></ul></div>
+      <div><strong>{% translate "For" %}</strong><ul id="sp-for"></ul></div>
+      <div><strong>{% translate "Against" %}</strong><ul id="sp-against"></ul></div>
     </div>
     <div class="recorder">
-      <div class="rec-phase" id="sp-phase">Preparation</div>
+      <div class="rec-phase" id="sp-phase">{% translate "Preparation" %}</div>
       <div class="rec-clock" id="sp-clock" aria-live="off">00:00</div>
       <div class="meter" aria-hidden="true"><span id="sp-meter"></span></div>
       <audio id="sp-playback" controls hidden style="width:100%;max-width:420px"></audio>
       <div class="row mt-2" style="justify-content:center">
-        <button class="btn btn-secondary" id="btn-skip" hidden>Start speaking now</button>
-        <button class="btn btn-danger" id="btn-stop" hidden>■ Stop recording</button>
-        <button class="btn btn-secondary" id="btn-redo" hidden>↺ Re-record</button>
-        <button class="btn btn-good" id="btn-upload" hidden>Submit answer</button>
+        <button class="btn btn-secondary" id="btn-skip" hidden>{% translate "Start speaking now" %}</button>
+        <button class="btn btn-danger" id="btn-stop" hidden>■ {% translate "Stop recording" %}</button>
+        <button class="btn btn-secondary" id="btn-redo" hidden>↺ {% translate "Re-record" %}</button>
+        <button class="btn btn-good" id="btn-upload" hidden>{% translate "Submit answer" %}</button>
       </div>
       <p class="small mt-2" id="sp-status" role="status" aria-live="polite"></p>
     </div>
-    <div class="right"><button class="btn btn-ghost btn-sm" id="btn-finish-early">Finish test early</button></div>
+    <div class="right"><button class="btn btn-ghost btn-sm" id="btn-finish-early">{% translate "Finish test early" %}</button></div>
   </div>
 
   <div class="card center" id="sp-finish" hidden>
     <div style="font-size:2.4rem" aria-hidden="true">✅</div>
-    <h2>All answers recorded</h2>
-    <p class="muted">Finish the test to get your overall result. Transcription and AI evaluation continue in the background.</p>
-    <button class="btn btn-lg btn-good" id="btn-finish">Finish test</button>
+    <h2>{% translate "All answers recorded" %}</h2>
+    <p class="muted">{% translate "Finish the test to get your overall result. Transcription and AI evaluation continue in the background." %}</p>
+    <button class="btn btn-lg btn-good" id="btn-finish">{% translate "Finish test" %}</button>
   </div>
 </div>
 {% include "exams/_exit_modal.html" %}

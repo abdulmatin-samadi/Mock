@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext, gettext_lazy as _
 
 from exams.models import FullMock, MockExam, Option, Question
 
@@ -11,11 +12,11 @@ class ExamAttempt(models.Model):
     """Universal attempt record for every section (reading/listening/writing/speaking)."""
 
     class Status(models.TextChoices):
-        IN_PROGRESS = "in_progress", "In progress"
-        EVALUATING = "evaluating", "Evaluating"
-        COMPLETED = "completed", "Completed"
-        FAILED = "failed", "Evaluation failed"
-        DISCARDED = "discarded", "Discarded"
+        IN_PROGRESS = "in_progress", _("In progress")
+        EVALUATING = "evaluating", _("Evaluating")
+        COMPLETED = "completed", _("Completed")
+        FAILED = "failed", _("Evaluation failed")
+        DISCARDED = "discarded", _("Discarded")
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="exam_attempts")
     exam = models.ForeignKey(MockExam, on_delete=models.PROTECT, related_name="attempts")
@@ -82,7 +83,8 @@ class ExamAttempt(models.Model):
         if result is None:
             return None
         if self.practice and self.exam.is_objective and self.correct_count is not None:
-            return f"{self.correct_count}/{self.correct_count + self.incorrect_count + self.unanswered_count} correct"
+            total = self.correct_count + self.incorrect_count + self.unanswered_count
+            return gettext("%(n)d/%(total)d correct") % {"n": self.correct_count, "total": total}
         if result.scaled_score is not None:
             return f"{result.scaled_score:g}/75 · {result.cefr_level}"
         if self.percentage is not None:
@@ -126,10 +128,10 @@ class FullMockAttempt(models.Model):
     """One sitting of a full Multilevel test (4 section attempts)."""
 
     class Status(models.TextChoices):
-        IN_PROGRESS = "in_progress", "In progress"
-        EVALUATING = "evaluating", "Evaluating"
-        COMPLETED = "completed", "Completed"
-        FAILED = "failed", "Evaluation failed"
+        IN_PROGRESS = "in_progress", _("In progress")
+        EVALUATING = "evaluating", _("Evaluating")
+        COMPLETED = "completed", _("Completed")
+        FAILED = "failed", _("Evaluation failed")
 
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="full_mock_attempts")
     full_mock = models.ForeignKey(FullMock, on_delete=models.PROTECT, related_name="attempts")

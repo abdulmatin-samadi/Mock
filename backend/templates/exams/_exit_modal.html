@@ -1,11 +1,11 @@
-<div class="exit-modal" id="exit-modal" hidden role="dialog" aria-modal="true" aria-labelledby="exit-title">
+{% load i18n %}<div class="exit-modal" id="exit-modal" hidden role="dialog" aria-modal="true" aria-labelledby="exit-title">
   <div class="exit-card">
     <div class="exit-icon" aria-hidden="true">⚠️</div>
-    <h2 id="exit-title">Testdan chiqmoqchimisiz?</h2>
-    <p>{% if exam.section == 'speaking' %}Yuborilgan javoblaringiz saqlanadi.{% else %}Javoblaringiz saqlanadi.{% endif %} Keyinroq bosh sahifadagi <strong>Resume</strong> tugmasi orqali shu yoki boshqa qurilmada davom ettirishingiz mumkin.{% if deadline %} Taymer to'xtamaydi.{% endif %}</p>
+    <h2 id="exit-title">{% translate "Leave the test?" %}</h2>
+    <p>{% if exam.section == 'speaking' %}{% translate 'Your sent answers are saved.' %}{% else %}{% translate 'Your answers are saved.' %}{% endif %} {% translate 'You can continue later on this or another device with the <strong>Resume</strong> button on the home page.' %}{% if deadline %} {% translate 'The timer does not stop.' %}{% endif %}</p>
     <div class="exit-actions">
-      <button type="button" class="exit-stay" id="exit-stay">✓ Testni davom ettirish</button>
-      <a class="exit-leave" id="exit-leave" href="{{ exit_url }}">Hozircha chiqish</a>
+      <button type="button" class="exit-stay" id="exit-stay">✓ {% translate "Continue the test" %}</button>
+      <a class="exit-leave" id="exit-leave" href="{{ exit_url }}">{% translate "Leave for now" %}</a>
     </div>
   </div>
 </div>
