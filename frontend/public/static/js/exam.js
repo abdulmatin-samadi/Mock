@@ -145,7 +145,12 @@
     document.querySelectorAll(".room-part").forEach((p) => { p.hidden = p.dataset.part !== id; });
     if (audio && cfg.audio) {
       const src = cfg.audio[id];
-      if (src && audio.getAttribute("src") !== src) { audio.pause(); audio.setAttribute("src", src); audio.load(); }
+      if (src && audio.getAttribute("src") !== src) {
+        const rate = audio.playbackRate;
+        audio.pause(); audio.setAttribute("src", src); audio.load();
+        audio.playbackRate = rate;
+        audio.play().catch(() => {}); // the part's recording starts as soon as the student opens it
+      }
     }
     updateFab(id);
     window.scrollTo(0, 0);
@@ -189,6 +194,15 @@
       if (audio.duration) seek.value = (audio.currentTime / audio.duration) * 100;
     });
     seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = (seek.value / 100) * audio.duration; });
+    // load the recording of the part that is open when the room starts, and play it right away
+    // (some browsers allow playing only after the first click — then ▶ starts it)
+    const firstPart = document.querySelector(".room-part:not([hidden])");
+    const firstSrc = firstPart && cfg.audio ? cfg.audio[firstPart.dataset.part] : "";
+    if (firstSrc && !audio.getAttribute("src")) {
+      audio.setAttribute("src", firstSrc);
+      audio.load();
+      audio.play().catch(() => {});
+    }
     vol.addEventListener("input", () => { audio.volume = Number(vol.value); });
     speed.addEventListener("click", () => {
       const next = speeds[(speeds.indexOf(audio.playbackRate) + 1) % speeds.length];
