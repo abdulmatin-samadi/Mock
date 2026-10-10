@@ -1,11 +1,18 @@
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
-from exams.models import Section
+from ai.exceptions import AIError
+from exams.models import Question, Section
 
-from . import services
+from . import mistakes, services
 from .models import ExamAttempt, FullMockAttempt
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -52,3 +59,28 @@ def full_detail(request, pk):
     return render(request, "results/full_detail.html", {
         "full": full, "sections": sections, "is_owner": full.student_id == request.user.id,
         "pct": round(float(full.score) * 100 / 75) if full.score is not None else 0})
+
+
+@login_required
+@require_POST
+def explain(request, question_id):
+    """AI "why is this the answer" for one question (JSON)."""
+    question = get_object_or_404(Question.objects.select_related("part__exam").prefetch_related("options"),
+                                 pk=question_id)
+    if not mistakes.can_see_answer(request.user, question):
+        raise PermissionDenied
+    if question.explanation and request.POST.get("ai") != "1":
+        return JsonResponse({"text": question.explanation, "source": "teacher"})
+    if request.user.is_guest:
+        return JsonResponse({"detail": "AI tushuntirish uchun ro'yxatdan o'ting. (Sign up to get AI explanations.)"},
+                            status=403)
+    try:
+        text = mistakes.explanation(request.user, question, request.POST.get("lang", ""))
+    except mistakes.ExplanationLimit:
+        return JsonResponse({"detail": "Bugungi AI tushuntirishlar limiti tugadi — ertaga yana urinib ko'ring. "
+                                       "(Today's limit of AI explanations is used up.)"}, status=429)
+    except AIError as e:
+        logger.warning("AI explanation failed for question %s: %s", question_id, e)
+        return JsonResponse({"detail": "AI hozir javob bermadi, birozdan keyin qayta urinib ko'ring. "
+                                       "(The AI did not answer, try again shortly.)"}, status=503)
+    return JsonResponse({"text": text, "source": "ai"})

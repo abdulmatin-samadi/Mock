@@ -5,6 +5,7 @@
     <a href="{% url 'dashboard:home' %}" class="{% if p == '/dashboard/' %}active{% endif %}"><span class="tile t-indigo">{% include "partials/icon.html" with name="home" %}</span>Home</a>
     <a href="{% url 'exams:hub' %}" class="{% if p|slice:':7' == '/exams/' %}active{% endif %}"><span class="tile t-violet">{% include "partials/icon.html" with name="file" %}</span>Mocks</a>
     <a href="{% url 'dashboard:results' %}" class="{% if p == '/dashboard/results/' or p|slice:':9' == '/results/' %}active{% endif %}"><span class="tile t-sky">{% include "partials/icon.html" with name="chart" %}</span>My results</a>
+    <a href="{% url 'dashboard:mistakes' %}" class="{% if p == '/dashboard/mistakes/' %}active{% endif %}"><span class="tile t-rose">{% include "partials/icon.html" with name="flag" %}</span>Mistakes</a>
     <div class="side-group">History</div>
     <a href="{% url 'dashboard:writing' %}" class="{% if '/dashboard/writing' in p %}active{% endif %}"><span class="tile t-amber">{% include "partials/icon.html" with name="pen" %}</span>Writing history</a>
     <a href="{% url 'dashboard:speaking' %}" class="{% if p == '/dashboard/speaking/' %}active{% endif %}"><span class="tile t-purple">{% include "partials/icon.html" with name="mic" %}</span>Speaking history</a>

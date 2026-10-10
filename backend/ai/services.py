@@ -22,7 +22,7 @@ from .exceptions import AIConfigurationError, AIProviderError
 from .providers.anthropic_provider import AnthropicProvider
 from .providers.gemini_provider import GeminiProvider, GeminiSTTProvider
 from .providers.openai_provider import OpenAIProvider, OpenAISTTProvider
-from .schemas import SPEAKING_SCHEMA, WRITING_SCHEMA
+from .schemas import EXPLANATION_SCHEMA, SPEAKING_SCHEMA, WRITING_SCHEMA
 
 LLM_PROVIDERS = {"anthropic": AnthropicProvider, "openai": OpenAIProvider, "gemini": GeminiProvider}
 STT_PROVIDERS = {"openai": OpenAISTTProvider, "gemini": GeminiSTTProvider}
@@ -88,9 +88,9 @@ class AIService:
         return self._stt
 
     # ------------------------------------------------------------- writing
-    def evaluate_writing(self, *, task, essay, word_count):
+    def evaluate_writing(self, *, task, essay, word_count, language=None):
         data = self.llm.generate_json(
-            system=prompts.writing_system_prompt(),
+            system=prompts.writing_system_prompt(language),
             prompt=prompts.writing_user_prompt(task, essay, word_count),
             schema=WRITING_SCHEMA,
             schema_name="writing_evaluation",
@@ -123,6 +123,19 @@ class AIService:
             "raw_response": data,
         }
 
+    # ------------------------------------------------- answer explanations
+    def explain_answer(self, *, question, language=None):
+        data = self.llm.generate_json(
+            system=prompts.explanation_system_prompt(language),
+            prompt=prompts.explanation_user_prompt(question),
+            schema=EXPLANATION_SCHEMA,
+            schema_name="answer_explanation",
+        )
+        text = str(data.get("explanation", "")).strip()
+        if not text:
+            raise AIProviderError("The AI returned an empty explanation.", retryable=True)
+        return text[:2000]
+
     @staticmethod
     def empty_writing_result(task):
         """Deterministic result for a blank answer — no AI call is needed to score nothing."""
@@ -153,9 +166,9 @@ class AIService:
                                    content_type=AUDIO_CONTENT_TYPES.get(ext, "application/octet-stream"))
         return {"text": text, "provider": self.stt.name, "model": self.stt.model}
 
-    def evaluate_speaking(self, *, question, transcript, duration):
+    def evaluate_speaking(self, *, question, transcript, duration, language=None):
         data = self.llm.generate_json(
-            system=prompts.speaking_system_prompt(),
+            system=prompts.speaking_system_prompt(language),
             prompt=prompts.speaking_user_prompt(question, transcript, duration),
             schema=SPEAKING_SCHEMA,
             schema_name="speaking_evaluation",

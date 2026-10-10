@@ -49,7 +49,10 @@ class EmailAuthenticationForm(AuthenticationForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "profile_photo", "phone_number"]
+        fields = ["first_name", "last_name", "profile_photo", "phone_number", "feedback_language"]
+        labels = {"feedback_language": "AI feedback language"}
+        help_texts = {"feedback_language": "Writing and speaking feedback and the \u201cWhy?\u201d explanations "
+                                           "are written in this language."}
         widgets = {
             "profile_photo": forms.FileInput(attrs={"accept": "image/*"}),
             "phone_number": forms.TextInput(attrs={"placeholder": "+998 90 123 45 67", "autocomplete": "tel"}),

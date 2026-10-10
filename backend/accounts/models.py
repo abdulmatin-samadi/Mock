@@ -46,6 +46,13 @@ class User(AbstractUser):
     # Visitors who start their free mock without an account get a temporary guest student.
     is_guest = models.BooleanField(default=False, db_index=True)
 
+    class Language(models.TextChoices):
+        UZBEK = "uz", "O'zbekcha"
+        ENGLISH = "en", "English"
+
+    # Language of the AI feedback (writing, speaking, answer explanations) — the student chooses it.
+    feedback_language = models.CharField(max_length=8, choices=Language.choices, default=Language.UZBEK)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name"]
 

@@ -69,7 +69,7 @@ def process_submission(submission_id, service=None):
     ).update(processing_status=SpeakingStatus.TRANSCRIBING, error_message="")
     if not claimed:
         return
-    sub = SpeakingSubmission.objects.select_related("question__exam").get(pk=submission_id)
+    sub = SpeakingSubmission.objects.select_related("question__exam", "attempt__student").get(pk=submission_id)
     service = service or AIService()
     stt_meta = {}
     try:
@@ -85,7 +85,8 @@ def process_submission(submission_id, service=None):
         if not sub.transcript.strip():
             data = AIService.empty_speaking_result(sub.question)
         else:
-            data = service.evaluate_speaking(question=sub.question, transcript=sub.transcript, duration=sub.duration)
+            data = service.evaluate_speaking(question=sub.question, transcript=sub.transcript, duration=sub.duration,
+                                             language=sub.attempt.student.feedback_language)
 
         # 6. Save.
         with transaction.atomic():

@@ -35,6 +35,7 @@
       {% include "partials/form_field.html" with field=form.last_name %}
     </div>
     {% include "partials/form_field.html" with field=form.phone_number %}
+    {% include "partials/form_field.html" with field=form.feedback_language %}
     <div class="form-field">
       <label for="{{ form.profile_photo.id_for_label }}">Profile photo</label>
       <label class="pf-drop" for="{{ form.profile_photo.id_for_label }}"><span class="pf-drop-ico">🖼️</span><span><b data-file-name>{% if user.profile_photo %}Replace your photo{% else %}Upload a photo{% endif %}</b><small>JPG or PNG, square works best</small></span></label>

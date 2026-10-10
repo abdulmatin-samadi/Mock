@@ -1,0 +1,69 @@
+{% extends "base.html" %}{% load i18n core_tags static %}{% block title %}{% translate "Mistakes notebook" %}{% endblock %}
+{% block content %}
+<section class="hx-hero" style="--c1:#b42318;--c2:#f04438;--c3:#fda29b">
+  <div class="hx-head">
+    <span class="hx-ico">{% include "partials/icon.html" with name="flag" size=26 %}</span>
+    <div><span class="hx-kicker">{% translate "Practice" %}</span><h1>{% translate "Mistakes notebook" %}</h1><p>{% translate "Every Reading and Listening question you got wrong — try it again until you get it right." %}</p></div>
+  </div>
+  <div class="hx-figs mk-figs">
+    <div><strong>{{ total }}</strong><span>{% translate "To review" %}</span></div>
+    <div><strong>{{ counts.reading }}</strong><span>Reading</span></div>
+    <div><strong>{{ counts.listening }}</strong><span>Listening</span></div>
+  </div>
+</section>
+
+<div class="mk-bar">
+  <nav class="mk-tabs">
+    <a href="?" class="{% if not section %}active{% endif %}">{% translate "All" %} <b>{{ total }}</b></a>
+    <a href="?section=reading" class="{% if section == 'reading' %}active{% endif %}">📖 Reading <b>{{ counts.reading }}</b></a>
+    <a href="?section=listening" class="{% if section == 'listening' %}active{% endif %}">🎧 Listening <b>{{ counts.listening }}</b></a>
+  </nav>
+  <div class="mk-lang" role="group" aria-label="{% translate 'Explanation language' %}">
+    <span>{% translate "AI explains in" %}</span>
+    <button type="button" data-lang="uz" class="{% if user.feedback_language == 'uz' %}active{% endif %}">O'zbekcha</button>
+    <button type="button" data-lang="en" class="{% if user.feedback_language == 'en' %}active{% endif %}">English</button>
+  </div>
+</div>
+
+<div class="hx-list mk-list" data-explain-lang="{{ user.feedback_language }}">
+{% for c in cards %}{% with q=c.q a=c.answer %}
+<article class="mk-card" data-qid="{{ q.pk }}" data-check-url="{% url 'dashboard:mistake_check' q.pk %}" data-explain-url="{% url 'results:explain' q.pk %}" data-learned-url="{% url 'dashboard:mistake_learned' q.pk %}">
+  <header class="mk-head">
+    <span class="mk-num">{{ q.order }}</span>
+    <div class="mk-src"><b>{{ c.exam.title }}</b><small>{% if c.exam.section == 'listening' %}🎧{% else %}📖{% endif %} {{ q.part.title }} · {{ q.get_question_type_display }}</small></div>
+    <span class="mk-was">{% if a.selected_option %}{% translate "You:" %} <s>{{ a.selected_option.label }}</s>{% elif a.answer %}{% translate "You:" %} <s>{{ a.answer|truncatechars:30 }}</s>{% else %}{% translate "Skipped" %}{% endif %}</span>
+  </header>
+  <div class="mk-q">
+    {% if c.before or c.after %}<p class="mk-gap">{{ c.before }} <span class="mk-blank">({{ q.order }}) ______</span> {{ c.after }}</p>
+    {% if q.prompt and not q.prompt|lower|slice:":3" == "gap" %}<p>{{ q.prompt }}</p>{% endif %}
+    {% else %}<p>{{ q.prompt|linebreaksbr }}</p>{% endif %}
+    {% if q.part.image and q.question_type == 'map_labelling' %}<img class="mk-map" src="{{ q.part.image.url }}" alt="Map" loading="lazy">{% endif %}
+  </div>
+  <form class="mk-try">
+    {% if q.question_type == 'multiple_choice' %}
+      <div class="mk-opts">{% for o in c.options %}<label><input type="radio" name="answer" value="{{ o.pk }}"><span><b>{{ o.label }}</b> {{ o.text }}</span></label>{% endfor %}</div>
+    {% elif c.choices %}
+      <div class="mk-opts mk-row">{% for ch in c.choices %}<label><input type="radio" name="answer" value="{{ ch }}"><span>{{ ch }}</span></label>{% endfor %}</div>
+    {% elif c.options %}
+      <div class="mk-opts {% if c.options.0.text %}{% else %}mk-row{% endif %}">{% for o in c.options %}<label><input type="radio" name="answer" value="{{ o.label }}"><span><b>{{ o.label }}</b> {{ o.text }}</span></label>{% endfor %}</div>
+    {% else %}
+      <input class="mk-input" name="answer" autocomplete="off" placeholder="{% translate 'Type your answer' %}">
+    {% endif %}
+    <div class="mk-actions">
+      <button class="btn btn-sm" type="submit">{% translate "Check" %}</button>
+      <button class="btn btn-sm btn-secondary" type="button" data-reveal>{% translate "Show answer" %}</button>
+      <button class="btn btn-sm mk-why" type="button" data-why>✨ {% translate "Why?" %}</button>
+      <button class="btn btn-sm btn-ghost mk-ok" type="button" data-learned>✓ {% translate "I've learned it" %}</button>
+    </div>
+    <div class="mk-out" aria-live="polite" hidden></div>
+    <div class="mk-explain" aria-live="polite" hidden></div>
+  </form>
+</article>
+{% endwith %}{% empty %}
+<div class="hx-empty"><span>🎉</span><h3>{% translate "No mistakes to review" %}</h3><p class="muted">{% translate "Wrong answers from your Reading and Listening mocks will appear here." %}</p>
+  <a class="btn" href="{% url 'exams:hub' %}">{% translate "Take a mock" %}</a></div>
+{% endfor %}
+{% if more %}<p class="muted center">{% blocktranslate %}…and {{ more }} more. Mark some as learned to see the rest.{% endblocktranslate %}</p>{% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% vstatic 'js/mistakes.js' %}"></script>{% endblock %}

@@ -4,10 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, Max, Prefetch, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
-from exams.models import Section
+from exams.models import Question, Section
 from results.models import ExamAttempt, FullMockAttempt
 from speaking.models import SpeakingSubmission
 from writing.models import WritingSubmission
@@ -130,3 +132,52 @@ def speaking_history(request):
                                  done=Count("id", filter=Q(processing_status="completed")))
     summary["total_seconds"] = sum(float(d or 0) for d in all_subs.values_list("duration", flat=True))
     return render(request, "dashboard/speaking_history.html", {"page": page, "summary": summary})
+
+
+@login_required
+def mistakes(request):
+    """Mistakes notebook: every Reading/Listening question the student got wrong, to practise again."""
+    from results import mistakes as notebook
+
+    section = request.GET.get("section") if request.GET.get("section") in (Section.READING, Section.LISTENING) else ""
+    all_items = notebook.mistakes(request.user)
+    items = [a for a in all_items if not section or a.question.part.exam.section == section]
+    cards = []
+    for a in items[:150]:
+        q = a.question
+        before, after = notebook.gap_context(q) if q.question_type == Question.Type.GAP_FILLING else ("", "")
+        cards.append({"answer": a, "q": q, "exam": q.part.exam, "before": before, "after": after,
+                      "choices": q.fixed_choices, "options": list(q.options.all())})
+    counts = {s: sum(1 for a in all_items if a.question.part.exam.section == s)
+              for s in (Section.READING, Section.LISTENING)}
+    return render(request, "dashboard/mistakes.html", {
+        "cards": cards, "section": section, "total": len(all_items), "counts": counts,
+        "shown": len(items), "more": max(0, len(items) - len(cards)),
+    })
+
+
+@login_required
+@require_POST
+def mistake_check(request, question_id):
+    from results import mistakes as notebook
+
+    question = get_object_or_404(Question.objects.prefetch_related("options"), pk=question_id)
+    if not notebook.can_see_answer(request.user, question):
+        raise PermissionDenied
+    return JsonResponse({"correct": notebook.check(question, request.POST.get("answer", "")[:500]),
+                         "answer": question.correct_display()})
+
+
+@login_required
+@require_POST
+def mistake_learned(request, question_id):
+    from results.models import LearnedMistake
+
+    question = get_object_or_404(Question, pk=question_id)
+    if request.POST.get("undo"):
+        LearnedMistake.objects.filter(student=request.user, question=question).delete()
+    else:
+        LearnedMistake.objects.get_or_create(student=request.user, question=question)
+    if request.headers.get("Accept", "").startswith("application/json"):
+        return JsonResponse({"ok": True})
+    return redirect("dashboard:mistakes")

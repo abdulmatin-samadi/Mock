@@ -33,6 +33,9 @@ class FakeLLM:
 
     def generate_json(self, *, system, prompt, schema, schema_name):
         self.calls.append(schema_name)
+        self.systems = getattr(self, "systems", []) + [system]
+        if schema_name == "answer_explanation":
+            return {"explanation": "The text says it directly."}
         s = self.score
         base = {"overall_score": s, "cefr_level": "B2", "detailed_feedback": "Solid answer.",
                 "improvement_suggestions": ["Use more linking words."], "grammar_feedback": "ok",
@@ -1332,3 +1335,75 @@ class DeleteMockWithAttemptsTests(BaseTest):
         self.assertEqual(r.status_code, 302)
         self.assertFalse(MockExam.objects.filter(pk=exam.pk).exists())
         self.assertFalse(ExamAttempt.objects.filter(pk=attempt).exists())
+
+
+class MistakesNotebookTests(BaseTest):
+    def setUp(self):
+        super().setUp()
+        self.exam = MockExam.objects.create(title="Reading Mock", section="reading", time_limit=60, is_published=True)
+        part = ExamPart.objects.create(exam=self.exam, title="Part 1", order=1,
+                                       passage="The shop sold (1) ______ toys before it made bricks.")
+        self.q_gap = Question.objects.create(part=part, order=1, question_type="gap_filling", prompt="Gap 1",
+                                             correct_answer="wooden")
+        self.q_tf = Question.objects.create(part=part, order=2, question_type="true_false_not_given", prompt="TF",
+                                            correct_answer="TRUE")
+        api = self.api(self.student)
+        attempt_id = api.post(f"/api/exams/{self.exam.pk}/start/").json()["id"]
+        api.post(f"/api/attempts/{attempt_id}/submit/", {"answers": {
+            str(self.q_gap.pk): "plastic", str(self.q_tf.pk): "TRUE"}}, format="json")
+        self.attempt_id = attempt_id
+
+    def test_notebook_lists_wrong_answers_and_retry(self):
+        c = self.web(self.student)
+        r = c.get(reverse("dashboard:mistakes"))
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'data-qid="%d"' % self.q_gap.pk)
+        self.assertNotContains(r, 'data-qid="%d"' % self.q_tf.pk)
+        self.assertContains(r, "The shop sold")  # the gap's sentence is shown
+        r = c.post(reverse("dashboard:mistake_check", args=[self.q_gap.pk]), {"answer": "Wooden"})
+        self.assertTrue(r.json()["correct"])
+        r = c.post(reverse("dashboard:mistake_check", args=[self.q_gap.pk]), {"answer": "metal"})
+        self.assertFalse(r.json()["correct"])
+        c.post(reverse("dashboard:mistake_learned", args=[self.q_gap.pk]))
+        self.assertNotContains(c.get(reverse("dashboard:mistakes")), 'data-qid="%d"' % self.q_gap.pk)
+
+    def test_cannot_check_questions_never_finished(self):
+        r = self.web(self.other).post(reverse("dashboard:mistake_check", args=[self.q_gap.pk]), {"answer": "x"})
+        self.assertEqual(r.status_code, 403)
+        r = self.web(self.other).post(reverse("results:explain", args=[self.q_gap.pk]))
+        self.assertEqual(r.status_code, 403)
+
+    def test_ai_explanation_is_cached_per_language(self):
+        from results.models import AnswerExplanation
+
+        fake = FakeLLM()
+        c = self.web(self.student)
+        with mock.patch("ai.services.get_llm_provider", return_value=fake):
+            r = c.post(reverse("results:explain", args=[self.q_gap.pk]), {"lang": "uz"})
+            self.assertEqual(r.json()["text"], "The text says it directly.")
+            c.post(reverse("results:explain", args=[self.q_gap.pk]), {"lang": "uz"})
+            c.post(reverse("results:explain", args=[self.q_gap.pk]), {"lang": "en"})
+        self.assertEqual(fake.calls.count("answer_explanation"), 2)
+        self.assertIn("Uzbek", fake.systems[0])
+        self.assertEqual(AnswerExplanation.objects.filter(question=self.q_gap).count(), 2)
+        self.assertContains(c.get(reverse("results:detail", args=[self.attempt_id])), "data-why")
+
+    def test_teacher_explanation_is_used_first(self):
+        self.q_gap.explanation = "Line 1 says wooden."
+        self.q_gap.save()
+        r = self.web(self.student).post(reverse("results:explain", args=[self.q_gap.pk]))
+        self.assertEqual(r.json(), {"text": "Line 1 says wooden.", "source": "teacher"})
+
+
+class FeedbackLanguageTests(BaseTest):
+    def test_writing_feedback_follows_student_language(self):
+        from ai import prompts
+
+        self.assertIn("Uzbek", prompts.writing_system_prompt("uz"))
+        self.assertIn("English", prompts.speaking_system_prompt("en"))
+        c = self.web(self.student)
+        r = c.post(reverse("accounts:profile"), {"first_name": "S", "last_name": "T", "phone_number": "",
+                                                 "feedback_language": "en"})
+        self.assertIn(r.status_code, (200, 302))
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.feedback_language, "en")

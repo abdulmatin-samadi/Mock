@@ -151,3 +151,29 @@ class FullMockAttempt(models.Model):
 
     def section_attempt(self, section):
         return self.section_attempts.filter(exam__section=section).order_by("-started_at").first()
+
+
+class AnswerExplanation(models.Model):
+    """AI-written "why is this the answer" note, shared by every student (one per question and language)."""
+
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="ai_explanations")
+    language = models.CharField(max_length=8)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["question", "language"], name="unique_explanation_lang")]
+
+    def __str__(self):
+        return f"Q{self.question_id} ({self.language})"
+
+
+class LearnedMistake(models.Model):
+    """A question the student marked as learned — it leaves their mistakes notebook."""
+
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="learned_mistakes")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["student", "question"], name="unique_learned_mistake")]

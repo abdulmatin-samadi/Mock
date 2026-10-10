@@ -265,6 +265,7 @@ AI_MODEL = env("AI_MODEL", "")  # empty -> provider default
 AI_EFFORT = env("AI_EFFORT", "high")  # Anthropic only: low|medium|high|xhigh|max
 AI_TIMEOUT = env_int("AI_TIMEOUT", 180)
 AI_FEEDBACK_LANGUAGE = env("AI_FEEDBACK_LANGUAGE", "English")
+AI_EXPLAIN_DAILY_LIMIT = env_int("AI_EXPLAIN_DAILY_LIMIT", 40)  # new "Why?" explanations per student per day
 # Speech-to-text provider: "openai" (Whisper / gpt-4o-transcribe).
 STT_PROVIDER = env("STT_PROVIDER", "openai").lower()
 STT_API_KEY = env("STT_API_KEY", "") or (AI_API_KEY if STT_PROVIDER == AI_PROVIDER else "")

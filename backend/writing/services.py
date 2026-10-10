@@ -38,12 +38,13 @@ def evaluate_submission(submission_id, service=None):
     ).update(status=ProcessingStatus.PROCESSING, error_message="")
     if not claimed:
         return
-    sub = WritingSubmission.objects.select_related("task__exam").get(pk=submission_id)
+    sub = WritingSubmission.objects.select_related("task__exam", "attempt__student").get(pk=submission_id)
     try:
         if sub.word_count == 0:
             data = AIService.empty_writing_result(sub.task)
         else:
-            data = (service or AIService()).evaluate_writing(task=sub.task, essay=sub.essay, word_count=sub.word_count)
+            data = (service or AIService()).evaluate_writing(task=sub.task, essay=sub.essay, word_count=sub.word_count,
+                                                             language=sub.attempt.student.feedback_language)
         with transaction.atomic():
             WritingEvaluation.objects.update_or_create(
                 submission=sub, defaults={k: data[k] for k in EVALUATION_FIELDS})

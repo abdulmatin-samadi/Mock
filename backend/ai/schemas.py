@@ -85,3 +85,11 @@ SPEAKING_SCHEMA = {
         "improvement_suggestions": {"type": "array", "items": {"type": "string"}},
     },
 }
+
+
+EXPLANATION_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["explanation"],
+    "properties": {"explanation": {"type": "string"}},
+}
