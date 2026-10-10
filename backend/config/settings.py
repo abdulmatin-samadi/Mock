@@ -263,6 +263,11 @@ SIMPLE_JWT = {
 
 # ------------------------------------------------------------------------ AI
 # Evaluation (LLM) provider: "anthropic" or "openai".
+# ------------------------------------------------------------ Google sign-in
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_REDIRECT_URI = env("GOOGLE_REDIRECT_URI", "")  # e.g. https://mockcefr.netlify.app/accounts/google/callback/
+
 AI_PROVIDER = env("AI_PROVIDER", "anthropic").lower()
 AI_API_KEY = env("AI_API_KEY", "")
 AI_MODEL = env("AI_MODEL", "")  # empty -> provider default

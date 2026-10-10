@@ -1407,3 +1407,44 @@ class FeedbackLanguageTests(BaseTest):
         self.assertIn(r.status_code, (200, 302))
         self.student.refresh_from_db()
         self.assertEqual(self.student.feedback_language, "en")
+
+
+@override_settings(GOOGLE_CLIENT_ID="cid.apps.googleusercontent.com", GOOGLE_CLIENT_SECRET="secret",
+                   GOOGLE_REDIRECT_URI="")
+class GoogleLoginTests(BaseTest):
+    def _sign_in(self, profile, client=None, nxt=""):
+        c = client or self.client
+        r = c.get(reverse("accounts:google_login") + (f"?next={nxt}" if nxt else ""))
+        self.assertEqual(r.status_code, 302)
+        self.assertIn("accounts.google.com", r["Location"])
+        state = c.session["google_oauth"]["state"]
+        with mock.patch("accounts.google.fetch_profile", return_value=profile):
+            return c.get(reverse("accounts:google_callback"), {"code": "abc", "state": state})
+
+    def test_button_only_when_configured(self):
+        self.assertContains(self.client.get(reverse("accounts:login")), "google-btn")
+        with override_settings(GOOGLE_CLIENT_ID=""):
+            self.assertNotContains(self.client.get(reverse("accounts:login")), "google-btn")
+            self.assertEqual(self.client.get(reverse("accounts:google_login")).status_code, 404)
+
+    def test_new_user_is_created_and_signed_in(self):
+        r = self._sign_in({"email": "New.Person@gmail.com", "email_verified": True, "given_name": "New",
+                           "family_name": "Person"}, nxt="/exams/")
+        self.assertRedirects(r, "/exams/", fetch_redirect_response=False)
+        user = User.objects.get(email="new.person@gmail.com")
+        self.assertFalse(user.has_usable_password())
+        self.assertEqual(user.role, User.Role.STUDENT)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.pk)
+
+    def test_existing_user_signs_in(self):
+        self._sign_in({"email": "student@example.com", "email_verified": True})
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.student.pk)
+        self.assertEqual(User.objects.filter(email="student@example.com").count(), 1)
+
+    def test_bad_state_or_unverified_email_is_refused(self):
+        self.client.get(reverse("accounts:google_login"))
+        r = self.client.get(reverse("accounts:google_callback"), {"code": "abc", "state": "wrong"})
+        self.assertRedirects(r, reverse("accounts:login"), fetch_redirect_response=False)
+        self._sign_in({"email": "x@gmail.com", "email_verified": False})
+        self.assertFalse(User.objects.filter(email="x@gmail.com").exists())
+        self.assertNotIn("_auth_user_id", self.client.session)

@@ -1245,3 +1245,9 @@ td .mk-why { margin-top: 6px; padding: 3px 10px; font-size: .78rem; }
 .lang-switch.on-dark { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .25); }
 .lang-switch.on-dark button { color: rgba(255, 255, 255, .8); } .lang-switch.on-dark button.active { background: #fff; color: var(--brand-deep); }
 .lang-switch.auth-lang { align-self: flex-end; margin-bottom: 10px; }
+
+/* ---------------------------------------------------------------- Google sign-in */
+.google-btn { background: #fff; color: var(--ink); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; box-shadow: var(--shadow); }
+.google-btn:hover { background: #f8fafc; color: var(--ink); border-color: #c7d4e2; }
+.auth-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; color: var(--muted); font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }

@@ -1,6 +1,6 @@
 # DreamZone — Uzbek interface.
 msgid ""
-msgstr "Project-Id-Version: DreamZone\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2026-10-10 16:49+0500\nPO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\nLast-Translator: FULL NAME <EMAIL@ADDRESS>\nLanguage-Team: LANGUAGE <LL@li.org>\nLanguage: uz\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: DreamZone\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2026-10-10 16:53+0500\nPO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\nLast-Translator: FULL NAME <EMAIL@ADDRESS>\nLanguage-Team: LANGUAGE <LL@li.org>\nLanguage: uz\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 #: accounts/forms.py:10 accounts/forms.py:54 templates/partials/identity.html:7
 #: templates/results/full_detail.html:18
@@ -61,20 +61,32 @@ msgstr "AI fikr-mulohaza tili"
 msgid "Writing and speaking feedback and the “Why?” explanations are written in this language."
 msgstr "Writing va speaking fikr-mulohazalari hamda «Nega?» tushuntirishlari shu tilda yoziladi."
 
-#: accounts/views.py:39
+#: accounts/google.py:78
+msgid "Google sign-in did not work. Please try again or use your email and password."
+msgstr "Google orqali kirib bo'lmadi. Qayta urinib ko'ring yoki email va parol bilan kiring."
+
+#: accounts/google.py:91
+msgid "Your Google account has no verified email address."
+msgstr "Google hisobingizda tasdiqlangan email yo'q."
+
+#: accounts/google.py:103 accounts/views.py:40
 #, python-format
 msgid "Welcome, %(name)s! All mocks are now open."
 msgstr "Xush kelibsiz, %(name)s! Endi barcha mocklar ochiq."
 
-#: accounts/views.py:59
+#: accounts/google.py:105
+msgid "This account is disabled."
+msgstr "Bu hisob o'chirilgan."
+
+#: accounts/google.py:108 accounts/views.py:60
 msgid "Your free mock result was added to your account."
 msgstr "Bepul mock natijangiz hisobingizga qo'shildi."
 
-#: accounts/views.py:79
+#: accounts/views.py:80
 msgid "Profile updated."
 msgstr "Profil yangilandi."
 
-#: accounts/views.py:98
+#: accounts/views.py:99
 msgid "Your password was changed."
 msgstr "Parolingiz o'zgartirildi."
 
@@ -250,9 +262,13 @@ msgstr "Parolni ko'rsatish"
 msgid "Hide password"
 msgstr "Parolni yashirish"
 
-#: templates/accounts/login.html:1 templates/accounts/login.html:12
+#: templates/accounts/_google_button.html:6
+msgid "or"
+msgstr "yoki"
+
+#: templates/accounts/login.html:1 templates/accounts/login.html:13
 #: templates/accounts/password_reset_complete.html:4
-#: templates/accounts/register.html:20 templates/base.html:77
+#: templates/accounts/register.html:21 templates/base.html:77
 #: templates/exams/detail.html:23 templates/exams/full_detail.html:21
 #: templates/exams/practice.html:21
 msgid "Log in"
@@ -270,16 +286,20 @@ msgstr "Multilevel tayyorgarligingizni davom ettirish uchun kiring."
 msgid "✅ Your free mock result will be added to your account."
 msgstr "✅ Bepul mock natijangiz hisobingizga qo'shiladi."
 
-#: templates/accounts/login.html:11
+#: templates/accounts/login.html:8
+msgid "Continue with Google"
+msgstr "Google bilan davom etish"
+
+#: templates/accounts/login.html:12
 msgid "Forgot password?"
 msgstr "Parolni unutdingizmi?"
 
-#: templates/accounts/login.html:14
+#: templates/accounts/login.html:15
 #, python-format
 msgid "New to %(site)s?"
 msgstr "%(site)s'da yangimisiz?"
 
-#: templates/accounts/login.html:14 templates/partials/identity.html:5
+#: templates/accounts/login.html:15 templates/partials/identity.html:5
 msgid "Create a free account"
 msgstr "Bepul hisob oching"
 
@@ -464,11 +484,15 @@ msgstr "AI fikr-mulohazasi bilan bepul Multilevel mock imtihonlari — bir daqiq
 msgid "✅ Your free mock result will be saved to this account."
 msgstr "✅ Bepul mock natijangiz shu hisobga saqlanadi."
 
-#: templates/accounts/register.html:18
+#: templates/accounts/register.html:8
+msgid "Sign up with Google"
+msgstr "Google orqali ro'yxatdan o'tish"
+
+#: templates/accounts/register.html:19
 msgid "Create account"
 msgstr "Hisob ochish"
 
-#: templates/accounts/register.html:20
+#: templates/accounts/register.html:21
 msgid "Already have an account?"
 msgstr "Hisobingiz bormi?"
 

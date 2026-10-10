@@ -12,8 +12,9 @@ from .guest import convert_guest, merge_guest_into
 from .services import register_user
 
 
-def _safe_next(request, default="dashboard:home"):
-    target = request.POST.get("next") or request.GET.get("next") or ""
+def _safe_next(request, default="dashboard:home", target=None):
+    if target is None:
+        target = request.POST.get("next") or request.GET.get("next") or ""
     if target and url_has_allowed_host_and_scheme(target, {request.get_host()}, request.is_secure()):
         return target
     return reverse(default)

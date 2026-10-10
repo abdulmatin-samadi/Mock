@@ -5,6 +5,7 @@
   <p>{% translate "Free Multilevel mock exams with AI feedback — start in a minute." %}</p>
 </div>
 {% if guest %}<div class="guest-saved">{% translate "✅ Your free mock result will be saved to this account." %}</div>{% endif %}
+{% translate "Sign up with Google" as g_label %}{% include "accounts/_google_button.html" with label=g_label %}
 <form method="post" novalidate class="auth-form">{% csrf_token %}
   <input type="hidden" name="next" value="{{ next }}">
   {% if form.non_field_errors %}<div class="alert alert-error">{{ form.non_field_errors }}</div>{% endif %}

@@ -37,6 +37,26 @@ Barcha sozlamalar tayyor: `render.yaml` va `netlify.toml`. Siz faqat tugmalarni 
 
 ---
 
+## Google orqali kirish (ixtiyoriy, ≈10 daqiqa)
+Kirish va ro'yxatdan o'tish sahifalarida **«Google bilan davom etish»** tugmasi faqat quyidagi ikki kalit
+qo'shilgandan keyin chiqadi.
+1. console.cloud.google.com → yuqoridan loyiha tanlang yoki **New project** (`DreamZone`).
+2. **APIs & Services → OAuth consent screen** → *External* → ilova nomi `DreamZone`, email'ingiz → Save.
+   **Audience / Publishing status** → **Publish app** (aks holda faqat test foydalanuvchilar kira oladi).
+3. **APIs & Services → Credentials → Create credentials → OAuth client ID** → turi **Web application**.
+   - *Authorized JavaScript origins*: `https://mockcefr.netlify.app`
+   - *Authorized redirect URIs*: `https://mockcefr.netlify.app/accounts/google/callback/`
+   → **Create**. Ko'rsatilgan **Client ID** va **Client secret** ni nusxalang.
+4. Render → `dreamzone-samadi-api` → **Environment** → qo'shing:
+   `GOOGLE_CLIENT_ID=…`, `GOOGLE_CLIENT_SECRET=…` → **Save Changes**.
+   (Sayt manzili boshqa bo'lsa, `GOOGLE_REDIRECT_URI` ni ham o'sha manzilga moslang.)
+
+Google'dan kelgan email bilan hisob bo'lsa — o'sha hisobga kiradi; bo'lmasa yangi o'quvchi hisobi ochiladi.
+
+## Til
+Sayt **o'zbekcha** ochiladi; yuqoridagi **UZ / EN** tugmasi bilan inglizchaga o'tadi. Admin panel inglizcha.
+AI fikr-mulohaza tilini (o'zbekcha / inglizcha) har bir o'quvchi **Profil** sahifasida tanlaydi.
+
 ## Keyinchalik yangilash
 GitHub'ga yangi kod yuklansa, Render ham, Netlify ham **o'zi qayta joylaydi**.
 

@@ -52,6 +52,9 @@ services:
         value: gemini-3.5-flash
       - key: AI_TASK_MODE
         value: thread
+      # Google sign-in: add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Render → Environment (see DEPLOY.md)
+      - key: GOOGLE_REDIRECT_URI
+        value: https://mockcefr.netlify.app/accounts/google/callback/
 
 databases:
   - name: dreamzone-db

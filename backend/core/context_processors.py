@@ -11,4 +11,5 @@ def site(request):
         # Logged-in students get the app shell (sidebar) instead of the public top bar.
         "shell": shell,
         "daily_quote": quote_of_the_day() if shell else None,
+        "GOOGLE_LOGIN": bool(settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET),
     }

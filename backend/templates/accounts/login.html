@@ -5,6 +5,7 @@
   <p>{% translate "Log in to continue your Multilevel preparation." %}</p>
 </div>
 {% if guest %}<div class="guest-saved">{% translate "✅ Your free mock result will be added to your account." %}</div>{% endif %}
+{% translate "Continue with Google" as g_label %}{% include "accounts/_google_button.html" with label=g_label %}
 <form method="post" novalidate class="auth-form">{% csrf_token %}
   {% include "partials/form_fields.html" %}
   <input type="hidden" name="next" value="{{ next }}">
