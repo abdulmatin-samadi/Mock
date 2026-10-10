@@ -237,7 +237,7 @@ def parse_part(text, part):
         elif it.options:
             it.qtype = Question.Type.MULTIPLE_CHOICE
             if ans_upper and not any(ok for _, _, ok in it.options):
-                it.options = [(l, t, l.upper() == ans_upper) for l, t, _ in it.options]
+                it.options = [(l, t, ok) for l, t, ok in _mark_answer(it.options, ans_upper)]
             if len(it.options) < 2:
                 errors.append(f"Question {it.number}: multiple choice needs at least two options (A, B …).")
             if sum(ok for _, _, ok in it.options) != 1:
@@ -340,6 +340,23 @@ def pull_options(passage):
             in_opt = False
             keep.append(line)
     return "\n".join(keep).strip(), "\n".join(opts)
+
+
+def _plain(text):
+    return re.sub(r"[^0-9A-Z]+", " ", str(text).upper()).strip()
+
+
+def _mark_answer(options, answer):
+    """Mark the option the key names: by its letter ("B", "B)", "(B)") or by its text ("by bus")."""
+    m = re.fullmatch(r"([A-Z])|\(([A-Z])\).*|([A-Z])[.)]\s*.*", answer)
+    letter = next((g for g in m.groups() if g), "") if m else ""
+    if letter and any(l.upper() == letter for l, _, _ in options):
+        return [(l, t, l.upper() == letter) for l, t, _ in options]
+    plain = _plain(answer)
+    hits = [i for i, (_, t, _) in enumerate(options) if plain and _plain(t) == plain]
+    if len(hits) != 1:
+        hits = [i for i, (_, t, _) in enumerate(options) if plain and len(plain) > 2 and plain in _plain(t)]
+    return [(l, t, len(hits) == 1 and i == hits[0]) for i, (l, t, _) in enumerate(options)]
 
 
 def normalize_gaps(passage, numbers):

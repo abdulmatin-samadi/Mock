@@ -1448,3 +1448,37 @@ class GoogleLoginTests(BaseTest):
         self._sign_in({"email": "x@gmail.com", "email_verified": False})
         self.assertFalse(User.objects.filter(email="x@gmail.com").exists())
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+class MissingAnswersTests(BaseTest):
+    def setUp(self):
+        super().setUp()
+        self.exam = MockExam.objects.create(title="L", section="listening", time_limit=30)
+        part = ExamPart.objects.create(exam=self.exam, title="Part 1", order=1)
+        self.q = Question.objects.create(part=part, order=4, question_type="multiple_choice", prompt="How?")
+        self.a = Option.objects.create(question=self.q, label="A", text="by bus")
+        self.b = Option.objects.create(question=self.q, label="B", text="on foot")
+
+    def test_answer_chosen_on_the_mock_page(self):
+        c = self.web(self.admin)
+        r = c.get(reverse("admin_dashboard:mock_manage", args=[self.exam.pk]))
+        self.assertContains(r, "Answers missing (1)")
+        c.post(reverse("admin_dashboard:mock_set_answers", args=[self.exam.pk]), {f"q_{self.q.pk}": self.b.pk})
+        self.b.refresh_from_db(); self.a.refresh_from_db()
+        self.assertTrue(self.b.is_correct); self.assertFalse(self.a.is_correct)
+        self.assertNotIn("Question 4: mark the correct option.", exam_services_problems(self.exam))
+
+    def test_key_may_give_the_option_text(self):
+        from admin_dashboard.quick import _mark_answer
+
+        opts = [("A", "by bus", False), ("B", "on foot", False), ("C", "a friend's car", False)]
+        self.assertTrue(_mark_answer(opts, "ON FOOT")[1][2])
+        self.assertTrue(_mark_answer(opts, "B")[1][2])
+        self.assertTrue(_mark_answer(opts, "B) ON FOOT")[1][2])
+        self.assertTrue(_mark_answer(opts, "A FRIEND'S CAR")[2][2])
+
+
+def exam_services_problems(exam):
+    from exams.services import validate_publishable
+
+    return validate_publishable(exam)

@@ -17,6 +17,7 @@ urlpatterns = [
     path("mocks/<int:pk>/edit/", views.mock_edit, name="mock_edit"),
     path("mocks/<int:pk>/delete/", views.mock_delete, name="mock_delete"),
     path("mocks/<int:pk>/publish/", views.mock_toggle_publish, name="mock_publish"),
+    path("mocks/<int:pk>/answers/", views.mock_set_answers, name="mock_set_answers"),
     path("mocks/<int:pk>/duplicate/", views.mock_duplicate, name="mock_duplicate"),
     path("mocks/<int:exam_pk>/parts/new/", views.part_form, name="part_create"),
     path("parts/<int:pk>/edit/", views.part_form, name="part_edit"),

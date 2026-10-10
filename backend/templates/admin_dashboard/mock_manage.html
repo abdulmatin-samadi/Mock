@@ -12,6 +12,27 @@
   </div>
 </div>
 {% if problems %}<div class="alert alert-warning"><strong>Before publishing:</strong><ul class="mb-0">{% for p in problems %}<li>{{ p }}</li>{% endfor %}</ul></div>{% endif %}
+{% if unanswered %}
+<form method="post" action="{% url 'admin_dashboard:mock_set_answers' exam.pk %}" class="card mb-2 fa-card">{% csrf_token %}
+  <h3 class="mb-0">✍️ Answers missing ({{ unanswered|length }})</h3>
+  <p class="small muted">Choose the correct answer for each question below and press <b>Save answers</b> — then Publish.</p>
+  {% for q in unanswered %}
+  <div class="fa-q">
+    <div class="fa-head"><span class="fa-num">{{ q.order }}</span><div><small class="muted">{{ q.part.title }} · {{ q.get_question_type_display }}</small><div>{{ q.prompt|truncatechars:180 }}</div></div></div>
+    {% if q.question_type == 'multiple_choice' %}
+      <div class="fa-opts">{% for o in q.options.all %}<label><input type="radio" name="q_{{ q.pk }}" value="{{ o.pk }}"><span><b>{{ o.label }}</b> {{ o.text }}</span></label>{% endfor %}</div>
+    {% elif q.fixed_choices %}
+      <div class="fa-opts fa-row">{% for c in q.fixed_choices %}<label><input type="radio" name="q_{{ q.pk }}" value="{{ c }}"><span>{{ c }}</span></label>{% endfor %}</div>
+    {% elif q.options.all %}
+      <div class="fa-opts fa-row">{% for o in q.options.all %}<label title="{{ o.text }}"><input type="radio" name="q_{{ q.pk }}" value="{{ o.label }}"><span><b>{{ o.label }}</b></span></label>{% endfor %}</div>
+    {% else %}
+      <input class="fa-input" name="q_{{ q.pk }}" placeholder="Correct word(s) — several allowed: library | libraries">
+    {% endif %}
+  </div>
+  {% endfor %}
+  <div class="row mt-1"><button class="btn btn-good">💾 Save answers</button></div>
+</form>
+{% endif %}
 {% if exam.section == 'listening' %}<div class="card card-tight mb-2 row"><strong>Main audio:</strong>{% if exam.audio %}<audio controls preload="none" src="{% url 'exams:audio' exam.pk %}" style="flex:1;min-width:240px"></audio>{% else %}<span class="muted">none uploaded — <a href="{% url 'admin_dashboard:mock_edit' exam.pk %}">upload</a> (or add audio per section)</span>{% endif %}</div>{% endif %}
 
 {% if cefr_structure %}

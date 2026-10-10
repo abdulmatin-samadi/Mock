@@ -40,6 +40,43 @@ def validate_publishable(exam):
     return problems
 
 
+def unanswered_questions(exam):
+    """Reading/Listening questions that still have no correct answer (they block publishing)."""
+    out = []
+    for q in Question.objects.filter(exam=exam).select_related("part").prefetch_related("options"):
+        opts = list(q.options.all())
+        if q.question_type == Question.Type.MULTIPLE_CHOICE:
+            if opts and not any(o.is_correct for o in opts):
+                out.append(q)
+        elif not q.correct_answer.strip() and (q.question_type not in Question.LABEL_TYPES or opts):
+            out.append(q)
+    return out
+
+
+def set_correct_answer(question, value):
+    """Set the answer from the mock page: an option id (multiple choice), a label, a TFNG choice or text."""
+    q = question
+    if q.question_type == Question.Type.MULTIPLE_CHOICE:
+        opts = list(q.options.all())
+        if not any(str(o.pk) == value for o in opts):
+            return False
+        for o in opts:
+            o.is_correct = str(o.pk) == value
+        Option.objects.bulk_update(opts, ["is_correct"])
+        return True
+    if q.fixed_choices:
+        value = Question.canonical_choice(value)
+        if value not in q.fixed_choices:
+            return False
+    elif q.question_type in Question.LABEL_TYPES:
+        value = value.upper()
+        if value not in {o.label.upper() for o in q.options.all()}:
+            return False
+    q.correct_answer = value[:500]
+    q.save(update_fields=["correct_answer"])
+    return True
+
+
 @transaction.atomic
 def duplicate_exam(exam, user=None):
     """Deep copy of a mock (unpublished). Audio/image files are shared, not copied."""

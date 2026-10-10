@@ -1423,3 +1423,13 @@ td .mk-why { margin-top: 6px; padding: 3px 10px; font-size: .78rem; }
 :root[data-theme="dark"] .google-btn { background: var(--surface); }
 :root[data-theme="dark"] .google-btn:hover { background: var(--surface-2); border-color: var(--line); }
 /* @dark:auto end */
+
+/* ---------------------------------------------------------------- admin: fill in missing answers */
+.fa-card { border-left: 4px solid #f59e0b; }
+.fa-q { padding: 12px 0; border-top: 1px dashed var(--line); }
+.fa-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+.fa-num { flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; background: var(--ok-soft); color: var(--ok); }
+.fa-opts { display: grid; gap: 6px; padding-left: 44px; } .fa-opts.fa-row { display: flex; flex-wrap: wrap; }
+.fa-opts label { display: flex; gap: 8px; align-items: flex-start; padding: 7px 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.fa-opts label:has(input:checked) { border-color: var(--good); background: var(--good-soft); }
+.fa-input { margin-left: 44px; width: calc(100% - 44px); max-width: 420px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; background: var(--surface); color: var(--ink); }

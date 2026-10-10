@@ -300,7 +300,25 @@ def mock_manage(request, pk):
     else:
         ctx["speaking_questions"] = exam.speaking_questions.all()
     ctx["problems"] = exam_services.validate_publishable(exam) if not exam.is_published else []
+    ctx["unanswered"] = exam_services.unanswered_questions(exam) if exam.is_objective else []
     return render(request, "admin_dashboard/mock_manage.html", ctx)
+
+
+@admin_required
+@require_POST
+def mock_set_answers(request, pk):
+    """Save the correct answers chosen in the "Answers missing" box of the mock page."""
+    exam = get_object_or_404(MockExam, pk=pk)
+    saved = 0
+    for q in exam_services.unanswered_questions(exam):
+        value = request.POST.get(f"q_{q.pk}", "").strip()
+        if value and exam_services.set_correct_answer(q, value):
+            saved += 1
+    if saved:
+        messages.success(request, f"Saved {saved} answer{'s' if saved != 1 else ''}.")
+    else:
+        messages.error(request, "Choose an answer first.")
+    return redirect("admin_dashboard:mock_manage", pk=pk)
 
 
 def _manage_url(exam_id):
