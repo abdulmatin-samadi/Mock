@@ -543,6 +543,8 @@ details.box summary { cursor: pointer; font-weight: 600; }
 .rb-player input[type=range] { width: 160px; accent-color: #fff; }
 .rb-player input.rb-vol { width: 70px; }
 .rb-speed { border: 0; background: rgba(255, 255, 255, .2); color: #fff; font-weight: 800; border-radius: 8px; padding: 5px 9px; cursor: pointer; }
+.rb-plays { background: rgba(255, 255, 255, .2); color: #fff; font-weight: 800; font-size: 12px; border-radius: 999px; padding: 4px 9px; white-space: nowrap; }
+#rp-seek:disabled, #rp-play:disabled { opacity: .55; cursor: not-allowed; }
 .rb-spacer { flex: 1; }
 .room-bar .save-state { color: #d4ecff; font-size: .78rem; }
 .rb-timer { display: flex; flex-direction: column; align-items: center; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .25); border-radius: 12px; padding: 4px 14px; }

@@ -140,17 +140,38 @@
 
   // ------------------------------------------------------------- parts
   const audio = document.getElementById("room-audio");
+  // Exam mode (full listening test): each part's recording plays at most twice — once more right after
+  // the first time — and when it has finished the next part opens by itself. Counts survive a reload.
+  const examMode = !!(audio && cfg.examMode);
+  const MAX_PLAYS = 2;
+  const playsKey = "dz-plays-" + cfg.attemptId;
+  let plays = {};
+  try { plays = JSON.parse(localStorage.getItem(playsKey) || "{}"); } catch (e) { plays = {}; }
+  let audioPart = null; // part whose recording is loaded
+  function playsLeft(id) { return MAX_PLAYS - (plays[id] || 0); }
+  function showPlays() {
+    const badge = document.getElementById("rp-plays");
+    if (!examMode || !badge) return;
+    const used = Math.min(MAX_PLAYS, (plays[audioPart] || 0) + (audio.paused ? 0 : 1));
+    badge.hidden = false;
+    badge.textContent = playsLeft(audioPart) > 0 ? `${Math.max(used, 1)}/${MAX_PLAYS}` : `${MAX_PLAYS}/${MAX_PLAYS} ✓`;
+    const play = document.getElementById("rp-play");
+    if (play) play.disabled = playsLeft(audioPart) <= 0;
+  }
+  function loadPartAudio(id, src) {
+    const rate = audio.playbackRate;
+    audio.pause(); audio.setAttribute("src", src); audio.load();
+    audio.playbackRate = rate;
+    audioPart = id;
+    if (!examMode || playsLeft(id) > 0) audio.play().catch(() => {}); // starts as soon as the part opens
+    showPlays();
+  }
   function showPart(id) {
     document.querySelectorAll("[data-part-tab]").forEach((b) => b.classList.toggle("active", b.dataset.partTab === id));
     document.querySelectorAll(".room-part").forEach((p) => { p.hidden = p.dataset.part !== id; });
     if (audio && cfg.audio) {
       const src = cfg.audio[id];
-      if (src && audio.getAttribute("src") !== src) {
-        const rate = audio.playbackRate;
-        audio.pause(); audio.setAttribute("src", src); audio.load();
-        audio.playbackRate = rate;
-        audio.play().catch(() => {}); // the part's recording starts as soon as the student opens it
-      }
+      if (src && audio.getAttribute("src") !== src) loadPartAudio(id, src);
     }
     updateFab(id);
     window.scrollTo(0, 0);
@@ -194,15 +215,29 @@
       if (audio.duration) seek.value = (audio.currentTime / audio.duration) * 100;
     });
     seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = (seek.value / 100) * audio.duration; });
+    if (examMode) {
+      seek.disabled = true; // no skipping back or forward, as in the real exam
+      play.addEventListener("click", (e) => { if (playsLeft(audioPart) <= 0) { e.stopImmediatePropagation(); audio.pause(); } }, true);
+      audio.addEventListener("play", showPlays);
+      audio.addEventListener("ended", () => {
+        const id = audioPart;
+        plays[id] = (plays[id] || 0) + 1;
+        try { localStorage.setItem(playsKey, JSON.stringify(plays)); } catch (e) { /* private mode */ }
+        if (playsLeft(id) > 0) {
+          audio.currentTime = 0;
+          audio.play().catch(() => {}); // second listening
+        } else {
+          showPlays();
+          const i = partIds.indexOf(id);
+          if (i > -1 && i < partIds.length - 1) showPart(partIds[i + 1]);
+        }
+      });
+    }
     // load the recording of the part that is open when the room starts, and play it right away
     // (some browsers allow playing only after the first click — then ▶ starts it)
     const firstPart = document.querySelector(".room-part:not([hidden])");
     const firstSrc = firstPart && cfg.audio ? cfg.audio[firstPart.dataset.part] : "";
-    if (firstSrc && !audio.getAttribute("src")) {
-      audio.setAttribute("src", firstSrc);
-      audio.load();
-      audio.play().catch(() => {});
-    }
+    if (firstSrc && !audio.getAttribute("src")) loadPartAudio(firstPart.dataset.part, firstSrc);
     vol.addEventListener("input", () => { audio.volume = Number(vol.value); });
     speed.addEventListener("click", () => {
       const next = speeds[(speeds.indexOf(audio.playbackRate) + 1) % speeds.length];

@@ -176,6 +176,9 @@ def take(request, pk):
             elif exam.audio:
                 audio[str(p.pk)] = reverse("exams:audio", args=[exam.pk])
         config["audio"] = audio
+        # real exam: every part has its own recording → it plays at most twice, then the next part opens
+        config["examMode"] = (exam.section == Section.LISTENING and not attempt.practice
+                              and bool(audio) and all(p.audio for p in parts))
         ctx.update(parts=parts, room_parts=[build_part(p) for p in parts],
                    total_questions=result_services.attempt_questions(attempt).count())
         template = "exams/take_objective.html"
