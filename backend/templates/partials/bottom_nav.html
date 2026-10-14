@@ -1,0 +1,9 @@
+{% load i18n %}{% with p=request.path %}
+<nav class="bnav" aria-label="{% translate 'Main navigation' %}">
+  <a href="{% url 'dashboard:home' %}" class="{% if p == '/dashboard/' %}active{% endif %}">{% include "partials/icon.html" with name="home" size=22 %}<span>{% translate "Home" context "bottom nav" %}</span></a>
+  <a href="{% url 'exams:hub' %}" class="{% if p|slice:':7' == '/exams/' %}active{% endif %}">{% include "partials/icon.html" with name="file" size=22 %}<span>{% translate "Mocks" context "bottom nav" %}</span></a>
+  <a href="{% url 'dashboard:results' %}" class="{% if p == '/dashboard/results/' or p|slice:':9' == '/results/' %}active{% endif %}">{% include "partials/icon.html" with name="chart" size=22 %}<span>{% translate "Results" context "bottom nav" %}</span></a>
+  <a href="{% url 'dashboard:mistakes' %}" class="{% if p == '/dashboard/mistakes/' %}active{% endif %}">{% include "partials/icon.html" with name="flag" size=22 %}<span>{% translate "Mistakes" context "bottom nav" %}</span></a>
+  <a href="{% url 'accounts:profile' %}" class="{% if p|slice:':10' == '/accounts/' %}active{% endif %}">{% include "partials/icon.html" with name="user" size=22 %}<span>{% translate "Profile" context "bottom nav" %}</span></a>
+</nav>
+{% endwith %}

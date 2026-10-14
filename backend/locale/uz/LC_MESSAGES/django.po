@@ -1,6 +1,6 @@
 # DreamZone — Uzbek interface.
 msgid ""
-msgstr "Project-Id-Version: DreamZone\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2026-10-10 17:09+0500\nPO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\nLast-Translator: FULL NAME <EMAIL@ADDRESS>\nLanguage-Team: LANGUAGE <LL@li.org>\nLanguage: uz\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: DreamZone\nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2026-10-14 20:34+0500\nPO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\nLast-Translator: FULL NAME <EMAIL@ADDRESS>\nLanguage-Team: LANGUAGE <LL@li.org>\nLanguage: uz\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 #: accounts/forms.py:10 accounts/forms.py:54 templates/partials/identity.html:7
 #: templates/results/full_detail.html:18
@@ -1783,6 +1783,36 @@ msgstr "Topshirganingizdan so'ng insholaringizni AI baholaydi. Sahifadan chiqib,
 msgid "Submit for evaluation"
 msgstr "Baholashga yuborish"
 
+#: templates/partials/bottom_nav.html:2
+#: templates/partials/student_sidebar.html:2
+msgid "Main navigation"
+msgstr "Asosiy navigatsiya"
+
+#: templates/partials/bottom_nav.html:3
+msgctxt "bottom nav"
+msgid "Home"
+msgstr "Asosiy"
+
+#: templates/partials/bottom_nav.html:4
+msgctxt "bottom nav"
+msgid "Mocks"
+msgstr "Mocklar"
+
+#: templates/partials/bottom_nav.html:5
+msgctxt "bottom nav"
+msgid "Results"
+msgstr "Natijalar"
+
+#: templates/partials/bottom_nav.html:6
+msgctxt "bottom nav"
+msgid "Mistakes"
+msgstr "Xatolar"
+
+#: templates/partials/bottom_nav.html:7
+msgctxt "bottom nav"
+msgid "Profile"
+msgstr "Profil"
+
 #: templates/partials/continue.html:3 templates/partials/continue.html:11
 msgid "Continue where you left off"
 msgstr "To'xtagan joyingizdan davom eting"
@@ -1899,10 +1929,6 @@ msgstr "bugun topshirildi"
 #: templates/partials/section_cards.html:9
 msgid "all-time"
 msgstr "jami"
-
-#: templates/partials/student_sidebar.html:2
-msgid "Main navigation"
-msgstr "Asosiy navigatsiya"
 
 #: templates/partials/student_sidebar.html:6
 msgid "Mocks"

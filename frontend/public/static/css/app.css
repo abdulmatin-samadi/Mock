@@ -1285,6 +1285,87 @@ td .mk-why { margin-top: 6px; padding: 3px 10px; font-size: .78rem; }
 .app-top .theme-btn, .nav-right .theme-btn { flex: none; }
 .room-bar .theme-btn { background: rgba(255, 255, 255, .15); border-color: rgba(255, 255, 255, .3); color: #fff; }
 
+/* ---------------------------------------------------------------- phone layout */
+.bnav { display: none; }
+@media (max-width: 960px) {
+  .bnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; display: grid; grid-template-columns: repeat(5, 1fr);
+    background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(15, 27, 45, .08);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+  .bnav a { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; border-radius: 12px; color: var(--muted);
+    font-size: .68rem; font-weight: 700; text-decoration: none; min-width: 0; }
+  .bnav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bnav a.active { color: var(--brand); background: var(--primary-soft); }
+  .has-shell main { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 640px) {
+  /* 16px fields stop iPhone from zooming in when a field is tapped */
+  input, select, textarea { font-size: 16px; }
+  .container { padding-left: 14px; padding-right: 14px; }
+  .has-shell main { padding-top: 14px; }
+  .app-top { height: 56px; gap: 8px; padding: 0 12px; }
+  .app-top-cta { display: none; }
+  .card { padding: 18px 16px; }
+  h1 { font-size: 1.45rem; }
+  .page-head { gap: 10px; }
+  .back-link { margin-bottom: 10px; }
+
+  /* home */
+  .dh-hero { padding: 22px 18px; gap: 18px; border-radius: 22px; }
+  .dh-hero h1 { font-size: 1.55rem; }
+  .dh-chips { gap: 6px; } .dh-chips span { font-size: .8rem; padding: 5px 10px; }
+  .dh-cta { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .dh-cta .btn { justify-content: center; padding-left: 10px; padding-right: 10px; font-size: .95rem; }
+  .dh-medal { padding: 14px 16px; gap: 14px; }
+  .dh-stats { gap: 10px; }
+  .dh-stats > div { padding: 12px; gap: 10px; flex-direction: column; align-items: flex-start; }
+  .dh-stats strong { font-size: 1.35rem; }
+  .dh-stats small { font-size: .78rem; line-height: 1.25; }
+  .sec-card { padding: 16px; }
+
+  /* mock pages */
+  .stat-row { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px; }
+  .stat-row .stat { padding: 10px 12px; } .stat-row .label { font-size: .72rem; }
+  .stat-row .value { font-size: 1.2rem !important; } .stat-row .value.small { font-size: .78rem !important; }
+  .mode-card { padding: 18px 14px; }
+  .mock-card { padding: 16px; }
+
+  /* results */
+  .table th, .table td { padding: 8px 10px; }
+  .score-hero { gap: 16px; }
+}
+
+/* exam room on a phone: one compact bar, part tabs scroll sideways underneath */
+@media (max-width: 700px) {
+  .room-bar { flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
+  .rb-icon, #room-fullscreen, .room-bar .save-state { display: none; }
+  .rb-btn, .room-bar .theme-btn { width: 38px; height: 38px; border-radius: 10px; }
+  .rb-num { padding: 7px 11px; font-size: .9rem; }
+  .rb-timer { flex-direction: row; gap: 6px; padding: 4px 10px; }
+  .rb-timer small { display: none; }
+  .rb-timer .timer { font-size: 1.1rem; }
+  .rb-tabs { order: 10; flex: 1 0 100%; flex-wrap: nowrap; gap: 6px; padding-bottom: 2px; scrollbar-width: none; }
+  .rb-tabs::-webkit-scrollbar { display: none; }
+  .rb-tabs button { padding: 7px 14px; flex: none; }
+  .rb-player { order: 11; flex: 1 0 100%; gap: 8px; padding: 5px 8px; }
+  .rb-player { box-sizing: border-box; min-width: 0; }
+  .rb-player input[type=range]#rp-seek { flex: 1 1 0; width: 0; min-width: 0; }
+  .rb-time { font-size: .8rem; }
+  .rb-player .rb-vol, .rb-player > span[aria-hidden] { display: none; }
+  .room { padding: 12px 10px; }
+  .part-head { padding: 12px 14px; }
+  .part-head h2 { font-size: 1.05rem; }
+  .passage-card { padding: 16px 14px; border-radius: 14px; }
+  .passage-card .passage { font-size: 1rem; line-height: 2; }
+  .gap input { width: 128px; padding: 6px 10px; }
+  .answer-input { width: 100%; }
+  .q-group { padding: 14px 12px; }
+  .pill-choice span { padding: 8px 10px; }
+  .room-body .q-palette { margin: 10px 0 96px; padding: 10px; }
+  .room-body .q-palette > span { margin-left: 0 !important; flex-basis: 100%; }
+  .submit-fab { bottom: calc(14px + env(safe-area-inset-bottom)); padding: 12px 26px; font-size: 1rem; }
+  .font-fab { right: 12px; bottom: calc(16px + env(safe-area-inset-bottom)); width: 40px; height: 40px; }
+}
+
 /* @dark:auto begin */
 :root[data-theme="dark"] code { background: color-mix(in srgb, #eef1f6 15%, var(--surface)); }
 :root[data-theme="dark"] .badge { background: color-mix(in srgb, #eef1f6 15%, var(--surface)); }

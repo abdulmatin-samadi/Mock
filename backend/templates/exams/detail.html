@@ -6,7 +6,7 @@
     <div class="row"><span class="badge badge-{{ exam.section }}">{{ info.icon }} {{ exam.get_section_display }}</span><span class="badge badge-multilevel">{% translate "Multilevel" %}</span>{% if exam.level %}<span class="badge">{{ exam.level }}</span>{% endif %}{% if not exam.is_published %}<span class="badge badge-draft">{% translate "Draft (admin preview)" %}</span>{% endif %}</div>
     <h1 class="mt-1">{{ exam.title }}</h1>
     {% if exam.description %}<p>{{ exam.description|linebreaksbr }}</p>{% endif %}
-    <div class="grid grid-3 mt-2">
+    <div class="grid grid-3 mt-2 stat-row">
       <div class="stat"><div class="label">{% translate "Time limit" %}</div><div class="value">{% if exam.time_limit %}{{ exam.time_limit }}<span class="small"> {% translate "min" %}</span>{% else %}—{% endif %}</div></div>
       <div class="stat"><div class="label">{% if exam.section == 'writing' %}{% translate 'Tasks' %}{% else %}{% translate 'Questions' %}{% endif %}</div><div class="value">{{ question_count }}</div></div>
       <div class="stat"><div class="label">{% translate "Scoring" %}</div><div class="value small" style="font-size:1rem">{% translate "Multilevel 0–75 + CEFR" %}</div></div>

@@ -16,7 +16,7 @@
 </head>
 <body class="{% block body_class %}{% if shell %}has-shell{% endif %}{% endblock %}">
 <a class="skip-link" href="#main">{% translate "Skip to content" %}</a>
-{% block sidebar %}{% if shell %}{% include "partials/student_sidebar.html" %}{% endif %}{% endblock %}
+{% block sidebar %}{% if shell %}{% include "partials/student_sidebar.html" %}{% include "partials/bottom_nav.html" %}{% endif %}{% endblock %}
 <div class="page">
 {% block header %}
 {% if shell %}
@@ -26,7 +26,7 @@
   {% include "partials/theme_toggle.html" %}
   {% include "partials/lang_switch.html" %}
   {% if user.is_guest %}<span class="guest-pill">{% translate "Guest" %}</span><a class="btn btn-sm" href="{% url 'accounts:register' %}">{% translate "Create free account" %}</a>{% else %}
-  <a class="btn btn-sm" href="{% url 'exams:hub' %}">{% translate "Take a mock" %}</a>
+  <a class="btn btn-sm app-top-cta" href="{% url 'exams:hub' %}">{% translate "Take a mock" %}</a>
   <div class="dropdown">
     <button aria-haspopup="true" aria-label="{% translate 'Account menu' %}"><span class="avatar">{% if user.profile_photo %}<img src="{{ user.profile_photo.url }}" alt="">{% else %}{{ user.initials }}{% endif %}</span></button>
     <div class="dropdown-menu" role="menu">
